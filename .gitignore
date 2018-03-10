@@ -33,3 +33,4 @@ sysinfo.txt
 *.apk
 *.unitypackage
 /Coop_Next/Library
+Coop_Next/Temp/
