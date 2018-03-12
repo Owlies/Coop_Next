@@ -34,3 +34,4 @@ sysinfo.txt
 *.unitypackage
 /Coop_Next/Library
 Coop_Next/Temp/
+Coop_Next/.vs/
