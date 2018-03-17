@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : Singleton<PlayerManager> {
-
     private List<PlayerController> players;
 
 	// Use this for initialization
@@ -19,7 +18,7 @@ public class PlayerManager : Singleton<PlayerManager> {
     public void initialize(int numberOfPlayers) {
         for (int playerId = 0; playerId < numberOfPlayers; playerId++) {
 #if UNITY_EDITOR || UNITY_STANDALONE
-            PlayerController pc = new PlayerController(new PCInputController(playerId), playerId);
+            PlayerController pc = new PlayerController(new PCInputController(), playerId);
 #elif UNITY_IOS || UNITY_ANDROID
             
 #endif
