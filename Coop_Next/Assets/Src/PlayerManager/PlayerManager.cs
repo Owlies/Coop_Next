@@ -11,11 +11,11 @@ public class PlayerManager : Singleton<PlayerManager> {
 	void Start () {
         //TODO(Huayu): Hook up with GameManager
 
-        SceneManager.sceneLoaded += Init;
+        SceneManager.sceneLoaded += onSceneLoaded;
 
     }
 
-    void Init(Scene scence, LoadSceneMode mod)
+    void onSceneLoaded(Scene scence, LoadSceneMode mod)
     {
         initialize(1);
     }
@@ -27,7 +27,9 @@ public class PlayerManager : Singleton<PlayerManager> {
             PlayerController pController = playerObject.GetComponent<PlayerController>();
 
 #if UNITY_EDITOR || UNITY_STANDALONE
-            pController.initialize(new PCInputController(), playerId);
+            playerObject.AddComponent<PCInputController>();
+            playerObject.GetComponent<PCInputController>().registerListeners(pController.playerMove, pController.playerAction);
+            pController.initialize(playerObject.GetComponent<PCInputController>(), playerId);
 #elif UNITY_IOS || UNITY_ANDROID
             
 #endif
