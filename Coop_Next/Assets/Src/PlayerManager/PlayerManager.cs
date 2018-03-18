@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerManager : Singleton<PlayerManager> {
     public GameObject playerPrefab;
@@ -9,8 +8,6 @@ public class PlayerManager : Singleton<PlayerManager> {
 
 	// Use this for initialization
 	void Start () {
-        DontDestroyOnLoad(gameObject);
-        SceneManager.LoadSceneAsync("Level1", LoadSceneMode.Additive);
     }
 	
 	// Update is called once per frame
