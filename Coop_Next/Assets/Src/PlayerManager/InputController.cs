@@ -22,6 +22,7 @@ public class InputController : OverridableMonoBehaviour
     public InputController() {
         horizontalSpeed = AppConstant.Instance.playerHorizontalSpeed;
         verticalSpeed = AppConstant.Instance.playerVerticalSpeed;
+        base.Awake();
     }
 
     public void registerListeners(UnityAction<float, float> movementAction, UnityAction<bool> playerAction)
@@ -31,7 +32,7 @@ public class InputController : OverridableMonoBehaviour
     }
 
     protected virtual void handleMovement() {
-
+        Debug.Log("handleMovement");
     }
 
     protected virtual void handleAction() {
