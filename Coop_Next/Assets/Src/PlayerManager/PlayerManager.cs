@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : Singleton<PlayerManager> {
     public GameObject playerPrefab;
@@ -9,8 +10,15 @@ public class PlayerManager : Singleton<PlayerManager> {
 	// Use this for initialization
 	void Start () {
         //TODO(Huayu): Hook up with GameManager
+
+        SceneManager.sceneLoaded += Init;
+
+    }
+
+    void Init(Scene scence, LoadSceneMode mod)
+    {
         initialize(1);
-	}
+    }
 
     public void initialize(int numberOfPlayers) {
         for (int playerId = 0; playerId < numberOfPlayers; playerId++) {

@@ -11,7 +11,7 @@ public class GameManager : Singleton<GameManager> {
     void Start ()
     {
         DontDestroyOnLoad(gameObject);
-        SceneManager.LoadSceneAsync("Level1", LoadSceneMode.Additive);
+        SceneManager.LoadScene("Level1", LoadSceneMode.Additive);
     }
 	
 	// Update is called once per frame
