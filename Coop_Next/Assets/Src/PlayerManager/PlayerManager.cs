@@ -4,27 +4,45 @@ using UnityEngine;
 
 public class PlayerManager : Singleton<PlayerManager> {
     public GameObject playerPrefab;
-    private List<PlayerController> players;
+    private List<PlayerController> players = new List<PlayerController>();
 
 	// Use this for initialization
 	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+        //TODO(Huayu): Hook up with GameManager
+        initialize(1);
 	}
 
     public void initialize(int numberOfPlayers) {
         for (int playerId = 0; playerId < numberOfPlayers; playerId++) {
+            GameObject playerObject = GameObject.Instantiate(playerPrefab) as GameObject;
+            playerObject.AddComponent<PlayerController>();
+            PlayerController pController = playerObject.GetComponent<PlayerController>();
+
 #if UNITY_EDITOR || UNITY_STANDALONE
-            PlayerController pc = new PlayerController(new PCInputController(), playerId);
+            pController.initialize(new PCInputController(), playerId);
 #elif UNITY_IOS || UNITY_ANDROID
             
 #endif
-            players.Add(pc);
+            players.Add(pController);
+            initializePlayerLocation(playerObject);
+        }
+    }
+
+    void initializePlayerLocation(GameObject player) {
+        if (!AppConstant.Instance.isMultiPlayer) {
+            GameObject singlePlayerStartPoint = GameObject.FindWithTag("SinglePlayerStartPoint");
+            player.transform.position = new Vector3(singlePlayerStartPoint.transform.position.x, singlePlayerStartPoint.transform.position.y, singlePlayerStartPoint.transform.position.z);
+            return;
         }
 
+        PlayerController pController = player.GetComponent<PlayerController>();
+        if (pController.isFirstPlayer()) {
+            GameObject player1StartPoint = GameObject.FindWithTag("Player1StartPoint");
+            player.transform.position = new Vector3(player1StartPoint.transform.position.x, player1StartPoint.transform.position.y, player1StartPoint.transform.position.z);
+            return;
+        }
+
+        GameObject player2StartPoint = GameObject.FindWithTag("Player2StartPoint");
+        player.transform.position = new Vector3(player2StartPoint.transform.position.x, player2StartPoint.transform.position.y, player2StartPoint.transform.position.z);
     }
 }

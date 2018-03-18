@@ -18,6 +18,7 @@ public class PCInputController : InputController
         float x = Input.GetAxis(inputConfig.horizontalAxis) * horizontalSpeed * Time.deltaTime;
         float z = Input.GetAxis(inputConfig.verticalAxis) * verticalSpeed * Time.deltaTime;
 
+        Debug.Log(x);
         if (x.Equals(0.0f) && z.Equals(0.0f)) {
             return;
         }

@@ -13,7 +13,9 @@ public class PlayerController : OverridableMonoBehaviour {
     private int playerId;
     private InputController inputController;
 
-    public PlayerController(InputController iController, int pId) {
+    public void initialize(InputController iController, int pId) {
+        base.Awake();
+
         inputController = iController;
         playerId = pId;
 
@@ -51,7 +53,7 @@ public class PlayerController : OverridableMonoBehaviour {
 
     }
 
-    private bool isFirstPlayer() {
+    public bool isFirstPlayer() {
         return playerId == 0;
     }
 }
