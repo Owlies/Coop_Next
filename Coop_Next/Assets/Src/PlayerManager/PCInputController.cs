@@ -15,10 +15,9 @@ public class PCInputController : InputController
     protected override void handleMovement()
     {
         base.handleMovement();
-        float x = Input.GetAxis(inputConfig.horizontalAxis) * horizontalSpeed * Time.deltaTime;
-        float z = Input.GetAxis(inputConfig.verticalAxis) * verticalSpeed * Time.deltaTime;
+        float x = Input.GetAxis(inputConfig.horizontalAxis) * AppConstant.Instance.playerHorizontalSpeed * Time.deltaTime;
+        float z = Input.GetAxis(inputConfig.verticalAxis) * AppConstant.Instance.playerVerticalSpeed * Time.deltaTime;
 
-        Debug.Log(x);
         if (x.Equals(0.0f) && z.Equals(0.0f)) {
             return;
         }
@@ -29,11 +28,11 @@ public class PCInputController : InputController
     protected override void handleAction()
     {
         base.handleAction();
-        if (Input.GetKeyDown(inputConfig.actionButton) || Input.GetKey(inputConfig.actionButton))
+        if (Input.GetButtonDown(inputConfig.actionButton) || Input.GetButton(inputConfig.actionButton))
         {
             lastPressTime += Time.deltaTime;
         }
-        else if (Input.GetKeyUp(inputConfig.actionButton)) {
+        else if (Input.GetButtonUp(inputConfig.actionButton)) {
             if (lastPressTime >= AppConstant.Instance.playerActionLongPressThreshold)
             {
                 actionEvent.Invoke(true);

@@ -45,8 +45,8 @@ public class PlayerController : OverridableMonoBehaviour {
     }
 
     public void playerMove(float x, float z) {
-        transform.Rotate(0, x, 0);
-        transform.Rotate(0, 0, z);
+        transform.Translate(x, 0, 0);
+        transform.Translate(0, 0, z);
     }
 
     public void playerAction(bool isLongPress) {
