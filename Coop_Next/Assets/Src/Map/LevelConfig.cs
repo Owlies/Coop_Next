@@ -8,7 +8,7 @@ public class LevelConfig : ScriptableObject {
     public Vector2Int mapSize = new Vector2Int(0,0);
 
     [SerializeField]
-    public ObjectInstance[] objectInstances;// = new List<int>(10);
+    public ObjectInstance[] objectInstances;
 }
 
 [System.Serializable]

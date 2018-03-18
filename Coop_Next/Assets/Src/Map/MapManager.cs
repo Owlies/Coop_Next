@@ -20,11 +20,11 @@ public class MapManager : Singleton<MapManager> {
         if (levelConfig != null)
         {
             mapNodes = new MapNode[levelConfig.mapSize.x, levelConfig.mapSize.y];
-            for(int i =0; i < levelConfig.objectInstances.Count; i++)
+            for (int i = 0; i < levelConfig.objectInstances.Length; i++)
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
                 GameObject obj = GameObject.Instantiate(objectConfig.objects[instance.objectID].prefab, sceneRoot.transform);
-                obj.transform.localPosition = new Vector3(0,0,0);
+                obj.transform.localPosition = new Vector3(0, 0, 0);
             }
         }
     }
