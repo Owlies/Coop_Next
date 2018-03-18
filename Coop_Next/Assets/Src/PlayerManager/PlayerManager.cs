@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : Singleton<PlayerManager> {
+    public GameObject playerPrefab;
     private List<PlayerController> players;
 
 	// Use this for initialization
