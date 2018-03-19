@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CreateAssetMenu(fileName = "Level", menuName = "CoopNext/Level", order = 1)]
+[CreateAssetMenu(fileName = "Level", menuName = "CoopNext/Level Config", order = 1)]
 public class LevelConfig : ScriptableObject {
     public Vector2Int mapSize = new Vector2Int(0,0);
 

@@ -24,7 +24,7 @@ public class MapManager : Singleton<MapManager> {
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
                 GameObject obj = GameObject.Instantiate(objectConfig.objects[instance.objectID].prefab, sceneRoot.transform);
-                obj.transform.localPosition = new Vector3(0, 0, 0);
+                obj.transform.localPosition = new Vector3(instance.position.x, 0, instance.position.y);
             }
         }
     }

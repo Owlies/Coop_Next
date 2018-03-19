@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Object", menuName = "CoopNext/ObjectConfig", order = 1)]
+[CreateAssetMenu(fileName = "Object", menuName = "CoopNext/Object Config", order = 1)]
 public class ObjectConfig : ScriptableObject
 {
     [SerializeField]
