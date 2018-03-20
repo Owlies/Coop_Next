@@ -50,7 +50,7 @@ public class PlayerController : OverridableMonoBehaviour {
     }
 
     public void playerAction(bool isLongPress) {
-
+        //TODO(Huayu):Call Event Center
     }
 
     public bool isFirstPlayer() {
