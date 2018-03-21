@@ -12,12 +12,14 @@ public struct PlayerInputConfig
 public class PlayerController : OverridableMonoBehaviour {
     private int playerId;
     private InputController inputController;
+    private GameObject carryingBuilding;
 
     public void initialize(InputController iController, int pId) {
         base.Awake();
 
         inputController = iController;
         playerId = pId;
+        carryingBuilding = null;
 
         PlayerInputConfig inputConfig = new PlayerInputConfig();
         if (!AppConstant.Instance.isMultiPlayer)
@@ -51,6 +53,22 @@ public class PlayerController : OverridableMonoBehaviour {
 
     public void playerAction(bool isLongPress) {
         //TODO(Huayu):Call Event Center
+        if (isLongPress) {
+            RaycastHit hitObject;
+            if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8)) {
+                MoveBuildingEvent ev = new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject);
+                ev.Execute();
+                carryingBuilding = hitObject.transform.gameObject;
+            }
+
+            return;
+        }
+
+        if (carryingBuilding != null) {
+            PlaceBuildingEvent ev = new PlaceBuildingEvent(this.gameObject, carryingBuilding);
+            ev.Execute();
+            carryingBuilding = null;
+        }
     }
 
     public bool isFirstPlayer() {

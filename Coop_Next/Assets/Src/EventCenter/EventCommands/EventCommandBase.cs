@@ -2,11 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-abstract class EventCommandBase {
+public abstract class EventCommandBase {
     protected GameObject actor;
+    protected GameObject receiver;
     public abstract void Execute();
-    public EventCommandBase(GameObject actor) {
+
+    public EventCommandBase(GameObject actor)
+    {
         this.actor = actor;
+    }
+
+    public EventCommandBase(GameObject actor, GameObject receiver) {
+        this.actor = actor;
+        this.receiver = receiver;
     }
 
 }
