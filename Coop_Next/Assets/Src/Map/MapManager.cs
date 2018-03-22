@@ -41,8 +41,12 @@ public class MapManager : Singleton<MapManager> {
                     for (int idxY = 0; idxY < objectData.size.y; idxY++)
                     {
                         Vector2Int index = WorldToMapIndex(instance.position + new Vector2Int(idxX, idxY));
-                        mapNodes[index.x, index.y].isBlocked = true;
-                        mapNodes[index.x, index.y].gameObject = obj;
+                        if (index.x > 0 && index.y > 0 &&
+                            index.x < levelConfig.mapSize.x && index.y < levelConfig.mapSize.y)
+                        {
+                            mapNodes[index.x, index.y].isBlocked = true;
+                            mapNodes[index.x, index.y].gameObject = obj;
+                        }
                     }
                 }
             }
