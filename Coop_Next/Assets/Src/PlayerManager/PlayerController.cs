@@ -68,7 +68,10 @@ public class PlayerController : OverridableMonoBehaviour {
             PlaceBuildingEvent ev = new PlaceBuildingEvent(this.gameObject, carryingBuilding);
             ev.Execute();
             carryingBuilding = null;
+            return;
         }
+
+
     }
 
     public bool isFirstPlayer() {
