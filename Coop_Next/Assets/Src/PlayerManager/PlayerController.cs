@@ -54,16 +54,10 @@ public class PlayerController : OverridableMonoBehaviour {
     public void playerAction(bool isLongPress) {
         //TODO(Huayu):Call Event Center
         if (isLongPress) {
-            RaycastHit hitObject;
-            if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8)) {
-                MoveBuildingEvent ev = new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject);
-                ev.Execute();
-                carryingBuilding = hitObject.transform.gameObject;
-            }
-
-            return;
+            handleLongPressAction();
         }
 
+        // Place building if carrying
         if (carryingBuilding != null) {
             PlaceBuildingEvent ev = new PlaceBuildingEvent(this.gameObject, carryingBuilding);
             ev.Execute();
@@ -71,7 +65,37 @@ public class PlayerController : OverridableMonoBehaviour {
             return;
         }
 
+        handleShortPressAction();
+    }
 
+    private void handleLongPressAction() {
+        RaycastHit hitObject;
+        if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
+        {
+            if (hitObject.transform.gameObject.tag != "Building")
+            {
+                return;
+            }
+            MoveBuildingEvent ev = new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject);
+            ev.Execute();
+            carryingBuilding = hitObject.transform.gameObject;
+        }
+
+    }
+
+    private void handleShortPressAction() {
+        RaycastHit hitObject;
+        if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
+        {
+            if (hitObject.transform.gameObject.tag != "Resource")
+            {
+                return;
+            }
+
+            CollectResourceEventStart ev = new CollectResourceEventStart(this.gameObject, hitObject.transform.gameObject);
+            ev.Execute();
+            
+        }
     }
 
     public bool isFirstPlayer() {
