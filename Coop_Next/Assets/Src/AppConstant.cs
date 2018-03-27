@@ -8,4 +8,5 @@ public class AppConstant : Singleton<AppConstant> {
     public float playerActionLongPressThreshold = 0.3f;
     public float playerActionRange = 1.0f;
     public bool isMultiPlayer = false;
+    public float resourceCollectingSeconds = 2.0f;
 }

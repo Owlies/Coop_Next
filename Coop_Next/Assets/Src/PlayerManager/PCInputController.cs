@@ -40,7 +40,7 @@ public class PCInputController : InputController
             else {
                 actionEvent.Invoke(false);
             }
-                lastPressTime = 0.0f;
+            lastPressTime = 0.0f;
         }
     }
 

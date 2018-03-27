@@ -4,14 +4,8 @@ using UnityEngine;
 
 public class EventCenter : Singleton<EventCenter> {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void executeEvent(EventCommandBase ev) {
+        ev.Execute();
+    }
 
 }

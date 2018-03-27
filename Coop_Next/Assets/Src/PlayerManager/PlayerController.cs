@@ -13,7 +13,10 @@ public class PlayerController : OverridableMonoBehaviour {
     private int playerId;
     private InputController inputController;
     private GameObject carryingBuilding;
+    private Resource collectingResource;
+    private float startCollectingTime;
 
+    #region initialize
     public void initialize(InputController iController, int pId) {
         base.Awake();
 
@@ -45,7 +48,9 @@ public class PlayerController : OverridableMonoBehaviour {
 
         inputController.inputConfig = inputConfig;
     }
+    #endregion
 
+    #region action
     public void playerMove(float x, float z) {
         transform.Translate(x, 0, 0);
         transform.Translate(0, 0, z);
@@ -54,21 +59,23 @@ public class PlayerController : OverridableMonoBehaviour {
     public void playerAction(bool isLongPress) {
         //TODO(Huayu):Call Event Center
         if (isLongPress) {
-            handleLongPressAction();
+            tryHandleMoveBuildingAction();
+            return;
         }
 
         // Place building if carrying
         if (carryingBuilding != null) {
-            PlaceBuildingEvent ev = new PlaceBuildingEvent(this.gameObject, carryingBuilding);
-            ev.Execute();
+            EventCenter.Instance.executeEvent(new PlaceBuildingEvent(this.gameObject, carryingBuilding));
             carryingBuilding = null;
             return;
         }
 
-        handleShortPressAction();
+        tryHandleResourceAction();
     }
+    #endregion
 
-    private void handleLongPressAction() {
+    #region MoveBuilding
+    private void tryHandleMoveBuildingAction() {
         RaycastHit hitObject;
         if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
         {
@@ -76,14 +83,29 @@ public class PlayerController : OverridableMonoBehaviour {
             {
                 return;
             }
-            MoveBuildingEvent ev = new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject);
-            ev.Execute();
+
+            EventCenter.Instance.executeEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
             carryingBuilding = hitObject.transform.gameObject;
         }
+    }
+    #endregion
 
+    #region CollectResource
+    private void tryHandleResourceAction() {
+        if (collectingResource == null) {
+            startCollectingResource();
+            return;
+        }
+
+        if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds) {
+            EventCenter.Instance.executeEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
+            return;
+        }
+
+        EventCenter.Instance.executeEvent(new CancelResourceEvent(this.gameObject, collectingResource));
     }
 
-    private void handleShortPressAction() {
+    private void startCollectingResource() {
         RaycastHit hitObject;
         if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
         {
@@ -92,13 +114,22 @@ public class PlayerController : OverridableMonoBehaviour {
                 return;
             }
 
-            CollectResourceEventStart ev = new CollectResourceEventStart(this.gameObject, hitObject.transform.gameObject);
-            ev.Execute();
-            
+            collectingResource = hitObject.transform.GetComponent<Resource>();
+            if (collectingResource == null) {
+                Debug.Log("Missing Resource Component for Resource!");
+                return;
+            }
+
+            EventCenter.Instance.executeEvent(new StartCollectResourceEvent(this.gameObject, collectingResource));
+            startCollectingTime = Time.time;
         }
     }
 
+    #endregion
+
+    #region OtherFunctions
     public bool isFirstPlayer() {
         return playerId == 0;
     }
+    #endregion
 }
