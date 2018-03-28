@@ -15,6 +15,7 @@ public class PlayerController : OverridableMonoBehaviour {
     private GameObject carryingBuilding;
     private GameObject collectingResource;
     private float startCollectingTime;
+    private GameObject carryingResourceCube;
 
     #region initialize
     public void initialize(InputController iController, int pId) {
@@ -122,6 +123,10 @@ public class PlayerController : OverridableMonoBehaviour {
             startCollectingTime = Time.time;
             collectingResource = hitObject.transform.gameObject;
         }
+    }
+
+    public void setCarryingResourceCube(GameObject cube) {
+        carryingResourceCube = cube;
     }
 
     #endregion

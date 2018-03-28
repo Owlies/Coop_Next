@@ -4,10 +4,6 @@ using UnityEngine;
 using ProgressBar;
 
 public class ResourceManager : Singleton<ResourceManager> {
-    public int coalQuantity;
-    public int oreQuantity;
-    public int woodQuantity;
-    public int rockQuantity;
     public GameObject coalCubePrefab;
     public GameObject oreCubePrefab;
     public GameObject woodCubePrefab;
@@ -86,20 +82,23 @@ public class ResourceManager : Singleton<ResourceManager> {
 
         Resource resourceType = resource.GetComponent<Resource>();
         collectingMap.Remove(player);
+        GameObject cube = null;
         switch (resourceType.resourceEnum) {
             case ResourceEnum.Coal:
-                coalQuantity++;
+                cube = GameObject.Instantiate(coalCubePrefab, player.transform);
                 break;
             case ResourceEnum.Ore:
-                oreQuantity++;
+                cube = GameObject.Instantiate(oreCubePrefab, player.transform);
                 break;
             case ResourceEnum.Rock:
-                rockQuantity++;
+                cube = GameObject.Instantiate(rockCubePrefab, player.transform);
                 break;
             case ResourceEnum.Wood:
-                woodQuantity++;
+                cube = GameObject.Instantiate(woodCubePrefab, player.transform);
                 break;
         }
+
+        player.GetComponent<PlayerController>().setCarryingResourceCube(cube);
 
         return true;
     }
