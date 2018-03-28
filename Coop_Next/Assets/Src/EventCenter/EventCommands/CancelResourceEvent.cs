@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CancelResourceEvent : EventCommandBase {
-    private Resource resource;
+    private GameObject resource;
 
     public CancelResourceEvent(GameObject actor) : base(actor)
     {
@@ -11,11 +11,7 @@ public class CancelResourceEvent : EventCommandBase {
 
     public CancelResourceEvent(GameObject actor, GameObject receiver) : base(actor, receiver)
     {
-    }
-
-    public CancelResourceEvent(GameObject actor, Resource collectingReseource) : base(actor)
-    {
-        resource = collectingReseource;
+        resource = receiver;
     }
 
     public override void Execute()

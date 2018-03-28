@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class StartCollectResourceEvent : EventCommandBase {
-    private Resource resource;
+    private GameObject resource;
 
     public StartCollectResourceEvent(GameObject actor) : base(actor)
     {
@@ -11,11 +11,7 @@ public class StartCollectResourceEvent : EventCommandBase {
 
     public StartCollectResourceEvent(GameObject actor, GameObject receiver) : base(actor, receiver)
     {
-    }
-
-    public StartCollectResourceEvent(GameObject actor, Resource collectingReseource) : base(actor)
-    {
-        resource = collectingReseource;
+        resource = receiver;
     }
 
     public override void Execute()

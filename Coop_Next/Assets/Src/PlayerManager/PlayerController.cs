@@ -13,7 +13,7 @@ public class PlayerController : OverridableMonoBehaviour {
     private int playerId;
     private InputController inputController;
     private GameObject carryingBuilding;
-    private Resource collectingResource;
+    private GameObject collectingResource;
     private float startCollectingTime;
 
     #region initialize
@@ -59,8 +59,9 @@ public class PlayerController : OverridableMonoBehaviour {
     public void playerAction(bool isLongPress) {
         //TODO(Huayu):Call Event Center
         if (isLongPress) {
-            tryHandleMoveBuildingAction();
-            return;
+            if (tryHandleMoveBuildingAction()) {
+                return;
+            }
         }
 
         // Place building if carrying
@@ -75,18 +76,21 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region MoveBuilding
-    private void tryHandleMoveBuildingAction() {
+    private bool tryHandleMoveBuildingAction() {
         RaycastHit hitObject;
         if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
         {
             if (hitObject.transform.gameObject.tag != "Building")
             {
-                return;
+                return false;
             }
 
             EventCenter.Instance.executeEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
             carryingBuilding = hitObject.transform.gameObject;
+
+            return true;
         }
+        return false;
     }
     #endregion
 
@@ -114,14 +118,9 @@ public class PlayerController : OverridableMonoBehaviour {
                 return;
             }
 
-            collectingResource = hitObject.transform.GetComponent<Resource>();
-            if (collectingResource == null) {
-                Debug.Log("Missing Resource Component for Resource!");
-                return;
-            }
-
-            EventCenter.Instance.executeEvent(new StartCollectResourceEvent(this.gameObject, collectingResource));
+            EventCenter.Instance.executeEvent(new StartCollectResourceEvent(this.gameObject, hitObject.transform.gameObject));
             startCollectingTime = Time.time;
+            collectingResource = hitObject.transform.gameObject;
         }
     }
 

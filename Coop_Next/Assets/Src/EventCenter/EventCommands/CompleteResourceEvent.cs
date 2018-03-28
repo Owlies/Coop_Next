@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CompleteResourceEvent : EventCommandBase {
-    private Resource resource;
+    private GameObject resource;
     public CompleteResourceEvent(GameObject actor) : base(actor)
     {
     }
 
     public CompleteResourceEvent(GameObject actor, GameObject receiver) : base(actor, receiver)
     {
-    }
-
-    public CompleteResourceEvent(GameObject actor, Resource collectingReseource) : base(actor) {
-        resource = collectingReseource;
+        resource = receiver;
     }
 
     public override void Execute()

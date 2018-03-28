@@ -1,21 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProgressBar;
 
 public class ResourceManager : Singleton<ResourceManager> {
     public int coalQuantity;
     public int oreQuantity;
     public int woodQuantity;
     public int rockQuantity;
+    public GameObject coalCubePrefab;
+    public GameObject oreCubePrefab;
+    public GameObject woodCubePrefab;
+    public GameObject rockCubePrefab;
 
-    private Dictionary<PlayerController, Resource> collectingMap;
+    private Dictionary<PlayerController, GameObject> collectingMap = new Dictionary<PlayerController, GameObject>();
 
-    private bool canStartCollecting(PlayerController player, Resource resource) {
-        if (collectingMap[player] != null) {
+    private bool canStartCollecting(PlayerController player, GameObject resource) {
+        if (collectingMap.ContainsKey(player)) {
             return false;
         }
 
-        foreach (KeyValuePair<PlayerController, Resource> entry in collectingMap) {
+        foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap) {
             if (entry.Value == resource) {
                 return false;
             }
@@ -24,25 +29,27 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    public bool startCollecting(PlayerController player, Resource resource) {
+    public bool startCollecting(PlayerController player, GameObject resource) {
         if (!canStartCollecting(player, resource)) {
             return false;
         }
 
         collectingMap[player] = resource;
 
+        ProgressBarBehaviour progressBar = resource.GetComponentInChildren<ProgressBarBehaviour>();
+        progressBar.Value = 50.0f;
         return true;
     }
 
-    private bool canCancelCollecting(PlayerController player, Resource resource) {
-        if (collectingMap[player] == null) {
+    private bool canCancelCollecting(PlayerController player, GameObject resource) {
+        if (!collectingMap.ContainsKey(player)) {
             return false;
         }
 
         return true;
     }
 
-    public bool cancelCollecting(PlayerController player, Resource resource) {
+    public bool cancelCollecting(PlayerController player, GameObject resource) {
         if (!canCancelCollecting(player, resource)) {
             return false;
         }
@@ -52,14 +59,14 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    private bool canCompleteCollecting(PlayerController player, Resource resource) {
-        if (collectingMap[player] == null)
+    private bool canCompleteCollecting(PlayerController player, GameObject resource) {
+        if (!collectingMap.ContainsKey(player))
         {
             return false;
         }
 
         bool foundResource = false;
-        foreach (KeyValuePair<PlayerController, Resource> entry in collectingMap)
+        foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap)
         {
             if (entry.Value == resource)
             {
@@ -71,13 +78,14 @@ public class ResourceManager : Singleton<ResourceManager> {
         return foundResource;
     }
 
-    public bool completeCollecting(PlayerController player, Resource resource) {
+    public bool completeCollecting(PlayerController player, GameObject resource) {
         if (!canCompleteCollecting(player, resource)) {
             return false;
         }
 
+        Resource resourceType = resource.GetComponent<Resource>();
         collectingMap.Remove(player);
-        switch (resource.resourceEnum) {
+        switch (resourceType.resourceEnum) {
             case ResourceEnum.Coal:
                 coalQuantity++;
                 break;
