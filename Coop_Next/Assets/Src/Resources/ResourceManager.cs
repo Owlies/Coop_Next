@@ -37,7 +37,8 @@ public class ResourceManager : Singleton<ResourceManager> {
         collectingMap[player] = resource;
 
         ProgressBarBehaviour progressBar = resource.GetComponentInChildren<ProgressBarBehaviour>();
-        progressBar.Value = 50.0f;
+        progressBar.enabled = true;
+
         return true;
     }
 
@@ -101,5 +102,15 @@ public class ResourceManager : Singleton<ResourceManager> {
         }
 
         return true;
+    }
+
+    public override void UpdateMe() {
+
+        foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap)
+        {
+            ProgressBarBehaviour progressBar = entry.Value.GetComponentInChildren<ProgressBarBehaviour>();
+            progressBar.Value += Time.deltaTime;
+        }
+        
     }
 }
