@@ -28,22 +28,28 @@ public class PCInputController : InputController
     protected override void handleAction()
     {
         base.handleAction();
-        if (Input.GetButtonDown(inputConfig.actionButton) || Input.GetButton(inputConfig.actionButton))
+        
+        if (Input.GetButtonDown(inputConfig.actionButton))
         {
-            lastPressTime += Time.deltaTime;
+            actionEvent.Invoke(false, true);
         }
-        else if (Input.GetButtonUp(inputConfig.actionButton)) {
+        else if (Input.GetButtonUp(inputConfig.actionButton))
+        {
             if (lastPressTime >= AppConstant.Instance.playerActionLongPressThreshold)
             {
-                actionEvent.Invoke(true);
+                actionEvent.Invoke(true, false);
             }
-            else {
-                actionEvent.Invoke(false);
+            else
+            {
+                actionEvent.Invoke(false, false);
             }
             lastPressTime = 0.0f;
         }
+        else if (Input.GetButton(inputConfig.actionButton))
+        {
+            lastPressTime += Time.deltaTime;
+        }
     }
-
 }
 
 

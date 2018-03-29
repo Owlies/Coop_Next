@@ -57,22 +57,40 @@ public class PlayerController : OverridableMonoBehaviour {
         transform.Translate(0, 0, z);
     }
 
-    public void playerAction(bool isLongPress) {
-        //TODO(Huayu):Call Event Center
+    public void playerAction(bool isLongPress, bool isButtonDown) {
+        // Long press actions
         if (isLongPress) {
             if (tryHandleMoveBuildingAction()) {
                 return;
             }
         }
 
-        // Place building if carrying
-        if (carryingBuilding != null) {
-            EventCenter.Instance.executeEvent(new PlaceBuildingEvent(this.gameObject, carryingBuilding));
-            carryingBuilding = null;
+        // First press actions
+        if (isButtonDown) {
+            // Place building if carrying
+            if (carryingBuilding != null)
+            {
+                EventCenter.Instance.executeEvent(new PlaceBuildingEvent(this.gameObject, carryingBuilding));
+                carryingBuilding = null;
+                return;
+            }
+
+            if (tryStartCollectingResource()) {
+                return;
+            }
+
             return;
         }
 
-        tryHandleResourceAction();
+        // Release actions
+        if (tryCancelCollectingResource())
+        {
+            return;
+        }
+
+        if (tryCompleteCollectingResource()) {
+            return;
+        }
     }
     #endregion
 
@@ -96,18 +114,37 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region CollectResource
-    private void tryHandleResourceAction() {
-        if (collectingResource == null) {
+    private bool tryStartCollectingResource() {
+        if (collectingResource == null)
+        {
             startCollectingResource();
-            return;
+            return true;
         }
 
-        if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds) {
+        return false;
+    }
+
+    private bool tryCancelCollectingResource() {
+        if (Time.time - startCollectingTime < AppConstant.Instance.resourceCollectingSeconds)
+        {
+            EventCenter.Instance.executeEvent(new CancelResourceEvent(this.gameObject, collectingResource));
+            collectingResource = null;
+            startCollectingTime = 0;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool tryCompleteCollectingResource()
+    {
+        if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds)
+        {
             EventCenter.Instance.executeEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
-            return;
+            return true;
         }
 
-        EventCenter.Instance.executeEvent(new CancelResourceEvent(this.gameObject, collectingResource));
+        return false;
     }
 
     private void startCollectingResource() {

@@ -8,6 +8,7 @@ public class ResourceManager : Singleton<ResourceManager> {
     public GameObject oreCubePrefab;
     public GameObject woodCubePrefab;
     public GameObject rockCubePrefab;
+    private float val;
 
     private Dictionary<PlayerController, GameObject> collectingMap = new Dictionary<PlayerController, GameObject>();
 
@@ -31,10 +32,11 @@ public class ResourceManager : Singleton<ResourceManager> {
         }
 
         collectingMap[player] = resource;
-
+        Debug.Log("startCollecting");
         ProgressBarBehaviour progressBar = resource.GetComponentInChildren<ProgressBarBehaviour>();
         progressBar.enabled = true;
-
+        val = 0;
+        //resource.GetComponentInChildren<Canvas>().enabled = false;
         return true;
     }
 
@@ -42,6 +44,8 @@ public class ResourceManager : Singleton<ResourceManager> {
         if (!collectingMap.ContainsKey(player)) {
             return false;
         }
+
+        Debug.Log("canCancelCollecting");
 
         return true;
     }
@@ -79,7 +83,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         if (!canCompleteCollecting(player, resource)) {
             return false;
         }
-
+        Debug.Log("completeCollecting");
         Resource resourceType = resource.GetComponent<Resource>();
         collectingMap.Remove(player);
         GameObject cube = null;
@@ -108,7 +112,8 @@ public class ResourceManager : Singleton<ResourceManager> {
         foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap)
         {
             ProgressBarBehaviour progressBar = entry.Value.GetComponentInChildren<ProgressBarBehaviour>();
-            progressBar.Value += Time.deltaTime;
+            val += Time.deltaTime;
+            progressBar.Value = val;
         }
         
     }

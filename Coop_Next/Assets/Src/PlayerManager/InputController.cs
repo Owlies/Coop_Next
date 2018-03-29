@@ -8,7 +8,7 @@ public class PlayerMovementEvent : UnityEvent<float, float> {
 }
 
 [System.Serializable]
-public class PlayerActionEvent : UnityEvent<bool> {
+public class PlayerActionEvent : UnityEvent<bool, bool> {
 }
 
 public class InputController : OverridableMonoBehaviour
@@ -21,7 +21,7 @@ public class InputController : OverridableMonoBehaviour
         
     }
 
-    public void registerListeners(UnityAction<float, float> movementAction, UnityAction<bool> playerAction)
+    public void registerListeners(UnityAction<float, float> movementAction, UnityAction<bool, bool> playerAction)
     {
         movementEvent.AddListener(movementAction);
         actionEvent.AddListener(playerAction);
