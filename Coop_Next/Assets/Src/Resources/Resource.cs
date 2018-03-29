@@ -7,18 +7,17 @@ public enum ResourceEnum {Rock, Wood, Ore, Coal}
 
 public class Resource : OverridableMonoBehaviour {
     public ResourceEnum resourceEnum;
-
+    private Canvas canvas;
     private void Start()
     {
-        Canvas canvas = GetComponentInChildren<Canvas>();
+        canvas = GetComponentInChildren<Canvas>();
         canvas.worldCamera = Camera.main;
         canvas.enabled = false;
 
-        ProgressBarBehaviour progressBar = GetComponentInChildren<ProgressBarBehaviour>();
-        progressBar.enabled = false;
+        GetComponentInChildren<ProgressBarBehaviour>().enabled = false;
     }
 
     public override void UpdateMe() {
-        //transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.back, Camera.main.transform.rotation * Vector3.down);
+        canvas.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
     }
 }
