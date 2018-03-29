@@ -53,8 +53,22 @@ public class PlayerController : OverridableMonoBehaviour {
 
     #region action
     public void playerMove(float x, float z) {
-        transform.Translate(x, 0, 0);
-        transform.Translate(0, 0, z);
+        transform.Translate(new Vector3(x, 0, z), Space.World);
+
+        if (x < 0) {
+            transform.rotation = Quaternion.Euler(0, 270, 0);
+        } else if (x > 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 90, 0);
+        }
+
+        if (z < 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+        } else if (z > 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
 
         cancelActions();
     }
