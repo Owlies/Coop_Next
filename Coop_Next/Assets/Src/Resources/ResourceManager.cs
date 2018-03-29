@@ -107,6 +107,7 @@ public class ResourceManager : Singleton<ResourceManager> {
                 break;
         }
 
+        cube.transform.SetPositionAndRotation(cube.transform.position + Vector3.forward * 4.0f, cube.transform.rotation);
         player.GetComponent<PlayerController>().setCarryingResourceCube(cube);
 
         cleanMap(player, resource);

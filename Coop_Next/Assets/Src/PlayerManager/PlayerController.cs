@@ -55,6 +55,8 @@ public class PlayerController : OverridableMonoBehaviour {
     public void playerMove(float x, float z) {
         transform.Translate(x, 0, 0);
         transform.Translate(0, 0, z);
+
+        cancelActions();
     }
 
     public void playerAction(bool isLongPress, bool isButtonDown) {
@@ -91,6 +93,10 @@ public class PlayerController : OverridableMonoBehaviour {
         if (tryCompleteCollectingResource()) {
             return;
         }
+    }
+
+    private void cancelActions() {
+        tryCancelCollectingResource();
     }
     #endregion
 
@@ -169,8 +175,10 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region OtherFunctions
+
     public bool isFirstPlayer() {
         return playerId == 0;
     }
+
     #endregion
 }
