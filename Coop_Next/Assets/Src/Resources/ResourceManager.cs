@@ -8,12 +8,16 @@ public class ResourceManager : Singleton<ResourceManager> {
     public GameObject oreCubePrefab;
     public GameObject woodCubePrefab;
     public GameObject rockCubePrefab;
-    private float val;
 
     private Dictionary<PlayerController, GameObject> collectingMap = new Dictionary<PlayerController, GameObject>();
+    private Dictionary<GameObject, float> collectingProgressMap = new Dictionary<GameObject, float>();
 
     private bool canStartCollecting(PlayerController player, GameObject resource) {
         if (collectingMap.ContainsKey(player)) {
+            return false;
+        }
+
+        if (collectingProgressMap.ContainsKey(resource)) {
             return false;
         }
 
@@ -32,11 +36,12 @@ public class ResourceManager : Singleton<ResourceManager> {
         }
 
         collectingMap[player] = resource;
+        collectingProgressMap[resource] = 0;
+
         Debug.Log("startCollecting");
-        ProgressBarBehaviour progressBar = resource.GetComponentInChildren<ProgressBarBehaviour>();
-        progressBar.enabled = true;
-        val = 0;
-        //resource.GetComponentInChildren<Canvas>().enabled = false;
+
+        enableProgressBar(resource, true);
+
         return true;
     }
 
@@ -55,7 +60,7 @@ public class ResourceManager : Singleton<ResourceManager> {
             return false;
         }
 
-        collectingMap.Remove(player);
+        cleanMap(player, resource);
 
         return true;
     }
@@ -85,7 +90,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         }
         Debug.Log("completeCollecting");
         Resource resourceType = resource.GetComponent<Resource>();
-        collectingMap.Remove(player);
+        
         GameObject cube = null;
         switch (resourceType.resourceEnum) {
             case ResourceEnum.Coal:
@@ -104,7 +109,23 @@ public class ResourceManager : Singleton<ResourceManager> {
 
         player.GetComponent<PlayerController>().setCarryingResourceCube(cube);
 
+        cleanMap(player, resource);
+
         return true;
+    }
+
+    private void cleanMap(PlayerController player, GameObject resource) {
+        collectingMap.Remove(player);
+        collectingProgressMap.Remove(resource);
+
+        enableProgressBar(resource, false);
+    }
+
+    private void enableProgressBar(GameObject resource, bool enable) {
+        resource.GetComponentInChildren<ProgressBarBehaviour>().enabled = enable;
+        resource.GetComponentInChildren<ProgressBarBehaviour>().Value = 0.0f;
+        resource.GetComponentInChildren<ProgressBarBehaviour>().TransitoryValue = 0.0f;
+        resource.GetComponentInChildren<Canvas>().enabled = enable;
     }
 
     public override void UpdateMe() {
@@ -112,8 +133,8 @@ public class ResourceManager : Singleton<ResourceManager> {
         foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap)
         {
             ProgressBarBehaviour progressBar = entry.Value.GetComponentInChildren<ProgressBarBehaviour>();
-            val += Time.deltaTime;
-            progressBar.Value = val;
+            collectingProgressMap[entry.Value] += Time.deltaTime * 100.0f / AppConstant.Instance.resourceCollectingSeconds;
+            progressBar.Value = collectingProgressMap[entry.Value];
         }
         
     }

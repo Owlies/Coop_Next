@@ -57,7 +57,7 @@ namespace ProgressBar
         /// Keep in mind that this means that you get the actual Filler value from the property Value only,
         /// If the animation is playing, TransitoryValue will be different until it catches up.
         /// </remarks>
-        public float TransitoryValue { get; private set; }
+        public float TransitoryValue { get; set; }
 
         /// <summary>
         /// If a Text component is set here it will be updated with the ProgressBar value (percentage).
