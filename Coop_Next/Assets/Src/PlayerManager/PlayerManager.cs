@@ -28,7 +28,7 @@ public class PlayerManager : Singleton<PlayerManager> {
 
 #if UNITY_EDITOR || UNITY_STANDALONE
             playerObject.AddComponent<PCInputController>();
-            playerObject.GetComponent<PCInputController>().registerListeners(pController.playerMove, pController.playerAction);
+            playerObject.GetComponent<PCInputController>().registerListeners(pController.playerMove, pController.cancelPlayerMovement, pController.playerAction);
             pController.initialize(playerObject.GetComponent<PCInputController>(), playerId);
 #elif UNITY_IOS || UNITY_ANDROID
             

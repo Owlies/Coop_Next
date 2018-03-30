@@ -53,25 +53,40 @@ public class PlayerController : OverridableMonoBehaviour {
 
     #region action
     public void playerMove(float x, float z) {
-        transform.Translate(new Vector3(x, 0, z), Space.World);
-        // GetComponent<Rigidbody>().AddForce(new Vector3(x, 0, z));
-
+        float horizontalSpeed = 0.0f;
+        float verticalSpeed = 0.0f;
         if (x < 0) {
             transform.rotation = Quaternion.Euler(0, 270, 0);
+            horizontalSpeed = -AppConstant.Instance.playerHorizontalSpeed;
         } else if (x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 90, 0);
+            horizontalSpeed = AppConstant.Instance.playerHorizontalSpeed;
         }
 
         if (z < 0)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
+            verticalSpeed = -AppConstant.Instance.playerVerticalSpeed;
         } else if (z > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
+            verticalSpeed = AppConstant.Instance.playerVerticalSpeed;
         }
 
+        GetComponent<Rigidbody>().velocity = new Vector3(horizontalSpeed, 0, verticalSpeed);
+
         cancelActions();
+    }
+
+    public void cancelPlayerMovement(bool isHorizontal) {
+        Rigidbody rigidbody = GetComponent<Rigidbody>();
+        if (isHorizontal) {
+            rigidbody.velocity = new Vector3(0, 0, rigidbody.velocity.z);
+            return;
+        }
+        
+        rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0, 0);
     }
 
     public void playerAction(bool isLongPress, bool isButtonDown) {

@@ -8,6 +8,10 @@ public class PlayerMovementEvent : UnityEvent<float, float> {
 }
 
 [System.Serializable]
+public class CancelPlayerMovementEvent : UnityEvent<bool> {
+}
+
+[System.Serializable]
 public class PlayerActionEvent : UnityEvent<bool, bool> {
 }
 
@@ -15,15 +19,17 @@ public class InputController : OverridableMonoBehaviour
 {
     public PlayerInputConfig inputConfig;
     public PlayerMovementEvent movementEvent = new PlayerMovementEvent();
+    public CancelPlayerMovementEvent cancelMovementEvent = new CancelPlayerMovementEvent();
     public PlayerActionEvent actionEvent = new PlayerActionEvent();
 
     public InputController() {
         
     }
 
-    public void registerListeners(UnityAction<float, float> movementAction, UnityAction<bool, bool> playerAction)
+    public void registerListeners(UnityAction<float, float> movementAction, UnityAction<bool> cancelMovementAction, UnityAction<bool, bool> playerAction)
     {
         movementEvent.AddListener(movementAction);
+        cancelMovementEvent.AddListener(cancelMovementAction);
         actionEvent.AddListener(playerAction);
     }
 

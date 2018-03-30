@@ -15,8 +15,16 @@ public class PCInputController : InputController
     protected override void handleMovement()
     {
         base.handleMovement();
-        float x = Input.GetAxis(inputConfig.horizontalAxis) * AppConstant.Instance.playerHorizontalSpeed * Time.deltaTime;
-        float z = Input.GetAxis(inputConfig.verticalAxis) * AppConstant.Instance.playerVerticalSpeed * Time.deltaTime;
+        float x = Input.GetAxis(inputConfig.horizontalAxis);
+        float z = Input.GetAxis(inputConfig.verticalAxis);
+
+        if (x.Equals(0.0f)) {
+            cancelMovementEvent.Invoke(true);
+        }
+
+        if (z.Equals(0.0f)) {
+            cancelMovementEvent.Invoke(false);
+        }
 
         if (x.Equals(0.0f) && z.Equals(0.0f)) {
             return;
