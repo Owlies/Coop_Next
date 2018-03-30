@@ -82,7 +82,7 @@ public class PlayerController : OverridableMonoBehaviour {
     public void cancelPlayerMovement(bool isHorizontal) {
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         if (isHorizontal) {
-            rigidbody.velocity = new Vector3(0, 0, rigidbody.velocity.z);
+            rigidbody.velocity = new Vector3(0.0f, 0.0f, rigidbody.velocity.z);
             return;
         }
         

@@ -7,6 +7,8 @@ using UnityEngine.Events;
 public class PCInputController : InputController
 {
     private float lastPressTime;
+    private float deadThreshold = 0.95f;
+    private float startMoveThreshold = 0.25f;
     public PCInputController() : base()
     {
         lastPressTime = 0.0f;
@@ -18,19 +20,24 @@ public class PCInputController : InputController
         float x = Input.GetAxis(inputConfig.horizontalAxis);
         float z = Input.GetAxis(inputConfig.verticalAxis);
 
-        if (x.Equals(0.0f)) {
-            cancelMovementEvent.Invoke(true);
-        }
-
-        if (z.Equals(0.0f)) {
-            cancelMovementEvent.Invoke(false);
-        }
-
-        if (x.Equals(0.0f) && z.Equals(0.0f)) {
+        if (x.Equals(0.0f) && z.Equals(0.0f))
+        {
             return;
         }
 
-        movementEvent.Invoke(x, z);
+        if (!(x < -deadThreshold || x > deadThreshold) || Input.GetButtonUp(inputConfig.horizontalAxis)) {
+            cancelMovementEvent.Invoke(true);
+        }
+
+        if (!(z < -deadThreshold || z > deadThreshold) || Input.GetButtonUp(inputConfig.verticalAxis))
+        {
+            cancelMovementEvent.Invoke(false);
+        }
+
+        if (x > startMoveThreshold || x < -startMoveThreshold || z > startMoveThreshold || z < -startMoveThreshold) {
+            movementEvent.Invoke(x, z);
+        }
+
     }
 
     protected override void handleAction()
