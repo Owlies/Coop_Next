@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProgressBar;
 
-public enum ResourceEnum {Rock, Wood, Ore, Coal}
+public enum ResourceEnum {Stone, Wood, Ore, Coal}
 
 public class Resource : OverridableMonoBehaviour {
     public ResourceEnum resourceEnum;
