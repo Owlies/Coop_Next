@@ -51,6 +51,18 @@ public class PlayerController : OverridableMonoBehaviour {
     }
     #endregion
 
+    #region update
+    public override void FixedUpdateMe()
+    {
+        base.FixedUpdateMe();
+
+        Rigidbody rigidbody = GetComponent<Rigidbody>();
+        if (rigidbody.angularVelocity != Vector3.zero) {
+            rigidbody.angularVelocity = Vector3.zero;
+        }
+    }
+    #endregion
+
     #region action
     public void playerMove(float x, float z) {
         float horizontalSpeed = 0.0f;
