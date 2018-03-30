@@ -54,6 +54,7 @@ public class PlayerController : OverridableMonoBehaviour {
     #region action
     public void playerMove(float x, float z) {
         transform.Translate(new Vector3(x, 0, z), Space.World);
+        // GetComponent<Rigidbody>().AddForce(new Vector3(x, 0, z));
 
         if (x < 0) {
             transform.rotation = Quaternion.Euler(0, 270, 0);
