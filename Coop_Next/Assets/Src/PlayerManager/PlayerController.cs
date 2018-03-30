@@ -57,21 +57,21 @@ public class PlayerController : OverridableMonoBehaviour {
         float verticalSpeed = 0.0f;
         if (x < 0) {
             transform.rotation = Quaternion.Euler(0, 270, 0);
-            horizontalSpeed = -AppConstant.Instance.playerHorizontalSpeed;
+            horizontalSpeed = -AppConstant.Instance.playerHorizontalSpeed * Time.deltaTime;
         } else if (x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 90, 0);
-            horizontalSpeed = AppConstant.Instance.playerHorizontalSpeed;
+            horizontalSpeed = AppConstant.Instance.playerHorizontalSpeed * Time.deltaTime;
         }
 
         if (z < 0)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
-            verticalSpeed = -AppConstant.Instance.playerVerticalSpeed;
+            verticalSpeed = -AppConstant.Instance.playerVerticalSpeed * Time.deltaTime;
         } else if (z > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
-            verticalSpeed = AppConstant.Instance.playerVerticalSpeed;
+            verticalSpeed = AppConstant.Instance.playerVerticalSpeed * Time.deltaTime;
         }
 
         GetComponent<Rigidbody>().velocity = new Vector3(horizontalSpeed, 0, verticalSpeed);
