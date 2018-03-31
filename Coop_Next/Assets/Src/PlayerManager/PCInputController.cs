@@ -31,11 +31,7 @@ public class PCInputController : InputController
             playerState = PlayerState.Idle;
         }
 
-        if (playerState == curState) {
-            return;
-        }
-
-        else if (playerState == PlayerState.Idle)
+        if (playerState == PlayerState.Idle)
         {
             cancelMovementEvent.Invoke(true);
             cancelMovementEvent.Invoke(false);
