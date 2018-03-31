@@ -8,14 +8,15 @@ public class PlayerMovementEvent : UnityEvent<float, float> {
 }
 
 [System.Serializable]
-public class CancelPlayerMovementEvent : UnityEvent<bool> {
+public class CancelPlayerMovementEvent : UnityEvent {
 }
 
 [System.Serializable]
 public class PlayerActionEvent : UnityEvent<bool, bool> {
 }
 
-public enum PlayerState { Idle, Moving };
+public enum PlayerState { Idle, HorizontalMoving, VerticalMoving };
+
 
 public class InputController : OverridableMonoBehaviour
 {
@@ -29,7 +30,7 @@ public class InputController : OverridableMonoBehaviour
         playerState = PlayerState.Idle;
     }
 
-    public void registerListeners(UnityAction<float, float> movementAction, UnityAction<bool> cancelMovementAction, UnityAction<bool, bool> playerAction)
+    public void registerListeners(UnityAction<float, float> movementAction, UnityAction cancelMovementAction, UnityAction<bool, bool> playerAction)
     {
         movementEvent.AddListener(movementAction);
         cancelMovementEvent.AddListener(cancelMovementAction);

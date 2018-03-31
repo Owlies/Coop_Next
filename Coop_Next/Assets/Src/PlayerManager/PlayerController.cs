@@ -67,23 +67,29 @@ public class PlayerController : OverridableMonoBehaviour {
     public void playerMove(float x, float z) {
         float horizontalSpeed = 0.0f;
         float verticalSpeed = 0.0f;
+        float speed = AppConstant.Instance.playerMovingSpeed;
+
+        if (!x.Equals(0.0f) && !z.Equals(0.0f)) {
+            speed = speed / Mathf.Sqrt(2.0f);
+        }
+
         if (x < 0) {
             transform.rotation = Quaternion.Euler(0, 270, 0);
-            horizontalSpeed = -AppConstant.Instance.playerHorizontalSpeed * Time.deltaTime;
+            horizontalSpeed = -speed * Time.deltaTime;
         } else if (x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 90, 0);
-            horizontalSpeed = AppConstant.Instance.playerHorizontalSpeed * Time.deltaTime;
+            horizontalSpeed = speed * Time.deltaTime;
         }
 
         if (z < 0)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
-            verticalSpeed = -AppConstant.Instance.playerVerticalSpeed * Time.deltaTime;
+            verticalSpeed = -speed * Time.deltaTime;
         } else if (z > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
-            verticalSpeed = AppConstant.Instance.playerVerticalSpeed * Time.deltaTime;
+            verticalSpeed = speed * Time.deltaTime;
         }
 
         GetComponent<Rigidbody>().velocity = new Vector3(horizontalSpeed, 0, verticalSpeed);
@@ -91,14 +97,8 @@ public class PlayerController : OverridableMonoBehaviour {
         cancelActions();
     }
 
-    public void cancelPlayerMovement(bool isHorizontal) {
-        Rigidbody rigidbody = GetComponent<Rigidbody>();
-        if (isHorizontal) {
-            rigidbody.velocity = new Vector3(0.0f, 0.0f, rigidbody.velocity.z);
-            return;
-        }
-        
-        rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0, 0);
+    public void cancelPlayerMovement() {
+        GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
     }
 
     public void playerAction(bool isLongPress, bool isButtonDown) {
