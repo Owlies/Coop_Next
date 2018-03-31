@@ -7,8 +7,6 @@ using UnityEngine.Events;
 public class PCInputController : InputController
 {
     private float lastPressTime;
-    private float deadThreshold = 0.95f;
-    private float startMoveThreshold = 0.25f;
     public PCInputController() : base()
     {
         lastPressTime = 0.0f;
@@ -17,27 +15,31 @@ public class PCInputController : InputController
     protected override void handleMovement()
     {
         base.handleMovement();
-        float x = Input.GetAxis(inputConfig.horizontalAxis);
-        float z = Input.GetAxis(inputConfig.verticalAxis);
+        PlayerState curState = playerState;
 
-        if (x.Equals(0.0f) && z.Equals(0.0f))
+        if (Input.GetButton(inputConfig.horizontalAxis) ||
+            Input.GetButtonDown(inputConfig.horizontalAxis) ||
+            Input.GetButton(inputConfig.verticalAxis) || 
+            Input.GetButtonDown(inputConfig.verticalAxis))
         {
+            playerState = PlayerState.Moveing;
+            float x = Input.GetAxis(inputConfig.horizontalAxis);
+            float z = Input.GetAxis(inputConfig.verticalAxis);
+            movementEvent.Invoke(x, z);
+        }
+        else {
+            playerState = PlayerState.Idle;
+        }
+
+        if (playerState == curState) {
             return;
         }
 
-        if (!(x < -deadThreshold || x > deadThreshold) || Input.GetButtonUp(inputConfig.horizontalAxis)) {
-            cancelMovementEvent.Invoke(true);
-        }
-
-        if (!(z < -deadThreshold || z > deadThreshold) || Input.GetButtonUp(inputConfig.verticalAxis))
+        else if (playerState == PlayerState.Idle)
         {
+            cancelMovementEvent.Invoke(true);
             cancelMovementEvent.Invoke(false);
         }
-
-        if (x > startMoveThreshold || x < -startMoveThreshold || z > startMoveThreshold || z < -startMoveThreshold) {
-            movementEvent.Invoke(x, z);
-        }
-
     }
 
     protected override void handleAction()

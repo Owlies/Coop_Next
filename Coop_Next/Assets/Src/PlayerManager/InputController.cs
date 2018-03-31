@@ -15,15 +15,18 @@ public class CancelPlayerMovementEvent : UnityEvent<bool> {
 public class PlayerActionEvent : UnityEvent<bool, bool> {
 }
 
+public enum PlayerState { Idle, Moveing };
+
 public class InputController : OverridableMonoBehaviour
 {
     public PlayerInputConfig inputConfig;
     public PlayerMovementEvent movementEvent = new PlayerMovementEvent();
     public CancelPlayerMovementEvent cancelMovementEvent = new CancelPlayerMovementEvent();
     public PlayerActionEvent actionEvent = new PlayerActionEvent();
+    public PlayerState playerState;
 
     public InputController() {
-        
+        playerState = PlayerState.Idle;
     }
 
     public void registerListeners(UnityAction<float, float> movementAction, UnityAction<bool> cancelMovementAction, UnityAction<bool, bool> playerAction)
