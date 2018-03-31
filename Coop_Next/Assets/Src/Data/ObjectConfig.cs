@@ -9,11 +9,15 @@ public class ObjectConfig : ScriptableObject
     public ObjectData[] objects;
 }
 
+[System.Serializable]
+public struct Receipt {
+    public ResourceEnum[] resources;
+}
 
 [System.Serializable]
 public struct ObjectData
 {
     public GameObject prefab;
     public Vector2Int size;
-    public ResourceEnum[] receipts;
+    public Receipt[] receipts;
 }
