@@ -15,4 +15,5 @@ public struct ObjectData
 {
     public GameObject prefab;
     public Vector2Int size;
+    public ResourceEnum[] receipts;
 }
