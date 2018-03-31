@@ -52,6 +52,32 @@ public class MapManager : Singleton<MapManager> {
             }
         }
     }
+
+    public Vector2Int WorldPosToMapCoord(Vector3 worldPos)
+    {
+        return Vector2Int.zero;
+    }
+
+    public Vector3 MapCoordToWorldPos(Vector2Int mapCoord)
+    {
+        return Vector3.zero;
+    }
+
+    public bool PickUp(Vector2Int mapCoord)
+    {
+        return true;
+    }
+
+    public bool PickUp(GameObject obj)
+    {
+        return true;
+    }
+
+    public bool SettleDown(GameObject obj, Vector2Int size, Vector2Int mapCoord)
+    {
+        return true;
+    }
+
 }
 
 public struct MapNode
