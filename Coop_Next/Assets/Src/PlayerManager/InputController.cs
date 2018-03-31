@@ -15,7 +15,7 @@ public class CancelPlayerMovementEvent : UnityEvent<bool> {
 public class PlayerActionEvent : UnityEvent<bool, bool> {
 }
 
-public enum PlayerState { Idle, Moveing };
+public enum PlayerState { Idle, Moving };
 
 public class InputController : OverridableMonoBehaviour
 {

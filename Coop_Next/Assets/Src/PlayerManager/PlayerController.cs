@@ -152,8 +152,10 @@ public class PlayerController : OverridableMonoBehaviour {
                 return false;
             }
 
-            EventCenter.Instance.executeEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
             carryingBuilding = hitObject.transform.gameObject;
+
+            // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
+            EventCenter.Instance.executeEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
 
             return true;
         }

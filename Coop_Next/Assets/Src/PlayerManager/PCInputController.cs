@@ -22,10 +22,10 @@ public class PCInputController : InputController
             Input.GetButton(inputConfig.verticalAxis) || 
             Input.GetButtonDown(inputConfig.verticalAxis))
         {
-            playerState = PlayerState.Moveing;
             float x = Input.GetAxis(inputConfig.horizontalAxis);
             float z = Input.GetAxis(inputConfig.verticalAxis);
             movementEvent.Invoke(x, z);
+            playerState = PlayerState.Moving;
         }
         else {
             playerState = PlayerState.Idle;
