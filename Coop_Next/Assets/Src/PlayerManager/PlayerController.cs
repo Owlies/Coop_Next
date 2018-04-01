@@ -105,31 +105,44 @@ public class PlayerController : OverridableMonoBehaviour {
     }
 
     public void PlayerAction(bool isLongPress, bool isButtonDown) {
-        // Long press actions
+        RaycastHit hitObject;
+        bool isHit = Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8);
+
+        #region ButtonLongPressActions
+        /*  Button Long Press Actions   */
         if (isLongPress) {
-            if (TryHandleMoveBuildingAction()) {
-                return;
-            }
-        }
-
-        // First press actions
-        if (isButtonDown) {
-            // Place building if carrying
-            if (carryingBuilding != null)
-            {
-                EventCenter.Instance.executeEvent(new PlaceBuildingEvent(this.gameObject, carryingBuilding));
-                carryingBuilding = null;
-                return;
-            }
-
-            if (TryStartCollectingResource()) {
+            if (TryHandleMoveBuildingAction(isHit, hitObject)) {
                 return;
             }
 
             return;
         }
+        #endregion
 
-        // Release actions
+        #region ButtonShortPressActions
+        /*  Button Short Press Actions  */
+        if (isButtonDown) {
+            if (TryPlaceBuilding()) {
+                return;
+            }
+
+            if (TryStartCollectingResource(isHit, hitObject)) {
+                return;
+            }
+
+            if (TryAddResourceToForge(isHit, hitObject)) {
+                return;
+            }
+
+            if (TryStartForging(isHit, hitObject)) {
+                return;
+            }
+            return;
+        }
+        #endregion
+
+        #region ButtonReleaseActions
+        /*  Button Release Actions  */
         if (TryCancelCollectingResource())
         {
             return;
@@ -138,6 +151,11 @@ public class PlayerController : OverridableMonoBehaviour {
         if (TryCompleteCollectingResource()) {
             return;
         }
+
+        if (TryCancelForging(isHit, hitObject)) {
+            return;
+        }
+        #endregion
     }
 
     private void CancelActions() {
@@ -145,10 +163,9 @@ public class PlayerController : OverridableMonoBehaviour {
     }
     #endregion
 
-    #region MoveBuilding
-    private bool TryHandleMoveBuildingAction() {
-        RaycastHit hitObject;
-        if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
+    #region BuildingActions
+    private bool TryHandleMoveBuildingAction(bool isHit, RaycastHit hitObject) {
+        if (isHit)
         {
             if (hitObject.transform.gameObject.tag != "Building")
             {
@@ -158,19 +175,118 @@ public class PlayerController : OverridableMonoBehaviour {
             carryingBuilding = hitObject.transform.gameObject;
 
             // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
-            EventCenter.Instance.executeEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
+            EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
 
             return true;
         }
         return false;
     }
+
+    private bool TryPlaceBuilding() {
+        // Place building if carrying
+        if (carryingBuilding != null)
+        {
+            EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingBuilding));
+            carryingBuilding = null;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool CanAddResourceToForge(bool isHit, RaycastHit hitObject) {
+        if (!isHit)
+        {
+            return false;
+        }
+
+        if (carryingResourceCube == null)
+        {
+            return false;
+        }
+
+        if (hitObject.transform.gameObject.tag != "Forge")
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private bool TryAddResourceToForge(bool isHit, RaycastHit hitObject) {
+        if (!CanAddResourceToForge(isHit, hitObject)) {
+            return false;
+        }
+
+        EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingResourceCube, hitObject.transform.gameObject));
+
+        return true;
+    }
+
+    private bool CanStartForging(bool isHit, RaycastHit hitObject) {
+        if (!isHit)
+        {
+            return false;
+        }
+
+        if (carryingResourceCube != null)
+        {
+            return false;
+        }
+
+        if (hitObject.transform.gameObject.tag != "Forge")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryStartForging(bool isHit, RaycastHit hitObject) {
+        if (!CanStartForging(isHit, hitObject)) {
+            return false;
+        }
+
+        EventCenter.Instance.ExecuteEvent(new StartForgeEvent(this.gameObject, hitObject.transform.gameObject));
+
+        return true;
+    }
+
+    private bool CanCancelForging(bool isHit, RaycastHit hitObject) {
+        if (!isHit)
+        {
+            return false;
+        }
+
+        if (carryingResourceCube != null)
+        {
+            return false;
+        }
+
+        if (hitObject.transform.gameObject.tag != "Forge")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryCancelForging(bool isHit, RaycastHit hitObject) {
+        if (!CanCancelForging(isHit, hitObject)) {
+            return false;
+        }
+
+        EventCenter.Instance.ExecuteEvent(new CancelForgingEvent(this.gameObject, hitObject.transform.gameObject));
+
+        return true;
+    }
     #endregion
 
     #region CollectResource
-    private bool TryStartCollectingResource() {
+    private bool TryStartCollectingResource(bool isHit, RaycastHit hitObject) {
         if (collectingResource == null)
         {
-            StartCollectingResource();
+            StartCollectingResource(isHit, hitObject);
             return true;
         }
 
@@ -180,7 +296,7 @@ public class PlayerController : OverridableMonoBehaviour {
     private bool TryCancelCollectingResource() {
         if (Time.time - startCollectingTime < AppConstant.Instance.resourceCollectingSeconds)
         {
-            EventCenter.Instance.executeEvent(new CancelResourceEvent(this.gameObject, collectingResource));
+            EventCenter.Instance.ExecuteEvent(new CancelResourceEvent(this.gameObject, collectingResource));
             collectingResource = null;
             startCollectingTime = 0;
             return true;
@@ -193,23 +309,22 @@ public class PlayerController : OverridableMonoBehaviour {
     {
         if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds)
         {
-            EventCenter.Instance.executeEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
+            EventCenter.Instance.ExecuteEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
             return true;
         }
 
         return false;
     }
 
-    private void StartCollectingResource() {
-        RaycastHit hitObject;
-        if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
+    private void StartCollectingResource(bool isHit, RaycastHit hitObject) {
+        if (isHit)
         {
             if (hitObject.transform.gameObject.tag != "Resource")
             {
                 return;
             }
 
-            EventCenter.Instance.executeEvent(new StartCollectResourceEvent(this.gameObject, hitObject.transform.gameObject));
+            EventCenter.Instance.ExecuteEvent(new StartCollectResourceEvent(this.gameObject, hitObject.transform.gameObject));
             startCollectingTime = Time.time;
             collectingResource = hitObject.transform.gameObject;
         }

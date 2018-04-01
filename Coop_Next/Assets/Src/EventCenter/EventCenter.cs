@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EventCenter : Singleton<EventCenter> {
 
-    public void executeEvent(EventCommandBase ev) {
+    public void ExecuteEvent(EventCommandBase ev) {
         ev.Execute();
     }
 
