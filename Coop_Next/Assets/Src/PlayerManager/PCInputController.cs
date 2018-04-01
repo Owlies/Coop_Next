@@ -12,9 +12,9 @@ public class PCInputController : InputController
         lastPressTime = 0.0f;
     }
 
-    protected override void handleMovement()
+    protected override void HandleMovement()
     {
-        base.handleMovement();
+        base.HandleMovement();
         playerState = PlayerState.Idle;
 
         float x = 0.0f;
@@ -41,9 +41,9 @@ public class PCInputController : InputController
         }
     }
 
-    protected override void handleAction()
+    protected override void HandleAction()
     {
-        base.handleAction();
+        base.HandleAction();
         
         if (Input.GetButtonDown(inputConfig.actionButton))
         {

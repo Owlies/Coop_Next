@@ -30,23 +30,23 @@ public class InputController : OverridableMonoBehaviour
         playerState = PlayerState.Idle;
     }
 
-    public void registerListeners(UnityAction<float, float> movementAction, UnityAction cancelMovementAction, UnityAction<bool, bool> playerAction)
+    public void RegisterListeners(UnityAction<float, float> movementAction, UnityAction cancelMovementAction, UnityAction<bool, bool> playerAction)
     {
         movementEvent.AddListener(movementAction);
         cancelMovementEvent.AddListener(cancelMovementAction);
         actionEvent.AddListener(playerAction);
     }
 
-    protected virtual void handleMovement() {
+    protected virtual void HandleMovement() {
     }
 
-    protected virtual void handleAction() {
+    protected virtual void HandleAction() {
     }
 
     public override void UpdateMe() {
         base.UpdateMe();
-        handleMovement();
-        handleAction();
+        HandleMovement();
+        HandleAction();
     }
 }
 

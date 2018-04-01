@@ -8,4 +8,5 @@ public class AppConstant : Singleton<AppConstant> {
     public float playerActionRange = 1.0f;
     public bool isMultiPlayer = false;
     public float resourceCollectingSeconds = 2.0f;
+    public float moveBuildingScaleChange = 0.5f;
 }

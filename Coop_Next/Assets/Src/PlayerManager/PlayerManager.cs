@@ -28,8 +28,8 @@ public class PlayerManager : Singleton<PlayerManager> {
 
 #if UNITY_EDITOR || UNITY_STANDALONE
             playerObject.AddComponent<PCInputController>();
-            playerObject.GetComponent<PCInputController>().registerListeners(pController.playerMove, pController.cancelPlayerMovement, pController.playerAction);
-            pController.initialize(playerObject.GetComponent<PCInputController>(), playerId);
+            playerObject.GetComponent<PCInputController>().RegisterListeners(pController.PlayerMove, pController.CancelPlayerMovement, pController.PlayerAction);
+            pController.Initialize(playerObject.GetComponent<PCInputController>(), playerId);
 #elif UNITY_IOS || UNITY_ANDROID
             
 #endif
@@ -46,7 +46,7 @@ public class PlayerManager : Singleton<PlayerManager> {
         }
 
         PlayerController pController = player.GetComponent<PlayerController>();
-        if (pController.isFirstPlayer()) {
+        if (pController.IsFirstPlayer()) {
             GameObject player1StartPoint = GameObject.FindWithTag("Player1StartPoint");
             player.transform.position = new Vector3(player1StartPoint.transform.position.x, player1StartPoint.transform.position.y, player1StartPoint.transform.position.z);
             return;

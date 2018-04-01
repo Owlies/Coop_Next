@@ -18,7 +18,7 @@ public class PlayerController : OverridableMonoBehaviour {
     private GameObject carryingResourceCube;
 
     #region initialize
-    public void initialize(InputController iController, int pId) {
+    public void Initialize(InputController iController, int pId) {
         base.Awake();
 
         inputController = iController;
@@ -33,7 +33,7 @@ public class PlayerController : OverridableMonoBehaviour {
             inputConfig.actionButton = InputAxisEnum.SinglePlayerAction.Value;
         }
         else {
-            if (isFirstPlayer())
+            if (IsFirstPlayer())
             {
                 
                 inputConfig.horizontalAxis = InputAxisEnum.Player1_Horizontal.Value;
@@ -64,7 +64,7 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region action
-    public void playerMove(float x, float z) {
+    public void PlayerMove(float x, float z) {
         float horizontalSpeed = 0.0f;
         float verticalSpeed = 0.0f;
         float speed = AppConstant.Instance.playerMovingSpeed;
@@ -93,18 +93,21 @@ public class PlayerController : OverridableMonoBehaviour {
         }
 
         GetComponent<Rigidbody>().velocity = new Vector3(horizontalSpeed, 0, verticalSpeed);
+        if (!transform.position.y.Equals(0.0f)) {
+            transform.position = new Vector3(transform.position.x, 0.0f, transform.position.z);
+        }
 
-        cancelActions();
+        CancelActions();
     }
 
-    public void cancelPlayerMovement() {
+    public void CancelPlayerMovement() {
         GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 0.0f, 0.0f);
     }
 
-    public void playerAction(bool isLongPress, bool isButtonDown) {
+    public void PlayerAction(bool isLongPress, bool isButtonDown) {
         // Long press actions
         if (isLongPress) {
-            if (tryHandleMoveBuildingAction()) {
+            if (TryHandleMoveBuildingAction()) {
                 return;
             }
         }
@@ -119,7 +122,7 @@ public class PlayerController : OverridableMonoBehaviour {
                 return;
             }
 
-            if (tryStartCollectingResource()) {
+            if (TryStartCollectingResource()) {
                 return;
             }
 
@@ -127,23 +130,23 @@ public class PlayerController : OverridableMonoBehaviour {
         }
 
         // Release actions
-        if (tryCancelCollectingResource())
+        if (TryCancelCollectingResource())
         {
             return;
         }
 
-        if (tryCompleteCollectingResource()) {
+        if (TryCompleteCollectingResource()) {
             return;
         }
     }
 
-    private void cancelActions() {
-        tryCancelCollectingResource();
+    private void CancelActions() {
+        TryCancelCollectingResource();
     }
     #endregion
 
     #region MoveBuilding
-    private bool tryHandleMoveBuildingAction() {
+    private bool TryHandleMoveBuildingAction() {
         RaycastHit hitObject;
         if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
         {
@@ -164,17 +167,17 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region CollectResource
-    private bool tryStartCollectingResource() {
+    private bool TryStartCollectingResource() {
         if (collectingResource == null)
         {
-            startCollectingResource();
+            StartCollectingResource();
             return true;
         }
 
         return false;
     }
 
-    private bool tryCancelCollectingResource() {
+    private bool TryCancelCollectingResource() {
         if (Time.time - startCollectingTime < AppConstant.Instance.resourceCollectingSeconds)
         {
             EventCenter.Instance.executeEvent(new CancelResourceEvent(this.gameObject, collectingResource));
@@ -186,7 +189,7 @@ public class PlayerController : OverridableMonoBehaviour {
         return false;
     }
 
-    private bool tryCompleteCollectingResource()
+    private bool TryCompleteCollectingResource()
     {
         if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds)
         {
@@ -197,7 +200,7 @@ public class PlayerController : OverridableMonoBehaviour {
         return false;
     }
 
-    private void startCollectingResource() {
+    private void StartCollectingResource() {
         RaycastHit hitObject;
         if (Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8))
         {
@@ -212,7 +215,7 @@ public class PlayerController : OverridableMonoBehaviour {
         }
     }
 
-    public void setCarryingResourceCube(GameObject cube) {
+    public void SetCarryingResourceCube(GameObject cube) {
         carryingResourceCube = cube;
     }
 
@@ -220,7 +223,7 @@ public class PlayerController : OverridableMonoBehaviour {
 
     #region OtherFunctions
 
-    public bool isFirstPlayer() {
+    public bool IsFirstPlayer() {
         return playerId == 0;
     }
 
