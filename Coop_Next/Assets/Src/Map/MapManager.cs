@@ -30,7 +30,7 @@ public class MapManager : Singleton<MapManager> {
                 ObjectInstance instance = levelConfig.objectInstances[i];
                 ObjectData objectData = objectConfig.objects[instance.objectID];
                 GameObject obj = GameObject.Instantiate(objectData.prefab, sceneRoot.transform);
-                obj.transform.localPosition = MapCoordToWorldPos(instance.position + new Vector2Int(objectData.size.x / 2, objectData.size.y / 2));
+                obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2Int(objectData.size.x / 2, objectData.size.y / 2));
                 for(int idxX = 0; idxX < objectData.size.x; idxX++)
                 {
                     for (int idxY = 0; idxY < objectData.size.y; idxY++)
@@ -48,29 +48,29 @@ public class MapManager : Singleton<MapManager> {
         }
     }
 
-    public Vector2Int WorldPosToMapCoord(Vector3 worldPos)
+    public Vector2Int WorldPosToMapIndex(Vector3 worldPos)
     {
         return new Vector2Int((int)((worldPos.x - mapOrigin.x) / unitSize),
                                 (int)((worldPos.z - mapOrigin.z) / unitSize));
     }
 
-    public Vector3 MapCoordToWorldPos(Vector2Int mapCoord)
+    public Vector3 MapIndexToWorldPos(Vector2Int mapIndex)
     {
-        return new Vector3(mapCoord.x * unitSize + mapOrigin.x, 0, mapCoord.y * unitSize + mapOrigin.z);
+        return new Vector3(mapIndex.x * unitSize + mapOrigin.x, 0, mapIndex.y * unitSize + mapOrigin.z);
     }
 
-    public GameObject GetGameObject(Vector2Int mapCoord)
+    public GameObject GetGameObject(Vector2Int mapIndex)
     {
-        return mapNodes[mapCoord.x, mapCoord.y].gameObject;
+        return mapNodes[mapIndex.x, mapIndex.y].gameObject;
     }
 
-    public void Remove(Vector2Int mapCoord)
+    public void RemoveItemFromMap(Vector2Int mapIndex)
     {
-        if (mapNodes[mapCoord.x, mapCoord.y].gameObject != null)
-            Remove(mapNodes[mapCoord.x, mapCoord.y].gameObject);
+        if (mapNodes[mapIndex.x, mapIndex.y].gameObject != null)
+            RemoveItemFromMap(mapNodes[mapIndex.x, mapIndex.y].gameObject);
     }
 
-    public void Remove(GameObject obj)
+    public void RemoveItemFromMap(GameObject obj)
     {
         if (obj == null)
             return;
@@ -85,15 +85,15 @@ public class MapManager : Singleton<MapManager> {
         GameObject.DestroyImmediate(obj);
     }
 
-    public bool SettleDown(GameObject obj, Vector2Int size, Vector2Int mapCoord)
+    public bool CreateItemOnMap(GameObject obj, Vector2Int size, Vector2Int mapIndex)
     {
         bool accessible = true;
         for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
             {
-                Vector2Int coord = mapCoord + new Vector2Int(i, j);
-                if (!mapNodes[coord.x, coord.y].IsEmpty())
+                Vector2Int index = mapIndex + new Vector2Int(i, j);
+                if (!mapNodes[index.x, index.y].IsEmpty())
                 {
                     accessible = false;
                 }
@@ -105,25 +105,25 @@ public class MapManager : Singleton<MapManager> {
             {
                 for (int j = 0; j < size.y; j++)
                 {
-                    Vector2Int coord = mapCoord + new Vector2Int(i, j);
-                    mapNodes[coord.x, coord.y].Place(obj);
+                    Vector2Int index = mapIndex + new Vector2Int(i, j);
+                    mapNodes[index.x, index.y].AddItemToNode(obj);
                 }
             }
             obj.transform.parent = sceneRoot.transform;
-            obj.transform.localPosition = MapCoordToWorldPos(mapCoord + new Vector2Int(size.x / 2, size.y / 2)); ;
+            obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2Int(size.x / 2, size.y / 2)); ;
         }
         return accessible;
     }
 
-    public bool SettleDown(ObjectData objData, Vector2Int mapCoord)
+    public bool CreateItemOnMap(ObjectData objData, Vector2Int mapIndex)
     {
         GameObject obj = GameObject.Instantiate(objData.prefab, sceneRoot.transform);
-        return SettleDown(obj, objData.size, mapCoord);
+        return CreateItemOnMap(obj, objData.size, mapIndex);
     }
 
-    public bool IsBlocked(Vector2Int mapCoord)
+    public bool IsBlocked(Vector2Int mapIndex)
     {
-        return mapNodes[mapCoord.x, mapCoord.y].isBlocked;
+        return mapNodes[mapIndex.x, mapIndex.y].isBlocked;
     }
 }
 
@@ -145,7 +145,7 @@ public struct MapNode
         return (gameObject == null && !isBlocked);
     }
 
-    public bool Place(GameObject obj)
+    public bool AddItemToNode(GameObject obj)
     {
         if (IsEmpty())
         {
