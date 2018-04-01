@@ -13,8 +13,9 @@ public class UpdateCanvasLookAt : OverridableMonoBehaviour {
     }
 
     // Update is called once per frame
-    public override void UpdateMe()
+    public override void LateUpdateMe()
     {
-        canvas.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
+        //canvas.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
+        canvas.transform.rotation = Camera.main.transform.rotation;
     }
 }
