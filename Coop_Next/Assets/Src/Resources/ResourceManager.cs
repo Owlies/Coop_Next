@@ -12,7 +12,7 @@ public class ResourceManager : Singleton<ResourceManager> {
     private Dictionary<PlayerController, GameObject> collectingMap = new Dictionary<PlayerController, GameObject>();
     private Dictionary<GameObject, float> collectingProgressMap = new Dictionary<GameObject, float>();
 
-    private bool canStartCollecting(PlayerController player, GameObject resource) {
+    private bool CanStartCollecting(PlayerController player, GameObject resource) {
         if (collectingMap.ContainsKey(player)) {
             return false;
         }
@@ -30,8 +30,8 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    public bool startCollecting(PlayerController player, GameObject resource) {
-        if (!canStartCollecting(player, resource)) {
+    public bool StartCollecting(PlayerController player, GameObject resource) {
+        if (!CanStartCollecting(player, resource)) {
             return false;
         }
 
@@ -40,12 +40,12 @@ public class ResourceManager : Singleton<ResourceManager> {
 
         Debug.Log("startCollecting");
 
-        enableProgressBar(resource, true);
+        EnableProgressBar(resource, true);
 
         return true;
     }
 
-    private bool canCancelCollecting(PlayerController player, GameObject resource) {
+    private bool CanCancelCollecting(PlayerController player, GameObject resource) {
         if (!collectingMap.ContainsKey(player)) {
             return false;
         }
@@ -55,17 +55,17 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    public bool cancelCollecting(PlayerController player, GameObject resource) {
-        if (!canCancelCollecting(player, resource)) {
+    public bool CancelCollecting(PlayerController player, GameObject resource) {
+        if (!CanCancelCollecting(player, resource)) {
             return false;
         }
 
-        cleanMap(player, resource);
+        CleanMap(player, resource);
 
         return true;
     }
 
-    private bool canCompleteCollecting(PlayerController player, GameObject resource) {
+    private bool CanCompleteCollecting(PlayerController player, GameObject resource) {
         if (!collectingMap.ContainsKey(player))
         {
             return false;
@@ -84,8 +84,8 @@ public class ResourceManager : Singleton<ResourceManager> {
         return foundResource;
     }
 
-    public bool completeCollecting(PlayerController player, GameObject resource) {
-        if (!canCompleteCollecting(player, resource)) {
+    public bool CompleteCollecting(PlayerController player, GameObject resource) {
+        if (!CanCompleteCollecting(player, resource)) {
             return false;
         }
         Debug.Log("completeCollecting");
@@ -110,19 +110,19 @@ public class ResourceManager : Singleton<ResourceManager> {
         cube.transform.SetPositionAndRotation(cube.transform.position + Vector3.forward * 2.0f, cube.transform.rotation);
         player.GetComponent<PlayerController>().SetCarryingResourceCube(cube);
 
-        cleanMap(player, resource);
+        CleanMap(player, resource);
 
         return true;
     }
 
-    private void cleanMap(PlayerController player, GameObject resource) {
+    private void CleanMap(PlayerController player, GameObject resource) {
         collectingMap.Remove(player);
         collectingProgressMap.Remove(resource);
 
-        enableProgressBar(resource, false);
+        EnableProgressBar(resource, false);
     }
 
-    private void enableProgressBar(GameObject resource, bool enable) {
+    private void EnableProgressBar(GameObject resource, bool enable) {
         resource.GetComponentInChildren<ProgressBarBehaviour>().enabled = enable;
         resource.GetComponentInChildren<ProgressBarBehaviour>().Value = 0.0f;
         resource.GetComponentInChildren<ProgressBarBehaviour>().TransitoryValue = 0.0f;

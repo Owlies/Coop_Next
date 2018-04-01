@@ -11,16 +11,16 @@ public class PlayerManager : Singleton<PlayerManager> {
 	void Start () {
         //TODO(Huayu): Hook up with GameManager
 
-        SceneManager.sceneLoaded += onSceneLoaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
     }
 
-    void onSceneLoaded(Scene scence, LoadSceneMode mod)
+    void OnSceneLoaded(Scene scence, LoadSceneMode mod)
     {
-        initialize(1);
+        Initialize(1);
     }
 
-    public void initialize(int numberOfPlayers) {
+    public void Initialize(int numberOfPlayers) {
         for (int playerId = 0; playerId < numberOfPlayers; playerId++) {
             GameObject playerObject = GameObject.Instantiate(playerPrefab) as GameObject;
             playerObject.AddComponent<PlayerController>();
@@ -34,11 +34,11 @@ public class PlayerManager : Singleton<PlayerManager> {
             
 #endif
             players.Add(pController);
-            initializePlayerLocation(playerObject);
+            InitializePlayerLocation(playerObject);
         }
     }
 
-    void initializePlayerLocation(GameObject player) {
+    void InitializePlayerLocation(GameObject player) {
         if (!AppConstant.Instance.isMultiPlayer) {
             GameObject singlePlayerStartPoint = GameObject.FindWithTag("SinglePlayerStartPoint");
             player.transform.position = new Vector3(singlePlayerStartPoint.transform.position.x, singlePlayerStartPoint.transform.position.y, singlePlayerStartPoint.transform.position.z);

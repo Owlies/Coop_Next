@@ -20,6 +20,6 @@ public class StartCollectResourceEvent : EventCommandBase {
         if (pc == null) {
             return;
         }
-        ResourceManager.Instance.startCollecting(pc, resource);
+        ResourceManager.Instance.StartCollecting(pc, resource);
     }
 }

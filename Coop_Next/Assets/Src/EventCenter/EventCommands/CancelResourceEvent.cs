@@ -21,6 +21,6 @@ public class CancelResourceEvent : EventCommandBase {
         {
             return;
         }
-        ResourceManager.Instance.cancelCollecting(pc, resource);
+        ResourceManager.Instance.CancelCollecting(pc, resource);
     }
 }

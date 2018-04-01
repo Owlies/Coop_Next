@@ -20,6 +20,6 @@ public class CompleteResourceEvent : EventCommandBase {
         {
             return;
         }
-        ResourceManager.Instance.completeCollecting(pc, resource);
+        ResourceManager.Instance.CompleteCollecting(pc, resource);
     }
 }
