@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MapManager : Singleton<MapManager> {
+    private MapGridRender gridRender;
     public ObjectConfig objectConfig;
     public LevelConfig levelConfig;
     public GameObject sceneRoot;
@@ -16,6 +17,7 @@ public class MapManager : Singleton<MapManager> {
     private void Start()
     {
         LoadLevel();
+        gridRender = new MapGridRender();
     }
 
     private void LoadLevel()
@@ -124,6 +126,26 @@ public class MapManager : Singleton<MapManager> {
     public bool IsBlocked(Vector2Int mapIndex)
     {
         return mapNodes[mapIndex.x, mapIndex.y].isBlocked;
+    }
+
+    public void RenderGrid(Vector2Int mapIndex, Vector2Int size)
+    {
+        for(int i = 0; i < size.x; i++)
+        {
+            for(int j = 0; j < size.y;j++)
+            {
+                Vector2Int index = mapIndex + new Vector2Int(i, j);
+                if (IsBlocked(index))
+                {
+
+                }
+            }
+        }
+    }
+
+    public void Update()
+    {
+        RenderGrid(new Vector2Int(0,0), mapSize);
     }
 }
 
