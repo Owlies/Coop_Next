@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class Forge : BuildingBase {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private bool CanAddResourceToForge(GameObject resourceCube) {
+        return true;
+    }
+
+    public void AddResourceToForge(GameObject resourceCube) {
+        return;
+    }
+
+    public void StartForging() {
+
+    }
+
+    public void CancelForging() {
+
+    }
 }
