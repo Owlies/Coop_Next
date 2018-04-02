@@ -15,7 +15,7 @@ public class MapManager : Singleton<MapManager> {
 
     static public float MAP_SIZE_UNIT = 2.0f;
 
-    private void Start()
+    public void Start()
     {
         LoadLevel();
         gridRender = new MapGridRender();
@@ -32,6 +32,8 @@ public class MapManager : Singleton<MapManager> {
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
                 ObjectData objectData = objectConfig.objects[instance.objectID];
+                if (objectData.prefab == null)
+                    continue;
                 GameObject obj = GameObject.Instantiate(objectData.prefab, sceneRoot.transform);
                 obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2Int(objectData.size.x / 2, objectData.size.y / 2));
                 for(int idxX = 0; idxX < objectData.size.x; idxX++)

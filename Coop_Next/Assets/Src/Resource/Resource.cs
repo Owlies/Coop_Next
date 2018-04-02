@@ -14,4 +14,10 @@ public class Resource : OverridableMonoBehaviour {
             GetComponentInChildren<ProgressBarBehaviour>().enabled = false;
         }
     }
-    }}
+
+    //public override void UpdateMe()
+    //{
+    //    canvas.transform.rotation = Camera.main.transform.rotation;
+    //}
+
+}
