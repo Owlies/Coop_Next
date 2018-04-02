@@ -11,6 +11,7 @@ public class MapManager : Singleton<MapManager> {
     private Vector2Int mapSize;
     private Vector3 mapOrigin;
     private float unitSize = 1.0f;
+    public bool showDebug = true;
 
     static public float MAP_SIZE_UNIT = 2.0f;
 
@@ -38,7 +39,7 @@ public class MapManager : Singleton<MapManager> {
                     for (int idxY = 0; idxY < objectData.size.y; idxY++)
                     {
                         Vector2Int index = instance.position + new Vector2Int(idxX, idxY);
-                        if (index.x > 0 && index.y > 0 &&
+                        if (index.x >= 0 && index.y >= 0 &&
                             index.x < levelConfig.mapSize.x && index.y < levelConfig.mapSize.y)
                         {
                             mapNodes[index.x, index.y].isBlocked = true;
@@ -66,13 +67,13 @@ public class MapManager : Singleton<MapManager> {
         return mapNodes[mapIndex.x, mapIndex.y].gameObject;
     }
 
-    public void RemoveItemFromMap(Vector2Int mapIndex)
+    public void PickUpItemFromMap(Vector2Int mapIndex)
     {
         if (mapNodes[mapIndex.x, mapIndex.y].gameObject != null)
-            RemoveItemFromMap(mapNodes[mapIndex.x, mapIndex.y].gameObject);
+            PickUpItemFromMap(mapNodes[mapIndex.x, mapIndex.y].gameObject);
     }
 
-    public void RemoveItemFromMap(GameObject obj)
+    public void PickUpItemFromMap(GameObject obj)
     {
         if (obj == null)
             return;
@@ -84,10 +85,10 @@ public class MapManager : Singleton<MapManager> {
                     mapNodes[i, j].Clear();
             }
         }
-        GameObject.DestroyImmediate(obj);
+        //GameObject.DestroyImmediate(obj);
     }
 
-    public bool CreateItemOnMap(GameObject obj, Vector2Int size, Vector2Int mapIndex)
+    public bool PlaceItemOnMap(GameObject obj, Vector2Int size, Vector2Int mapIndex)
     {
         bool accessible = true;
         for (int i = 0; i < size.x; i++)
@@ -120,7 +121,7 @@ public class MapManager : Singleton<MapManager> {
     public bool CreateItemOnMap(ObjectData objData, Vector2Int mapIndex)
     {
         GameObject obj = GameObject.Instantiate(objData.prefab, sceneRoot.transform);
-        return CreateItemOnMap(obj, objData.size, mapIndex);
+        return PlaceItemOnMap(obj, objData.size, mapIndex);
     }
 
     public bool IsBlocked(Vector2Int mapIndex)
@@ -135,17 +136,18 @@ public class MapManager : Singleton<MapManager> {
             for(int j = 0; j < size.y;j++)
             {
                 Vector2Int index = mapIndex + new Vector2Int(i, j);
+                Color color = Color.green;
                 if (IsBlocked(index))
-                {
-
-                }
+                    color = Color.red;
+                gridRender.Draw(MapIndexToWorldPos(index), color);
             }
         }
     }
 
-    public void Update()
+    public override void UpdateMe()
     {
-        RenderGrid(new Vector2Int(0,0), mapSize);
+        if (showDebug)
+            RenderGrid(new Vector2Int(0,0), mapSize);
     }
 }
 

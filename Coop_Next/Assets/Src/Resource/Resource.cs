@@ -18,6 +18,6 @@ public class Resource : OverridableMonoBehaviour {
     }
 
     public override void UpdateMe() {
-        canvas.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
+        //canvas.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
     }
 }

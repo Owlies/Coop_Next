@@ -23,5 +23,9 @@ public class MoveBuildingEvent : EventCommandBase
         
         this.receiver.transform.parent = this.actor.transform;
         this.receiver.transform.localPosition = Vector3.forward * moveingBuildingAnchorMultplier;
+
+        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
+        Vector2Int index = mapManager.WorldPosToMapIndex(this.receiver.transform.position);
+        mapManager.RenderGrid(index, new Vector2Int(1, 1));
     }
 }
