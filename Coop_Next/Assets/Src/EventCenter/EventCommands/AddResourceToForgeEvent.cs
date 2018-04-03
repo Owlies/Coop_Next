@@ -21,7 +21,7 @@ public class AddResourceToForgeEvent : EventCommandBase {
     {
         Forge forgeBuilding = receiver.GetComponent<Forge>();
         if (forgeBuilding != null) {
-            forgeBuilding.AddResourceToForge(resourceCube);
+            forgeBuilding.AddResourceToForge(this.actor, resourceCube);
         }
     }
 }

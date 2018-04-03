@@ -158,6 +158,7 @@ public class PlayerController : OverridableMonoBehaviour {
 
     private void CancelActions() {
         TryCancelCollectingResource();
+        TryCancelForging();
     }
     #endregion
 
@@ -221,6 +222,11 @@ public class PlayerController : OverridableMonoBehaviour {
         return true;
     }
 
+    public void OnAddResourceToForgeComplete() {
+        GameObject.Destroy(carryingResourceCube);
+        carryingResourceCube = null;
+    }
+
     private bool CanStartForging(bool isHit, RaycastHit hitObject) {
         if (!isHit)
         {
@@ -269,6 +275,12 @@ public class PlayerController : OverridableMonoBehaviour {
         return true;
     }
 
+    private bool TryCancelForging() {
+        RaycastHit hitObject;
+        bool isHit = Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8);
+        return TryCancelForging(isHit, hitObject);
+    }
+
     private bool TryCancelForging(bool isHit, RaycastHit hitObject) {
         if (!CanCancelForging(isHit, hitObject)) {
             return false;
@@ -281,14 +293,34 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region CollectResource
-    private bool TryStartCollectingResource(bool isHit, RaycastHit hitObject) {
-        if (collectingResource == null)
-        {
-            StartCollectingResource(isHit, hitObject);
-            return true;
+    private bool CanStartCollectionResource(bool isHit, RaycastHit hitObject) {
+        if (!isHit) {
+            return false;
         }
 
-        return false;
+        if (collectingResource != null) {
+            return false;
+        }
+
+        if (carryingResourceCube != null) {
+            return false;
+        }
+
+        if (hitObject.transform.tag != "Resource") {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryStartCollectingResource(bool isHit, RaycastHit hitObject) {
+        if (!CanStartCollectionResource(isHit, hitObject))
+        {
+            return false;
+        }
+
+        StartCollectingResource(isHit, hitObject);
+        return true;
     }
 
     private bool TryCancelCollectingResource() {
@@ -308,6 +340,8 @@ public class PlayerController : OverridableMonoBehaviour {
         if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds)
         {
             EventCenter.Instance.ExecuteEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
+            collectingResource = null;
+            startCollectingTime = 0;
             return true;
         }
 

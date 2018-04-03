@@ -15,9 +15,11 @@ public class Resource : OverridableMonoBehaviour {
         }
     }
 
-    //public override void UpdateMe()
-    //{
-    //    canvas.transform.rotation = Camera.main.transform.rotation;
-    //}
+    public bool isBasicResource() {
+        return resourceEnum == ResourceEnum.Stone ||
+            resourceEnum == ResourceEnum.Ore ||
+            resourceEnum == ResourceEnum.Coal ||
+            resourceEnum == ResourceEnum.Wood;
+    }
 
 }
