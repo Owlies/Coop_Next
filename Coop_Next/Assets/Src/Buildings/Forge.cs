@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Forge : BuildingBase {
+    private Canvas canvas;
+    private void Start()
+    {
+        canvas = GetComponentInChildren<Canvas>();
+    }
 
     private bool CanAddResourceToForge(GameObject resourceCube) {
         return true;
     }
 
     public void AddResourceToForge(GameObject resourceCube) {
+        Debug.Log("AddResourceToForge");
         return;
     }
 

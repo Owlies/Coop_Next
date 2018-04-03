@@ -114,8 +114,6 @@ public class PlayerController : OverridableMonoBehaviour {
             if (TryHandleMoveBuildingAction(isHit, hitObject)) {
                 return;
             }
-
-            return;
         }
         #endregion
 
