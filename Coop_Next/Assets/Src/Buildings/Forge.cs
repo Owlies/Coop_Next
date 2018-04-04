@@ -2,25 +2,62 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProgressBar;
 
 public class Forge : BuildingBase {
-    private Canvas canvas;
+    private Canvas receiptCanvas;
+    private Canvas progressBarCanvas;
+    private ProgressBarBehaviour forgingProgressBar;
     private List<ResourceEnum> resourceList;
     private Image[] resourceImages;
+
     public Sprite resourceEmptyImage;
     public Sprite resourceStoneImage;
     public Sprite resourceCoalImage;
     public Sprite resourceOreImage;
     public Sprite resourceWoodImage;
+    public ObjectConfig objectConfig;
+
+    private bool isForging = false;
+    private float curForgingProgress = 0.0f;
+    private GameObject forgingPlayer;
 
     private void Start()
     {
-        canvas = GetComponentInChildren<Canvas>();
+        receiptCanvas = GetComponentInChildren<Canvas>();
+        progressBarCanvas = GetComponentsInChildren<Canvas>()[1];
+        progressBarCanvas.worldCamera = Camera.main;
+        forgingProgressBar = progressBarCanvas.GetComponentInChildren<ProgressBarBehaviour>();
+
         resourceList = new List<ResourceEnum>();
 
         // [0] - Background image
         // [1 - 4] Resource images
+        // [5 - ] Progress bar images
         resourceImages = GetComponentsInChildren<Image>();
+
+        if (forgingProgressBar != null)
+        {
+            forgingProgressBar.enabled = false;
+            progressBarCanvas.enabled = false;
+        }
+    }
+
+    public override void UpdateMe()
+    {
+        base.UpdateMe();
+        if (isForging) {
+            curForgingProgress += Time.deltaTime;
+            forgingProgressBar.Value = curForgingProgress * 100.0f / AppConstant.Instance.forgingTime;
+            if (curForgingProgress >= AppConstant.Instance.forgingTime) {
+                ForgingComplete();
+            }
+        }
+    }
+    public override void LateUpdateMe()
+    {
+        base.LateUpdateMe();
+        progressBarCanvas.transform.rotation = Camera.main.transform.rotation;
     }
 
     private bool CanAddResourceToForge(Resource resource) {
@@ -74,11 +111,82 @@ public class Forge : BuildingBase {
         return;
     }
 
-    public void StartForging() {
+    private GameObject FindMatchingReceiptObject() {
+        foreach (ObjectData data in objectConfig.objects) {
+            if (data.receipts.Length > 0) {
+                foreach (Receipt receipt in data.receipts) {
+                    bool doesMatch = true;
+                    for (int i = 0; i < receipt.resources.Length; i++) {
+                        if (i == resourceList.Count) {
+                            doesMatch = false;
+                            break;
+                        }
 
+                        if (resourceList[i] != receipt.resources[i]) {
+                            doesMatch = false;
+                            break;
+                        }
+                    }
+
+                    if (doesMatch) {
+                        return data.prefab;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private bool CanStartForging() {
+        if (isForging) {
+            return false;
+        }
+
+        if (forgingPlayer != null) {
+            return false;
+        }
+
+        if (FindMatchingReceiptObject() == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void StartForging(GameObject player) {
+        if (!CanStartForging()) {
+            return;
+        }
+
+        receiptCanvas.enabled = false;
+        progressBarCanvas.enabled = true;
+        forgingProgressBar.enabled = true;
+        isForging = true;
+        curForgingProgress = 0.0f;
+        forgingPlayer = player;
+    }
+
+    private void ForgingComplete() {
+        GameObject forgedPrefab = FindMatchingReceiptObject();
+
+        GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, forgingPlayer.transform);
+        forgingPlayer.GetComponent<PlayerController>().SetCarryingBuilding(forgedBuilding);
+
+        resourceList.Clear();
+        isForging = false;
+        curForgingProgress = 0.0f;
+        forgingProgressBar.enabled = false;
+        forgingPlayer = null;
+        receiptCanvas.enabled = true;
+        progressBarCanvas.enabled = false;
     }
 
     public void CancelForging() {
+        isForging = false;
+    }
 
+    public void DestroyForging() {
+        isForging = false;
     }
 }

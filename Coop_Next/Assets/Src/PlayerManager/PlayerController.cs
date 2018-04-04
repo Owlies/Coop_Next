@@ -114,6 +114,10 @@ public class PlayerController : OverridableMonoBehaviour {
             if (TryHandleMoveBuildingAction(isHit, hitObject)) {
                 return;
             }
+
+            if (TryDestroyForging(isHit, hitObject)) {
+                return;
+            }
         }
         #endregion
 
@@ -290,6 +294,36 @@ public class PlayerController : OverridableMonoBehaviour {
 
         return true;
     }
+
+    private bool CanDestroyForging(bool isHit, RaycastHit hitObject) {
+        if (!isHit)
+        {
+            return false;
+        }
+
+        if (carryingResourceCube != null)
+        {
+            return false;
+        }
+
+        if (hitObject.transform.gameObject.tag != "Forge")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryDestroyForging(bool isHit, RaycastHit hitObject) {
+        if (!CanDestroyForging(isHit, hitObject)) {
+            return false;
+        }
+
+        EventCenter.Instance.ExecuteEvent(new DestroyForgingEvent(this.gameObject, hitObject.transform.gameObject));
+
+        return true;
+    }
+
     #endregion
 
     #region CollectResource
@@ -372,6 +406,14 @@ public class PlayerController : OverridableMonoBehaviour {
 
     public bool IsFirstPlayer() {
         return playerId == 0;
+    }
+
+    public void SetCarryingBuilding(GameObject building) {
+        carryingBuilding = building;
+        if (carryingBuilding.GetComponent<BoxCollider>() != null) {
+            carryingBuilding.GetComponent<BoxCollider>().enabled = false;
+            carryingBuilding.transform.SetPositionAndRotation(carryingBuilding.transform.position + this.transform.forward * 2.0f, carryingBuilding.transform.rotation);
+        }
     }
 
     #endregion

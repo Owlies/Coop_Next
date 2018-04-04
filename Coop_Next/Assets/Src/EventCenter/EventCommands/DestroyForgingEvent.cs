@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StartForgeEvent : EventCommandBase {
-    public StartForgeEvent(GameObject actor) : base(actor)
+public class DestroyForgingEvent : EventCommandBase {
+    public DestroyForgingEvent(GameObject actor) : base(actor)
     {
     }
 
-    public StartForgeEvent(GameObject actor, GameObject receiver) : base(actor, receiver)
+    public DestroyForgingEvent(GameObject actor, GameObject receiver) : base(actor, receiver)
     {
     }
 
@@ -16,7 +16,7 @@ public class StartForgeEvent : EventCommandBase {
         Forge forgeBuilding = receiver.GetComponent<Forge>();
         if (forgeBuilding != null)
         {
-            forgeBuilding.StartForging(this.actor);
+            forgeBuilding.DestroyForging();
         }
     }
 }
