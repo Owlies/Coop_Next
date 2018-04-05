@@ -11,7 +11,9 @@ public class Forge : BuildingBase {
 
     private Canvas receiptCanvas;
     private Canvas progressBarCanvas;
+    private Canvas destroyProgressBarCanvas;
     private ProgressBarBehaviour forgingProgressBar;
+    private ProgressBarBehaviour destroyProgressBar;
     private List<ResourceEnum> resourceList;
     private Image[] resourceImages;
 
@@ -28,10 +30,14 @@ public class Forge : BuildingBase {
 
     private void Start()
     {
-        receiptCanvas = GetComponentInChildren<Canvas>();
+        receiptCanvas = GetComponentsInChildren<Canvas>()[0];
         progressBarCanvas = GetComponentsInChildren<Canvas>()[1];
+        destroyProgressBarCanvas = GetComponentsInChildren<Canvas>()[2];
+
         progressBarCanvas.worldCamera = Camera.main;
+        destroyProgressBarCanvas.worldCamera = Camera.main;
         forgingProgressBar = progressBarCanvas.GetComponentInChildren<ProgressBarBehaviour>();
+        destroyProgressBar = destroyProgressBarCanvas.GetComponentInChildren<ProgressBarBehaviour>();
 
         resourceList = new List<ResourceEnum>();
 
@@ -44,6 +50,12 @@ public class Forge : BuildingBase {
         {
             forgingProgressBar.enabled = false;
             progressBarCanvas.enabled = false;
+        }
+
+        if (destroyProgressBar != null)
+        {
+            destroyProgressBar.enabled = false;
+            destroyProgressBarCanvas.enabled = false;
         }
     }
 

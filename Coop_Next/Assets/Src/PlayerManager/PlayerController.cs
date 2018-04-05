@@ -44,7 +44,6 @@ public class PlayerController : OverridableMonoBehaviour {
         else {
             if (IsFirstPlayer())
             {
-                
                 inputConfig.horizontalAxis = InputAxisEnum.Player1_Horizontal.Value;
                 inputConfig.verticalAxis = InputAxisEnum.Player1_Vertical.Value;
                 inputConfig.actionButton = InputAxisEnum.Player1_Action.Value;
