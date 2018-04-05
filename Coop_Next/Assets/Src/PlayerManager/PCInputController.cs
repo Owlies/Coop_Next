@@ -15,24 +15,24 @@ public class PCInputController : InputController
     protected override void HandleMovement()
     {
         base.HandleMovement();
-        playerState = PlayerState.Idle;
+        playerMovingState = EPlayerMovingState.IDLE;
 
         float x = 0.0f;
         float z = 0.0f;
 
         if (Input.GetButton(inputConfig.horizontalAxis) ||
             Input.GetButtonDown(inputConfig.horizontalAxis)) {
-            playerState = PlayerState.HorizontalMoving;
+            playerMovingState = EPlayerMovingState.HORIZONTAL_MOVING;
             x = Input.GetAxis(inputConfig.horizontalAxis);
         }
         if(Input.GetButton(inputConfig.verticalAxis) || 
             Input.GetButtonDown(inputConfig.verticalAxis))
         {
-            playerState = PlayerState.VerticalMoving;
+            playerMovingState = EPlayerMovingState.VERTICAL_MOVING;
             z = Input.GetAxis(inputConfig.verticalAxis);
         }
 
-        if (playerState == PlayerState.Idle)
+        if (playerMovingState == EPlayerMovingState.IDLE)
         {
             cancelMovementEvent.Invoke();
         }

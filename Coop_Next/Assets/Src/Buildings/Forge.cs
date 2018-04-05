@@ -4,7 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProgressBar;
 
+
+
 public class Forge : BuildingBase {
+    private enum ForgeState { IDLE, FORGING }
+
     private Canvas receiptCanvas;
     private Canvas progressBarCanvas;
     private ProgressBarBehaviour forgingProgressBar;
@@ -18,7 +22,7 @@ public class Forge : BuildingBase {
     public Sprite resourceWoodImage;
     public ObjectConfig objectConfig;
 
-    private bool isForging = false;
+    private ForgeState forgeState;
     private float curForgingProgress = 0.0f;
     private GameObject forgingPlayer;
 
@@ -46,7 +50,7 @@ public class Forge : BuildingBase {
     public override void UpdateMe()
     {
         base.UpdateMe();
-        if (isForging) {
+        if (forgeState == ForgeState.FORGING) {
             curForgingProgress += Time.deltaTime;
             forgingProgressBar.Value = curForgingProgress * 100.0f / AppConstant.Instance.forgingTime;
             if (curForgingProgress >= AppConstant.Instance.forgingTime) {
@@ -139,7 +143,7 @@ public class Forge : BuildingBase {
     }
 
     private bool CanStartForging() {
-        if (isForging) {
+        if (forgeState != ForgeState.IDLE) {
             return false;
         }
 
@@ -162,7 +166,7 @@ public class Forge : BuildingBase {
         receiptCanvas.enabled = false;
         progressBarCanvas.enabled = true;
         forgingProgressBar.enabled = true;
-        isForging = true;
+        forgeState = ForgeState.FORGING;
         curForgingProgress = 0.0f;
         forgingPlayer = player;
     }
@@ -171,22 +175,32 @@ public class Forge : BuildingBase {
         GameObject forgedPrefab = FindMatchingReceiptObject();
 
         GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, forgingPlayer.transform);
-        forgingPlayer.GetComponent<PlayerController>().SetCarryingBuilding(forgedBuilding);
+        forgingPlayer.GetComponent<PlayerController>().SetCarryingItem(forgedBuilding);
 
-        resourceList.Clear();
-        isForging = false;
+        forgeState = ForgeState.IDLE;
         curForgingProgress = 0.0f;
         forgingProgressBar.enabled = false;
+        forgingProgressBar.Value = 0.0f;
+        forgingProgressBar.TransitoryValue = 0.0f;
         forgingPlayer = null;
         receiptCanvas.enabled = true;
         progressBarCanvas.enabled = false;
+
+        resourceList.Clear();
+        ResetResourceImages();
+    }
+
+    private void ResetResourceImages() {
+        for(int i = 1; i <= 4; i++) {
+            resourceImages[i].sprite = resourceEmptyImage;
+        }
     }
 
     public void CancelForging() {
-        isForging = false;
+        forgeState = ForgeState.IDLE;
     }
 
     public void DestroyForging() {
-        isForging = false;
+        
     }
 }

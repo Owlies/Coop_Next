@@ -9,13 +9,21 @@ public struct PlayerInputConfig
     public string actionButton;
 };
 
+public enum EPlayerActionState {
+    IDLE,
+    CARRYING_RESOURCE,
+    CARRYING_BUILDING,
+    FORGING,
+    COLLECTING_RESOURCE,
+}
+
 public class PlayerController : OverridableMonoBehaviour {
     private int playerId;
     private InputController inputController;
-    private GameObject carryingBuilding;
+    private GameObject carryingItem;
     private GameObject collectingResource;
     private float startCollectingTime;
-    private GameObject carryingResourceCube;
+    private EPlayerActionState playerActionState;
 
     #region initialize
     public void Initialize(InputController iController, int pId) {
@@ -23,7 +31,8 @@ public class PlayerController : OverridableMonoBehaviour {
 
         inputController = iController;
         playerId = pId;
-        carryingBuilding = null;
+        carryingItem = null;
+        playerActionState = EPlayerActionState.IDLE;
 
         PlayerInputConfig inputConfig = new PlayerInputConfig();
         if (!AppConstant.Instance.isMultiPlayer)
@@ -167,34 +176,58 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region BuildingActions
-    private bool TryHandleMoveBuildingAction(bool isHit, RaycastHit hitObject) {
-        if (isHit)
-        {
-            if (hitObject.transform.gameObject.tag != "Building")
-            {
-                return false;
-            }
-
-            carryingBuilding = hitObject.transform.gameObject;
-
-            // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
-            EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
-
-            return true;
+    private bool CanMoveBuilding(bool isHist, RaycastHit hitObject) {
+        if (!isHist) {
+            return false;
         }
-        return false;
+
+        if (playerActionState != EPlayerActionState.IDLE) {
+            return false;
+        }
+
+        if (hitObject.transform.gameObject.tag != "Building")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryHandleMoveBuildingAction(bool isHit, RaycastHit hitObject) {
+        if (!CanMoveBuilding(isHit, hitObject)) {
+            return false;
+        }
+
+        SetCarryingItem(hitObject.transform.gameObject);
+        // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
+        EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
+
+        return true;
+    }
+
+    private bool CanPlaceBuilding() {
+        if (carryingItem == null) {
+            return false;
+        }
+
+        if (playerActionState != EPlayerActionState.CARRYING_BUILDING) {
+            return false;
+        }
+
+        return true;
     }
 
     private bool TryPlaceBuilding() {
-        // Place building if carrying
-        if (carryingBuilding != null)
-        {
-            EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingBuilding));
-            carryingBuilding = null;
-            return true;
+        if (!CanPlaceBuilding()) {
+            return false;
         }
 
-        return false;
+        EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingItem));
+        UnsetCarryingItem();
+
+        playerActionState = EPlayerActionState.IDLE;
+
+        return true;
     }
 
     private bool CanAddResourceToForge(bool isHit, RaycastHit hitObject) {
@@ -203,7 +236,11 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        if (carryingResourceCube == null)
+        if (playerActionState != EPlayerActionState.CARRYING_RESOURCE) {
+            return false;
+        }
+
+        if (carryingItem == null)
         {
             return false;
         }
@@ -221,14 +258,14 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingResourceCube, hitObject.transform.gameObject));
+        EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingItem, hitObject.transform.gameObject));
 
         return true;
     }
 
     public void OnAddResourceToForgeComplete() {
-        GameObject.Destroy(carryingResourceCube);
-        carryingResourceCube = null;
+        GameObject.Destroy(carryingItem);
+        UnsetCarryingItem();
     }
 
     private bool CanStartForging(bool isHit, RaycastHit hitObject) {
@@ -237,7 +274,11 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        if (carryingResourceCube != null)
+        if (playerActionState != EPlayerActionState.IDLE) {
+            return false;
+        }
+
+        if (carryingItem != null)
         {
             return false;
         }
@@ -256,6 +297,7 @@ public class PlayerController : OverridableMonoBehaviour {
         }
 
         EventCenter.Instance.ExecuteEvent(new StartForgeEvent(this.gameObject, hitObject.transform.gameObject));
+        playerActionState = EPlayerActionState.FORGING;
 
         return true;
     }
@@ -266,7 +308,11 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        if (carryingResourceCube != null)
+        if (playerActionState != EPlayerActionState.IDLE) {
+            return false;
+        }
+
+        if (carryingItem != null)
         {
             return false;
         }
@@ -291,17 +337,13 @@ public class PlayerController : OverridableMonoBehaviour {
         }
 
         EventCenter.Instance.ExecuteEvent(new CancelForgingEvent(this.gameObject, hitObject.transform.gameObject));
+        playerActionState = EPlayerActionState.IDLE;
 
         return true;
     }
 
     private bool CanDestroyForging(bool isHit, RaycastHit hitObject) {
         if (!isHit)
-        {
-            return false;
-        }
-
-        if (carryingResourceCube != null)
         {
             return false;
         }
@@ -327,27 +369,99 @@ public class PlayerController : OverridableMonoBehaviour {
     #endregion
 
     #region CollectResource
-    private bool CanStartCollectionResource(bool isHit, RaycastHit hitObject) {
-        if (!isHit) {
+    private bool CanCancelCollectingResource() {
+        if (playerActionState != EPlayerActionState.COLLECTING_RESOURCE) {
             return false;
         }
 
-        if (collectingResource != null) {
+        if (startCollectingTime <= 0.0f) {
             return false;
         }
 
-        if (carryingResourceCube != null) {
-            return false;
-        }
-
-        if (hitObject.transform.tag != "Resource") {
+        if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds) {
             return false;
         }
 
         return true;
     }
 
-    private bool TryStartCollectingResource(bool isHit, RaycastHit hitObject) {
+    private bool TryCancelCollectingResource() {
+        if (!CanCancelCollectingResource())
+        {
+            return false;
+        }
+
+        EventCenter.Instance.ExecuteEvent(new CancelResourceEvent(this.gameObject, collectingResource));
+        collectingResource = null;
+        startCollectingTime = 0;
+        playerActionState = EPlayerActionState.IDLE;
+
+        return true;
+    }
+
+    private bool CanCompleteCollectingResource() {
+        if (startCollectingTime <= 0.0f) {
+            return false;
+        }
+
+        if (Time.time - startCollectingTime < AppConstant.Instance.resourceCollectingSeconds) {
+            return false;
+        }
+
+        if (playerActionState != EPlayerActionState.COLLECTING_RESOURCE) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryCompleteCollectingResource()
+    {
+        if (!CanCompleteCollectingResource())
+        {
+            return false;
+        }
+
+        EventCenter.Instance.ExecuteEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
+        collectingResource = null;
+        startCollectingTime = 0;
+
+        playerActionState = EPlayerActionState.CARRYING_RESOURCE;
+        return true;
+    }
+
+    private bool CanStartCollectionResource(bool isHit, RaycastHit hitObject)
+    {
+        if (!isHit)
+        {
+            return false;
+        }
+
+        if (playerActionState != EPlayerActionState.IDLE)
+        {
+            return false;
+        }
+
+        if (collectingResource != null)
+        {
+            return false;
+        }
+
+        if (carryingItem != null)
+        {
+            return false;
+        }
+
+        if (hitObject.transform.tag != "Resource")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryStartCollectingResource(bool isHit, RaycastHit hitObject)
+    {
         if (!CanStartCollectionResource(isHit, hitObject))
         {
             return false;
@@ -355,31 +469,6 @@ public class PlayerController : OverridableMonoBehaviour {
 
         StartCollectingResource(isHit, hitObject);
         return true;
-    }
-
-    private bool TryCancelCollectingResource() {
-        if (Time.time - startCollectingTime < AppConstant.Instance.resourceCollectingSeconds)
-        {
-            EventCenter.Instance.ExecuteEvent(new CancelResourceEvent(this.gameObject, collectingResource));
-            collectingResource = null;
-            startCollectingTime = 0;
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool TryCompleteCollectingResource()
-    {
-        if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds)
-        {
-            EventCenter.Instance.ExecuteEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
-            collectingResource = null;
-            startCollectingTime = 0;
-            return true;
-        }
-
-        return false;
     }
 
     private void StartCollectingResource(bool isHit, RaycastHit hitObject) {
@@ -393,13 +482,9 @@ public class PlayerController : OverridableMonoBehaviour {
             EventCenter.Instance.ExecuteEvent(new StartCollectResourceEvent(this.gameObject, hitObject.transform.gameObject));
             startCollectingTime = Time.time;
             collectingResource = hitObject.transform.gameObject;
+            playerActionState = EPlayerActionState.COLLECTING_RESOURCE;
         }
     }
-
-    public void SetCarryingResourceCube(GameObject cube) {
-        carryingResourceCube = cube;
-    }
-
     #endregion
 
     #region OtherFunctions
@@ -408,12 +493,38 @@ public class PlayerController : OverridableMonoBehaviour {
         return playerId == 0;
     }
 
-    public void SetCarryingBuilding(GameObject building) {
-        carryingBuilding = building;
-        if (carryingBuilding.GetComponent<BoxCollider>() != null) {
-            carryingBuilding.GetComponent<BoxCollider>().enabled = false;
-            carryingBuilding.transform.SetPositionAndRotation(carryingBuilding.transform.position + this.transform.forward * 2.0f, carryingBuilding.transform.rotation);
+    public void SetCarryingItem(GameObject item) {
+        carryingItem = item;
+        if (carryingItem.GetComponent<BoxCollider>() != null) {
+            carryingItem.GetComponent<BoxCollider>().enabled = false;
+            carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 2.0f, carryingItem.transform.rotation);
+            if (carryingItem.tag == "Building")
+            {
+                playerActionState = EPlayerActionState.CARRYING_BUILDING;
+            }
+            else if(carryingItem.tag == "Item") {
+                playerActionState = EPlayerActionState.CARRYING_RESOURCE;
+            }
         }
+
+        if (carryingItem.GetComponent<Rigidbody>() != null) {
+            carryingItem.GetComponent<Rigidbody>().detectCollisions = false;
+        }
+    }
+
+    public void UnsetCarryingItem() {
+        if (carryingItem.GetComponent<BoxCollider>() != null)
+        {
+            carryingItem.GetComponent<BoxCollider>().enabled = true;
+        }
+
+        if (carryingItem.GetComponent<Rigidbody>() != null)
+        {
+            carryingItem.GetComponent<Rigidbody>().detectCollisions = true;
+        }
+
+        carryingItem = null;
+        playerActionState = EPlayerActionState.IDLE;
     }
 
     #endregion

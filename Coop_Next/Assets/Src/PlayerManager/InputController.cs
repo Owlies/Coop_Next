@@ -15,7 +15,7 @@ public class CancelPlayerMovementEvent : UnityEvent {
 public class PlayerActionEvent : UnityEvent<bool, bool> {
 }
 
-public enum PlayerState { Idle, HorizontalMoving, VerticalMoving };
+public enum EPlayerMovingState { IDLE, HORIZONTAL_MOVING, VERTICAL_MOVING };
 
 
 public class InputController : OverridableMonoBehaviour
@@ -24,10 +24,10 @@ public class InputController : OverridableMonoBehaviour
     public PlayerMovementEvent movementEvent = new PlayerMovementEvent();
     public CancelPlayerMovementEvent cancelMovementEvent = new CancelPlayerMovementEvent();
     public PlayerActionEvent actionEvent = new PlayerActionEvent();
-    public PlayerState playerState;
+    public EPlayerMovingState playerMovingState;
 
     public InputController() {
-        playerState = PlayerState.Idle;
+        playerMovingState = EPlayerMovingState.IDLE;
     }
 
     public void RegisterListeners(UnityAction<float, float> movementAction, UnityAction cancelMovementAction, UnityAction<bool, bool> playerAction)
