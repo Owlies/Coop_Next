@@ -537,9 +537,8 @@ public class PlayerController : OverridableMonoBehaviour {
         carryingItem = item;
         if (carryingItem.GetComponent<BoxCollider>() != null) {
             carryingItem.GetComponent<BoxCollider>().enabled = false;
-            carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 2.0f, carryingItem.transform.rotation);
-            if (carryingItem.tag == "Building")
-            {
+            carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 1.0f, carryingItem.transform.rotation);
+            if (carryingItem.tag == "Building") {
                 playerActionState = EPlayerActionState.CARRYING_BUILDING;
             }
             else if(carryingItem.tag == "Item") {
