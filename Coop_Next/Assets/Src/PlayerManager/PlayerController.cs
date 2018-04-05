@@ -114,7 +114,7 @@ public class PlayerController : OverridableMonoBehaviour {
 
     public void PlayerAction(bool isLongPress, bool isButtonDown) {
         RaycastHit hitObject;
-        bool isHit = Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8);
+        bool isHit = Physics.Raycast(new Vector3(transform.position.x, 0.01f, transform.position.z), transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8);
 
         #region ButtonLongPressActions
         /*  Button Long Press Actions   */
@@ -132,7 +132,7 @@ public class PlayerController : OverridableMonoBehaviour {
         #region ButtonShortPressActions
         /*  Button Short Press Actions  */
         if (isButtonDown) {
-            if (TryPlaceBuilding()) {
+            if (TryCollectItemOnMap(isHit, hitObject)) {
                 return;
             }
 
@@ -145,6 +145,11 @@ public class PlayerController : OverridableMonoBehaviour {
             }
 
             if (TryStartForging(isHit, hitObject)) {
+                return;
+            }
+
+            if (TryPlaceItemOnMap())
+            {
                 return;
             }
             return;
@@ -204,24 +209,56 @@ public class PlayerController : OverridableMonoBehaviour {
         return true;
     }
 
-    private bool CanPlaceBuilding() {
-        if (carryingItem == null) {
+    private bool CanCollectItemOnMap(bool isHit, RaycastHit hitObject) {
+        if (!isHit) {
             return false;
         }
 
-        if (playerActionState != EPlayerActionState.CARRYING_BUILDING) {
+        if (playerActionState != EPlayerActionState.IDLE)
+        {
+            return false;
+        }
+
+        if (hitObject.transform.gameObject.tag != "Item")
+        {
             return false;
         }
 
         return true;
     }
 
-    private bool TryPlaceBuilding() {
-        if (!CanPlaceBuilding()) {
+    private bool TryCollectItemOnMap(bool isHit, RaycastHit hitObject) {
+        if (!CanCollectItemOnMap(isHit, hitObject)) {
             return false;
         }
 
-        EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingItem));
+        SetCarryingItem(hitObject.transform.gameObject);
+
+        return true;
+    }
+
+    private bool CanPlaceItemOnMap() {
+        if (carryingItem == null) {
+            return false;
+        }
+
+        if (!(playerActionState != EPlayerActionState.CARRYING_BUILDING ||
+            playerActionState != EPlayerActionState.CARRYING_RESOURCE)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryPlaceItemOnMap() {
+        if (!CanPlaceItemOnMap()) {
+            return false;
+        }
+
+        if (playerActionState == EPlayerActionState.CARRYING_BUILDING) {
+            EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingItem));
+        }
+        
         UnsetCarryingItem();
 
         playerActionState = EPlayerActionState.IDLE;
@@ -513,6 +550,8 @@ public class PlayerController : OverridableMonoBehaviour {
         if (carryingItem.GetComponent<Rigidbody>() != null) {
             carryingItem.GetComponent<Rigidbody>().detectCollisions = false;
         }
+
+        carryingItem.transform.parent = this.transform;
     }
 
     public void UnsetCarryingItem() {
@@ -526,6 +565,7 @@ public class PlayerController : OverridableMonoBehaviour {
             carryingItem.GetComponent<Rigidbody>().detectCollisions = true;
         }
 
+        carryingItem.transform.parent = null;
         carryingItem = null;
         playerActionState = EPlayerActionState.IDLE;
     }
