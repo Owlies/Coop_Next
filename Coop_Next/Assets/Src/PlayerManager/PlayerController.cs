@@ -308,7 +308,7 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        if (playerActionState != EPlayerActionState.IDLE) {
+        if (playerActionState != EPlayerActionState.FORGING) {
             return false;
         }
 
@@ -345,6 +345,10 @@ public class PlayerController : OverridableMonoBehaviour {
     private bool CanDestroyForging(bool isHit, RaycastHit hitObject) {
         if (!isHit)
         {
+            return false;
+        }
+
+        if (playerActionState != EPlayerActionState.IDLE) {
             return false;
         }
 

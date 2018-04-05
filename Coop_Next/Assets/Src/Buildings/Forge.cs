@@ -177,15 +177,8 @@ public class Forge : BuildingBase {
         GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, forgingPlayer.transform);
         forgingPlayer.GetComponent<PlayerController>().SetCarryingItem(forgedBuilding);
 
-        forgeState = ForgeState.IDLE;
-        curForgingProgress = 0.0f;
-        forgingProgressBar.enabled = false;
-        forgingProgressBar.Value = 0.0f;
-        forgingProgressBar.TransitoryValue = 0.0f;
-        forgingPlayer = null;
-        receiptCanvas.enabled = true;
-        progressBarCanvas.enabled = false;
 
+        CancelForging();
         resourceList.Clear();
         ResetResourceImages();
     }
@@ -198,6 +191,18 @@ public class Forge : BuildingBase {
 
     public void CancelForging() {
         forgeState = ForgeState.IDLE;
+        ResetForgingProgressBar();
+        forgingPlayer = null;
+        receiptCanvas.enabled = true;
+    }
+
+    private void ResetForgingProgressBar()
+    {
+        curForgingProgress = 0.0f;
+        forgingProgressBar.enabled = false;
+        forgingProgressBar.Value = 0.0f;
+        forgingProgressBar.TransitoryValue = 0.0f;
+        progressBarCanvas.enabled = false;
     }
 
     public void DestroyForging() {
