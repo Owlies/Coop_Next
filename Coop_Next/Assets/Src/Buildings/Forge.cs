@@ -6,7 +6,7 @@ using ProgressBar;
 
 
 
-public class Forge : BuildingBase {
+public class Forge : CollectableBuilding {
     private enum ForgeState { IDLE, FORGING }
 
     private Canvas receiptCanvas;
@@ -219,5 +219,10 @@ public class Forge : BuildingBase {
 
     public void DestroyForging() {
         
+    }
+
+    public override void CollectItem(GameObject player)
+    {
+        throw new System.NotImplementedException();
     }
 }

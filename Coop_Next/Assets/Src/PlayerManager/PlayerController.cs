@@ -122,10 +122,6 @@ public class PlayerController : OverridableMonoBehaviour {
             if (TryHandleMoveBuildingAction(isHit, hitObject)) {
                 return;
             }
-
-            if (TryDestroyForging(isHit, hitObject)) {
-                return;
-            }
         }
         #endregion
 
@@ -144,7 +140,7 @@ public class PlayerController : OverridableMonoBehaviour {
                 return;
             }
 
-            if (TryStartForging(isHit, hitObject)) {
+            if (TryCollectItemFromBuilding(isHit, hitObject)) {
                 return;
             }
 
@@ -167,19 +163,15 @@ public class PlayerController : OverridableMonoBehaviour {
             return;
         }
 
-        if (TryCancelForging(isHit, hitObject)) {
-            return;
-        }
         #endregion
     }
 
     private void CancelActions() {
         TryCancelCollectingResource();
-        TryCancelForging();
     }
     #endregion
 
-    #region BuildingActions
+    #region InteractiveItemActions
     private bool CanMoveBuilding(bool isHist, RaycastHit hitObject) {
         if (!isHist) {
             return false;
@@ -266,6 +258,35 @@ public class PlayerController : OverridableMonoBehaviour {
         return true;
     }
 
+    private bool CanCollectItemFromBuilding(bool isHit, RaycastHit hitObject) {
+        if (!isHit) {
+            return false;
+        }
+
+        if (playerActionState != EPlayerActionState.IDLE) {
+            return false;
+        }
+
+        if (hitObject.transform.GetComponent<BuildingBase>() == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryCollectItemFromBuilding(bool isHit, RaycastHit hitObject) {
+        if (!CanCollectItemFromBuilding(isHit, hitObject)) {
+            return false;
+        }
+
+        EventCenter.Instance.ExecuteEvent(new CollectItemFromBuildingEvent(this.gameObject, hitObject.transform.gameObject));
+
+        return true;
+    }
+
+    #endregion
+
+    #region Forging
     private bool CanAddResourceToForge(bool isHit, RaycastHit hitObject) {
         if (!isHit)
         {
@@ -302,108 +323,6 @@ public class PlayerController : OverridableMonoBehaviour {
     public void OnAddResourceToForgeComplete() {
         GameObject.Destroy(carryingItem);
         UnsetCarryingItem();
-    }
-
-    private bool CanStartForging(bool isHit, RaycastHit hitObject) {
-        if (!isHit)
-        {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.IDLE) {
-            return false;
-        }
-
-        if (carryingItem != null)
-        {
-            return false;
-        }
-
-        if (hitObject.transform.gameObject.tag != "Forge")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryStartForging(bool isHit, RaycastHit hitObject) {
-        if (!CanStartForging(isHit, hitObject)) {
-            return false;
-        }
-
-        EventCenter.Instance.ExecuteEvent(new StartForgeEvent(this.gameObject, hitObject.transform.gameObject));
-        playerActionState = EPlayerActionState.FORGING;
-
-        return true;
-    }
-
-    private bool CanCancelForging(bool isHit, RaycastHit hitObject) {
-        if (!isHit)
-        {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.FORGING) {
-            return false;
-        }
-
-        if (carryingItem != null)
-        {
-            return false;
-        }
-
-        if (hitObject.transform.gameObject.tag != "Forge")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryCancelForging() {
-        RaycastHit hitObject;
-        bool isHit = Physics.Raycast(transform.position, transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8);
-        return TryCancelForging(isHit, hitObject);
-    }
-
-    private bool TryCancelForging(bool isHit, RaycastHit hitObject) {
-        if (!CanCancelForging(isHit, hitObject)) {
-            return false;
-        }
-
-        EventCenter.Instance.ExecuteEvent(new CancelForgingEvent(this.gameObject, hitObject.transform.gameObject));
-        playerActionState = EPlayerActionState.IDLE;
-
-        return true;
-    }
-
-    private bool CanDestroyForging(bool isHit, RaycastHit hitObject) {
-        if (!isHit)
-        {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.IDLE) {
-            return false;
-        }
-
-        if (hitObject.transform.gameObject.tag != "Forge")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryDestroyForging(bool isHit, RaycastHit hitObject) {
-        if (!CanDestroyForging(isHit, hitObject)) {
-            return false;
-        }
-
-        EventCenter.Instance.ExecuteEvent(new DestroyForgingEvent(this.gameObject, hitObject.transform.gameObject));
-
-        return true;
     }
 
     #endregion
