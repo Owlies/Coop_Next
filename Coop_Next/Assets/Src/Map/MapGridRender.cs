@@ -6,17 +6,16 @@ public class MapGridRender {
 
     GameObject planePrefab;
     Mesh planeMesh;
-    float size = 0.5f;
     Material material;
 
-    public MapGridRender()
+    public MapGridRender(float unitSize)
     {
         planeMesh = new Mesh();
         planeMesh.vertices = new Vector3[] {
              new Vector3(0, 0.01f, 0),
-             new Vector3(0, 0.01f, 1),
-             new Vector3(1, 0.01f, 1),
-             new Vector3(1, 0.01f, 0)
+             new Vector3(0, 0.01f, unitSize),
+             new Vector3(unitSize, 0.01f, unitSize),
+             new Vector3(unitSize, 0.01f, 0)
          };
         planeMesh.uv = new Vector2[] {
              new Vector2 (0, 0),

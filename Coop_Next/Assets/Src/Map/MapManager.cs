@@ -10,7 +10,6 @@ public class MapManager : Singleton<MapManager> {
     private MapNode[,] mapNodes;
     private Vector2Int mapSize;
     private Vector3 mapOrigin;
-    private float unitSize = 1.0f;
     public bool showDebug = true;
 
     static public float MAP_SIZE_UNIT = 2.0f;
@@ -18,7 +17,7 @@ public class MapManager : Singleton<MapManager> {
     public void Start()
     {
         LoadLevel();
-        gridRender = new MapGridRender();
+        gridRender = new MapGridRender(MAP_SIZE_UNIT);
     }
 
     private void LoadLevel()
@@ -26,7 +25,7 @@ public class MapManager : Singleton<MapManager> {
         if (levelConfig != null)
         {
             mapSize = levelConfig.mapSize;
-            mapOrigin = new Vector3(-mapSize.x / 2.0f * unitSize, 0, -mapSize.y / 2.0f * unitSize);
+            mapOrigin = new Vector3(-mapSize.x / 2.0f * MAP_SIZE_UNIT, 0, -mapSize.y / 2.0f * MAP_SIZE_UNIT);
             mapNodes = new MapNode[levelConfig.mapSize.x, levelConfig.mapSize.y];
             for (int i = 0; i < levelConfig.objectInstances.Length; i++)
             {
@@ -35,7 +34,7 @@ public class MapManager : Singleton<MapManager> {
                 if (objectData.prefab == null)
                     continue;
                 GameObject obj = GameObject.Instantiate(objectData.prefab, sceneRoot.transform);
-                obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2Int(objectData.size.x / 2, objectData.size.y / 2));
+                obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.x / 2.0f, objectData.size.y / 2.0f));
                 for(int idxX = 0; idxX < objectData.size.x; idxX++)
                 {
                     for (int idxY = 0; idxY < objectData.size.y; idxY++)
@@ -55,13 +54,13 @@ public class MapManager : Singleton<MapManager> {
 
     public Vector2Int WorldPosToMapIndex(Vector3 worldPos)
     {
-        return new Vector2Int((int)((worldPos.x - mapOrigin.x) / unitSize),
-                                (int)((worldPos.z - mapOrigin.z) / unitSize));
+        return new Vector2Int((int)((worldPos.x - mapOrigin.x) / MAP_SIZE_UNIT),
+                                (int)((worldPos.z - mapOrigin.z) / MAP_SIZE_UNIT));
     }
 
-    public Vector3 MapIndexToWorldPos(Vector2Int mapIndex)
+    public Vector3 MapIndexToWorldPos(Vector2 mapIndex)
     {
-        return new Vector3(mapIndex.x * unitSize + mapOrigin.x, 0, mapIndex.y * unitSize + mapOrigin.z);
+        return new Vector3(mapIndex.x * MAP_SIZE_UNIT + mapOrigin.x, 0, mapIndex.y * MAP_SIZE_UNIT + mapOrigin.z);
     }
 
     public GameObject GetGameObject(Vector2Int mapIndex)
