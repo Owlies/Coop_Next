@@ -7,7 +7,7 @@ using ProgressBar;
 
 
 public class Forge : CollectableBuilding {
-    private enum ForgeState { IDLE, FORGING }
+    private enum ForgeState { IDLE, FORGING, DESTROYING, READY_TO_COLLECT }
 
     private Canvas receiptCanvas;
     private Canvas progressBarCanvas;
@@ -25,7 +25,7 @@ public class Forge : CollectableBuilding {
     public ObjectConfig objectConfig;
 
     private ForgeState forgeState;
-    private float curForgingProgress = 0.0f;
+    private float curProgress = 0.0f;
     private GameObject forgedPrefab;
 
     private void Start()
@@ -62,11 +62,21 @@ public class Forge : CollectableBuilding {
     public override void UpdateMe()
     {
         base.UpdateMe();
-        if (forgeState == ForgeState.FORGING) {
-            curForgingProgress += Time.deltaTime;
-            forgingProgressBar.Value = curForgingProgress * 100.0f / AppConstant.Instance.forgingTime;
-            if (curForgingProgress >= AppConstant.Instance.forgingTime) {
+        if (forgeState == ForgeState.FORGING)
+        {
+            curProgress += Time.deltaTime;
+            forgingProgressBar.Value = curProgress * 100.0f / AppConstant.Instance.forgingTime;
+            if (curProgress >= AppConstant.Instance.forgingTime)
+            {
                 ForgingComplete();
+            }
+        }
+        else if (forgeState == ForgeState.DESTROYING) {
+            curProgress += Time.deltaTime;
+            destroyProgressBar.Value = curProgress * 100.0f / AppConstant.Instance.forgingTime;
+            if (curProgress >= AppConstant.Instance.forgingTime)
+            {
+                DestroyForging();
             }
         }
     }
@@ -74,10 +84,15 @@ public class Forge : CollectableBuilding {
     {
         base.LateUpdateMe();
         progressBarCanvas.transform.rotation = Camera.main.transform.rotation;
+        destroyProgressBarCanvas.transform.rotation = Camera.main.transform.rotation;
     }
 
     private bool CanAddResourceToForge(Resource resource) {
         if (resource == null) {
+            return false;
+        }
+
+        if (forgeState == ForgeState.READY_TO_COLLECT) {
             return false;
         }
 
@@ -129,32 +144,6 @@ public class Forge : CollectableBuilding {
         return;
     }
 
-    private GameObject FindMatchingReceiptObject() {
-        foreach (ObjectData data in objectConfig.objects) {
-            if (data.receipts.Length > 0) {
-                foreach (Receipt receipt in data.receipts) {
-                    bool doesMatch = true;
-                    for (int i = 0; i < receipt.resources.Length; i++) {
-                        if (i == resourceList.Count) {
-                            doesMatch = false;
-                            break;
-                        }
-
-                        if (resourceList[i] != receipt.resources[i]) {
-                            doesMatch = false;
-                            break;
-                        }
-                    }
-
-                    if (doesMatch) {
-                        return data.prefab;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
 
     private void StartForgeOrDestroy() {
         if (FindMatchingReceiptObject() != null)
@@ -163,44 +152,42 @@ public class Forge : CollectableBuilding {
             return;
         }
 
-        DestroyForging();
+        StartDestroyForging();
     }
 
-    public void StartForging() {
+    private void StartForging() {
         receiptCanvas.enabled = false;
+        ResetDestroyForgingProgressBar();
+        ResetForgingProgressBar();
         progressBarCanvas.enabled = true;
         forgingProgressBar.enabled = true;
         forgeState = ForgeState.FORGING;
-        curForgingProgress = 0.0f;
+        curProgress = 0.0f;
     }
 
     private void ForgingComplete() {
         forgedPrefab = FindMatchingReceiptObject();
-        forgeState = ForgeState.IDLE;
+        forgeState = ForgeState.READY_TO_COLLECT;
         ResetForgingProgressBar();
-        resourceList.Clear();
-        ResetResourceImages();
 
         //TODO(Huayu):Ready to collect UI
     }
 
-    private void ResetResourceImages() {
-        for(int i = 1; i <= 4; i++) {
-            resourceImages[i].sprite = resourceEmptyImage;
-        }
-    }
+    private void StartDestroyForging() {
+        receiptCanvas.enabled = false;
+        ResetDestroyForgingProgressBar();
+        ResetForgingProgressBar();
+        destroyProgressBarCanvas.enabled = true;
+        destroyProgressBar.enabled = true;
 
-    private void ResetForgingProgressBar()
-    {
-        curForgingProgress = 0.0f;
-        forgingProgressBar.enabled = false;
-        forgingProgressBar.Value = 0.0f;
-        forgingProgressBar.TransitoryValue = 0.0f;
-        progressBarCanvas.enabled = false;
+        forgeState = ForgeState.DESTROYING;
+        curProgress = 0.0f;
     }
 
     public void DestroyForging() {
-        
+        forgeState = ForgeState.IDLE;
+        ResetDestroyForgingProgressBar();
+        ResetAndEnableReceiptCanvas();
     }
 
     private bool CanCollectItem() {
@@ -220,8 +207,81 @@ public class Forge : CollectableBuilding {
         GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, player.transform);
         player.GetComponent<PlayerController>().SetCarryingItem(forgedBuilding);
         forgedPrefab = null;
-        receiptCanvas.enabled = true;
+
+        forgeState = ForgeState.IDLE;
+        ResetAndEnableReceiptCanvas();
 
         return true;
     }
+
+
+    #region HelperFunctions
+    private GameObject FindMatchingReceiptObject()
+    {
+        foreach (ObjectData data in objectConfig.objects)
+        {
+            if (data.receipts.Length > 0)
+            {
+                foreach (Receipt receipt in data.receipts)
+                {
+                    bool doesMatch = true;
+                    for (int i = 0; i < receipt.resources.Length; i++)
+                    {
+                        if (i == resourceList.Count)
+                        {
+                            doesMatch = false;
+                            break;
+                        }
+
+                        if (resourceList[i] != receipt.resources[i])
+                        {
+                            doesMatch = false;
+                            break;
+                        }
+                    }
+
+                    if (doesMatch)
+                    {
+                        return data.prefab;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void ResetResourceImages()
+    {
+        for (int i = 1; i <= 4; i++)
+        {
+            resourceImages[i].sprite = resourceEmptyImage;
+        }
+    }
+
+    private void ResetForgingProgressBar()
+    {
+        curProgress = 0.0f;
+        forgingProgressBar.enabled = false;
+        forgingProgressBar.Value = 0.0f;
+        forgingProgressBar.TransitoryValue = 0.0f;
+        progressBarCanvas.enabled = false;
+    }
+
+    private void ResetDestroyForgingProgressBar()
+    {
+        curProgress = 0.0f;
+        destroyProgressBar.enabled = false;
+        destroyProgressBar.Value = 0.0f;
+        destroyProgressBar.TransitoryValue = 0.0f;
+        destroyProgressBarCanvas.enabled = false;
+    }
+
+    private void ResetAndEnableReceiptCanvas()
+    {
+        resourceList.Clear();
+        ResetResourceImages();
+        receiptCanvas.enabled = true;
+    }
+    #endregion
 }
