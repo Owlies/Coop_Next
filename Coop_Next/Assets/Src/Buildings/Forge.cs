@@ -26,7 +26,7 @@ public class Forge : CollectableBuilding {
 
     private ForgeState forgeState;
     private float curForgingProgress = 0.0f;
-    private GameObject forgingPlayer;
+    private GameObject forgedPrefab;
 
     private void Start()
     {
@@ -124,6 +124,8 @@ public class Forge : CollectableBuilding {
 
         player.GetComponent<PlayerController>().OnAddResourceToForgeComplete();
 
+        StartForgeOrDestroy();
+
         return;
     }
 
@@ -154,58 +156,38 @@ public class Forge : CollectableBuilding {
         return null;
     }
 
-    private bool CanStartForging() {
-        if (forgeState != ForgeState.IDLE) {
-            return false;
-        }
-
-        if (forgingPlayer != null) {
-            return false;
-        }
-
-        if (FindMatchingReceiptObject() == null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public void StartForging(GameObject player) {
-        if (!CanStartForging()) {
+    private void StartForgeOrDestroy() {
+        if (FindMatchingReceiptObject() != null)
+        {
+            StartForging();
             return;
         }
 
+        DestroyForging();
+    }
+
+    public void StartForging() {
         receiptCanvas.enabled = false;
         progressBarCanvas.enabled = true;
         forgingProgressBar.enabled = true;
         forgeState = ForgeState.FORGING;
         curForgingProgress = 0.0f;
-        forgingPlayer = player;
     }
 
     private void ForgingComplete() {
-        GameObject forgedPrefab = FindMatchingReceiptObject();
-
-        GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, forgingPlayer.transform);
-        forgingPlayer.GetComponent<PlayerController>().SetCarryingItem(forgedBuilding);
-
-
-        CancelForging();
+        forgedPrefab = FindMatchingReceiptObject();
+        forgeState = ForgeState.IDLE;
+        ResetForgingProgressBar();
         resourceList.Clear();
         ResetResourceImages();
+
+        //TODO(Huayu):Ready to collect UI
     }
 
     private void ResetResourceImages() {
         for(int i = 1; i <= 4; i++) {
             resourceImages[i].sprite = resourceEmptyImage;
         }
-    }
-
-    public void CancelForging() {
-        forgeState = ForgeState.IDLE;
-        ResetForgingProgressBar();
-        forgingPlayer = null;
-        receiptCanvas.enabled = true;
     }
 
     private void ResetForgingProgressBar()
@@ -221,8 +203,25 @@ public class Forge : CollectableBuilding {
         
     }
 
-    public override void CollectItem(GameObject player)
+    private bool CanCollectItem() {
+        if (forgedPrefab == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public override bool CollectItem(GameObject player)
     {
-        throw new System.NotImplementedException();
+        if (!CanCollectItem()) {
+            return false;
+        }
+
+        GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, player.transform);
+        player.GetComponent<PlayerController>().SetCarryingItem(forgedBuilding);
+        forgedPrefab = null;
+        receiptCanvas.enabled = true;
+
+        return true;
     }
 }
