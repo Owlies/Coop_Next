@@ -14,13 +14,13 @@ public class CancelResourceEvent : EventCommandBase {
         resource = receiver;
     }
 
-    public override void Execute()
+    public override bool Execute()
     {
         PlayerController pc = actor.GetComponent<PlayerController>();
         if (pc == null)
         {
-            return;
+            return false;
         }
-        ResourceManager.Instance.CancelCollecting(pc, resource);
+        return ResourceManager.Instance.CancelCollecting(pc, resource);
     }
 }

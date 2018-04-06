@@ -11,10 +11,13 @@ public class CollectItemFromBuildingEvent : EventCommandBase {
     {
     }
 
-    public override void Execute()
+    public override bool Execute()
     {
-        if (receiver.GetComponent<CollectableBuilding>() != null) {
-            receiver.GetComponent<CollectableBuilding>().CollectItem(actor);
+        CollectableBuilding collectableBuilding = receiver.GetComponent<CollectableBuilding>();
+        if (collectableBuilding == null) {
+            return false;
         }
+
+        return collectableBuilding.CollectItem(actor);
     }
 }

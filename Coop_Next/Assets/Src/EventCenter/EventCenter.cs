@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EventCenter : Singleton<EventCenter> {
 
-    public void ExecuteEvent(EventCommandBase ev) {
-        ev.Execute();
+    public bool ExecuteEvent(EventCommandBase ev) {
+        return ev.Execute();
     }
 
 }

@@ -196,9 +196,7 @@ public class PlayerController : OverridableMonoBehaviour {
 
         SetCarryingItem(hitObject.transform.gameObject);
         // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
-        EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
-
-        return true;
+        return EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
     }
 
     private bool CanCollectItemOnMap(bool isHit, RaycastHit hitObject) {
@@ -279,9 +277,7 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        EventCenter.Instance.ExecuteEvent(new CollectItemFromBuildingEvent(this.gameObject, hitObject.transform.gameObject));
-
-        return true;
+        return EventCenter.Instance.ExecuteEvent(new CollectItemFromBuildingEvent(this.gameObject, hitObject.transform.gameObject));
     }
 
     #endregion
@@ -315,9 +311,7 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingItem, hitObject.transform.gameObject));
-
-        return true;
+        return EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingItem, hitObject.transform.gameObject));
     }
 
     public void OnAddResourceToForgeComplete() {
@@ -350,7 +344,10 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        EventCenter.Instance.ExecuteEvent(new CancelResourceEvent(this.gameObject, collectingResource));
+        if (!EventCenter.Instance.ExecuteEvent(new CancelResourceEvent(this.gameObject, collectingResource))) {
+            return false;
+        }
+
         collectingResource = null;
         startCollectingTime = 0;
         playerActionState = EPlayerActionState.IDLE;
@@ -381,7 +378,10 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        EventCenter.Instance.ExecuteEvent(new CompleteResourceEvent(this.gameObject, collectingResource));
+        if (!EventCenter.Instance.ExecuteEvent(new CompleteResourceEvent(this.gameObject, collectingResource))) {
+            return false;
+        }
+
         collectingResource = null;
         startCollectingTime = 0;
 
@@ -426,24 +426,17 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        StartCollectingResource(isHit, hitObject);
+        if (!EventCenter.Instance.ExecuteEvent(new StartCollectResourceEvent(this.gameObject, hitObject.transform.gameObject)))
+        {
+            return false;
+        }
+        startCollectingTime = Time.time;
+        collectingResource = hitObject.transform.gameObject;
+        playerActionState = EPlayerActionState.COLLECTING_RESOURCE;
+
         return true;
     }
 
-    private void StartCollectingResource(bool isHit, RaycastHit hitObject) {
-        if (isHit)
-        {
-            if (hitObject.transform.gameObject.tag != "Resource")
-            {
-                return;
-            }
-
-            EventCenter.Instance.ExecuteEvent(new StartCollectResourceEvent(this.gameObject, hitObject.transform.gameObject));
-            startCollectingTime = Time.time;
-            collectingResource = hitObject.transform.gameObject;
-            playerActionState = EPlayerActionState.COLLECTING_RESOURCE;
-        }
-    }
     #endregion
 
     #region OtherFunctions

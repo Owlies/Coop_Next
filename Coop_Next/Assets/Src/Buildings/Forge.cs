@@ -111,11 +111,11 @@ public class Forge : CollectableBuilding {
         return true;
     }
 
-    public void AddResourceToForge(GameObject player, GameObject resourceCube) {
+    public bool AddResourceToForge(GameObject player, GameObject resourceCube) {
         Resource resource = resourceCube.GetComponent<Resource>();
         Debug.Log("AddResourceToForge");
         if (!CanAddResourceToForge(resource)) {
-            return;
+            return false;
         }
 
         switch (resource.resourceEnum) {
@@ -141,7 +141,7 @@ public class Forge : CollectableBuilding {
 
         StartForgeOrDestroy();
 
-        return;
+        return true;
     }
 
 

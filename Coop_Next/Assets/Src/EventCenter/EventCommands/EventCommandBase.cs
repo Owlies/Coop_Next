@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class EventCommandBase {
     protected GameObject actor;
     protected GameObject receiver;
-    public abstract void Execute();
+    public abstract bool Execute();
 
     public EventCommandBase(GameObject actor)
     {

@@ -17,11 +17,13 @@ public class AddResourceToForgeEvent : EventCommandBase {
         this.resourceCube = resourceCube;
     }
 
-    public override void Execute()
+    public override bool Execute()
     {
         Forge forgeBuilding = receiver.GetComponent<Forge>();
-        if (forgeBuilding != null) {
-            forgeBuilding.AddResourceToForge(this.actor, resourceCube);
+        if (forgeBuilding == null) {
+            return false;
         }
+
+        return forgeBuilding.AddResourceToForge(this.actor, resourceCube);
     }
 }

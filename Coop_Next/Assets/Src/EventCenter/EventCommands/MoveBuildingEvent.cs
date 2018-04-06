@@ -13,7 +13,7 @@ public class MoveBuildingEvent : EventCommandBase
     {
     }
 
-    public override void Execute()
+    public override bool Execute()
     {
         float newScaleX = this.receiver.transform.localScale.x * AppConstant.Instance.moveBuildingScaleChange;
         float newScaleY = this.receiver.transform.localScale.y * AppConstant.Instance.moveBuildingScaleChange;
@@ -26,5 +26,7 @@ public class MoveBuildingEvent : EventCommandBase
         MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
         Vector2Int index = mapManager.WorldPosToMapIndex(this.receiver.transform.position);
         mapManager.RenderGrid(index, new Vector2Int(1, 1));
+
+        return true;
     }
 }
