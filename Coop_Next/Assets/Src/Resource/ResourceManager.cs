@@ -9,10 +9,10 @@ public class ResourceManager : Singleton<ResourceManager> {
     public GameObject woodCubePrefab;
     public GameObject stoneCubePrefab;
 
-    private Dictionary<PlayerController, GameObject> collectingMap = new Dictionary<PlayerController, GameObject>();
+    private Dictionary<Player, GameObject> collectingMap = new Dictionary<Player, GameObject>();
     private Dictionary<GameObject, float> collectingProgressMap = new Dictionary<GameObject, float>();
 
-    private bool CanStartCollecting(PlayerController player, GameObject resource) {
+    private bool CanStartCollecting(Player player, GameObject resource) {
         if (collectingMap.ContainsKey(player)) {
             return false;
         }
@@ -21,7 +21,7 @@ public class ResourceManager : Singleton<ResourceManager> {
             return false;
         }
 
-        foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap) {
+        foreach (KeyValuePair<Player, GameObject> entry in collectingMap) {
             if (entry.Value == resource) {
                 return false;
             }
@@ -30,7 +30,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    public bool StartCollecting(PlayerController player, GameObject resource) {
+    public bool StartCollecting(Player player, GameObject resource) {
         if (!CanStartCollecting(player, resource)) {
             return false;
         }
@@ -45,7 +45,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    private bool CanCancelCollecting(PlayerController player, GameObject resource) {
+    private bool CanCancelCollecting(Player player, GameObject resource) {
         if (!collectingMap.ContainsKey(player)) {
             return false;
         }
@@ -55,7 +55,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    public bool CancelCollecting(PlayerController player, GameObject resource) {
+    public bool CancelCollecting(Player player, GameObject resource) {
         if (!CanCancelCollecting(player, resource)) {
             return false;
         }
@@ -65,14 +65,14 @@ public class ResourceManager : Singleton<ResourceManager> {
         return true;
     }
 
-    private bool CanCompleteCollecting(PlayerController player, GameObject resource) {
+    private bool CanCompleteCollecting(Player player, GameObject resource) {
         if (!collectingMap.ContainsKey(player))
         {
             return false;
         }
 
         bool foundResource = false;
-        foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap)
+        foreach (KeyValuePair<Player, GameObject> entry in collectingMap)
         {
             if (entry.Value == resource)
             {
@@ -84,7 +84,7 @@ public class ResourceManager : Singleton<ResourceManager> {
         return foundResource;
     }
 
-    public bool CompleteCollecting(PlayerController player, GameObject resource) {
+    public bool CompleteCollecting(Player player, GameObject resource) {
         if (!CanCompleteCollecting(player, resource)) {
             return false;
         }
@@ -106,16 +106,20 @@ public class ResourceManager : Singleton<ResourceManager> {
                 cube = GameObject.Instantiate(woodCubePrefab, player.transform);
                 break;
         }
+        if (!InteractionReceiver.IsObjectInteractionReciever(cube))
+            return false;
 
         cube.transform.SetPositionAndRotation(cube.transform.position + player.transform.forward * 2.0f, cube.transform.rotation);
-        player.GetComponent<PlayerController>().SetCarryingItem(cube);
+
+        InteractionReceiver item = cube.GetComponent<InteractionReceiver>();
+        player.GetComponent<Player>().SetCarryingItem(item);
 
         CleanMap(player, resource);
 
         return true;
     }
 
-    private void CleanMap(PlayerController player, GameObject resource) {
+    private void CleanMap(Player player, GameObject resource) {
         collectingMap.Remove(player);
         collectingProgressMap.Remove(resource);
 
@@ -131,7 +135,7 @@ public class ResourceManager : Singleton<ResourceManager> {
 
     public override void UpdateMe() {
 
-        foreach (KeyValuePair<PlayerController, GameObject> entry in collectingMap)
+        foreach (KeyValuePair<Player, GameObject> entry in collectingMap)
         {
             ProgressBarBehaviour progressBar = entry.Value.GetComponentInChildren<ProgressBarBehaviour>();
             collectingProgressMap[entry.Value] += Time.deltaTime * 100.0f / AppConstant.Instance.resourceCollectingSeconds;

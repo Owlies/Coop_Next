@@ -15,11 +15,11 @@ public class CompleteResourceEvent : EventCommandBase {
 
     public override bool Execute()
     {
-        PlayerController pc = actor.GetComponent<PlayerController>();
-        if (pc == null)
+        Player player = actor.GetComponent<Player>();
+        if (player == null)
         {
             return false;
         }
-        return ResourceManager.Instance.CompleteCollecting(pc, resource);
+        return ResourceManager.Instance.CompleteCollecting(player, resource);
     }
 }

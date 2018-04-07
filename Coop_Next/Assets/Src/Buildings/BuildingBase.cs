@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BuildingBase : OverridableMonoBehaviour {
+public abstract class BuildingBase : InteractionReceiver {
     public float HitPoint;
 }

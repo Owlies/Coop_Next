@@ -16,10 +16,10 @@ public class StartCollectResourceEvent : EventCommandBase {
 
     public override bool Execute()
     {
-        PlayerController pc = actor.GetComponent<PlayerController>();
-        if (pc == null) {
+        Player player = actor.GetComponent<Player>();
+        if (player == null) {
             return false;
         }
-        return ResourceManager.Instance.StartCollecting(pc, resource);
+        return ResourceManager.Instance.StartCollecting(player, resource);
     }
 }

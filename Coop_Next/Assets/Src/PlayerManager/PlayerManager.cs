@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerManager : Singleton<PlayerManager> {
     public GameObject playerPrefab;
-    private List<PlayerController> players = new List<PlayerController>();
+    private List<Player> players = new List<Player>();
 
 	// Use this for initialization
 	void Start () {
@@ -23,8 +23,8 @@ public class PlayerManager : Singleton<PlayerManager> {
     public void Initialize(int numberOfPlayers) {
         for (int playerId = 0; playerId < numberOfPlayers; playerId++) {
             GameObject playerObject = GameObject.Instantiate(playerPrefab) as GameObject;
-            playerObject.AddComponent<PlayerController>();
-            PlayerController pController = playerObject.GetComponent<PlayerController>();
+            playerObject.AddComponent<Player>();
+            Player pController = playerObject.GetComponent<Player>();
 
 #if UNITY_EDITOR || UNITY_STANDALONE
             playerObject.AddComponent<PCInputController>();
@@ -45,7 +45,7 @@ public class PlayerManager : Singleton<PlayerManager> {
             return;
         }
 
-        PlayerController pController = player.GetComponent<PlayerController>();
+        Player pController = player.GetComponent<Player>();
         if (pController.IsFirstPlayer()) {
             GameObject player1StartPoint = GameObject.FindWithTag("Player1StartPoint");
             player.transform.position = new Vector3(player1StartPoint.transform.position.x, player1StartPoint.transform.position.y, player1StartPoint.transform.position.z);

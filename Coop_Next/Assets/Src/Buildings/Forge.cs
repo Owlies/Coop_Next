@@ -137,7 +137,7 @@ public class Forge : CollectableBuilding {
                 break;
         }
 
-        player.GetComponent<PlayerController>().OnAddResourceToForgeComplete();
+        player.GetComponent<Player>().OnAddResourceToForgeComplete();
 
         StartForgeOrDestroy();
 
@@ -203,9 +203,13 @@ public class Forge : CollectableBuilding {
         if (!CanCollectItem()) {
             return false;
         }
+        if (!InteractionReceiver.IsObjectInteractionReciever(forgedPrefab))
+            return false;
 
         GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, player.transform);
-        player.GetComponent<PlayerController>().SetCarryingItem(forgedBuilding);
+
+        InteractionReceiver item = forgedBuilding.GetComponent<InteractionReceiver>();
+        player.GetComponent<Player>().SetCarryingItem(item);
         forgedPrefab = null;
 
         forgeState = ForgeState.IDLE;

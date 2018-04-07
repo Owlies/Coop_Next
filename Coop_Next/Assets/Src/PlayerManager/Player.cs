@@ -17,10 +17,10 @@ public enum EPlayerActionState {
     COLLECTING_RESOURCE,
 }
 
-public class PlayerController : OverridableMonoBehaviour {
+public class Player : InteractionDispatcher
+{
     private int playerId;
     private InputController inputController;
-    private GameObject carryingItem;
     private GameObject collectingResource;
     private float startCollectingTime;
     private EPlayerActionState playerActionState;
@@ -194,7 +194,11 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        SetCarryingItem(hitObject.transform.gameObject);
+        if (!InteractionReceiver.IsObjectInteractionReciever(hitObject.transform.gameObject))
+            return false;
+
+        InteractionReceiver item = hitObject.transform.gameObject.GetComponent<InteractionReceiver>();
+        SetCarryingItem(item);
         // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
         return EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
     }
@@ -222,7 +226,11 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        SetCarryingItem(hitObject.transform.gameObject);
+        if (!InteractionReceiver.IsObjectInteractionReciever(hitObject.transform.gameObject))
+            return false;
+
+        InteractionReceiver item = hitObject.transform.gameObject.GetComponent<InteractionReceiver>();
+        SetCarryingItem(item);
 
         return true;
     }
@@ -246,7 +254,7 @@ public class PlayerController : OverridableMonoBehaviour {
         }
 
         if (playerActionState == EPlayerActionState.CARRYING_BUILDING) {
-            EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingItem));
+            EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingItem.gameObject));
         }
         
         UnsetCarryingItem();
@@ -311,11 +319,11 @@ public class PlayerController : OverridableMonoBehaviour {
             return false;
         }
 
-        return EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingItem, hitObject.transform.gameObject));
+        return EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingItem.gameObject, hitObject.transform.gameObject));
     }
 
     public void OnAddResourceToForgeComplete() {
-        GameObject.Destroy(carryingItem);
+        GameObject.Destroy(carryingItem.gameObject);
         UnsetCarryingItem();
     }
 
@@ -445,7 +453,7 @@ public class PlayerController : OverridableMonoBehaviour {
         return playerId == 0;
     }
 
-    public void SetCarryingItem(GameObject item) {
+    public void SetCarryingItem(InteractionReceiver item) {
         carryingItem = item;
         if (carryingItem.GetComponent<BoxCollider>() != null) {
             carryingItem.GetComponent<BoxCollider>().enabled = false;
