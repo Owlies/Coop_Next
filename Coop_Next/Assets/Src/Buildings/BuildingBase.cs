@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BuildingBase : InteractionReceiver {
+public class BuildingBase : InteractiveItem {
     public float HitPoint;
 }

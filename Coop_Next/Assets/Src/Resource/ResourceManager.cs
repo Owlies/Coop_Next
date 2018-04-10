@@ -106,12 +106,10 @@ public class ResourceManager : Singleton<ResourceManager> {
                 cube = GameObject.Instantiate(woodCubePrefab, player.transform);
                 break;
         }
-        if (!InteractionReceiver.IsObjectInteractionReciever(cube))
-            return false;
 
         cube.transform.SetPositionAndRotation(cube.transform.position + player.transform.forward * 2.0f, cube.transform.rotation);
 
-        InteractionReceiver item = cube.GetComponent<InteractionReceiver>();
+        InteractiveItem item = cube.GetComponent<InteractiveItem>();
         player.GetComponent<Player>().SetCarryingItem(item);
 
         CleanMap(player, resource);

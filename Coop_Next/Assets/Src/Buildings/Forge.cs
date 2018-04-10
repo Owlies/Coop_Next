@@ -203,12 +203,10 @@ public class Forge : CollectableBuilding {
         if (!CanCollectItem()) {
             return false;
         }
-        if (!InteractionReceiver.IsObjectInteractionReciever(forgedPrefab))
-            return false;
 
         GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, player.transform);
 
-        InteractionReceiver item = forgedBuilding.GetComponent<InteractionReceiver>();
+        InteractiveItem item = forgedBuilding.GetComponent<InteractiveItem>();
         player.GetComponent<Player>().SetCarryingItem(item);
         forgedPrefab = null;
 

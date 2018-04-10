@@ -17,8 +17,10 @@ public enum EPlayerActionState {
     COLLECTING_RESOURCE,
 }
 
-public class Player : InteractionDispatcher
+public class Player:OverridableMonoBehaviour
 {
+    private InteractiveItem carryingItem;
+    private InteractiveItem interactingItem;
     private int playerId;
     private InputController inputController;
     private GameObject collectingResource;
@@ -119,6 +121,10 @@ public class Player : InteractionDispatcher
         #region ButtonLongPressActions
         /*  Button Long Press Actions   */
         if (isLongPress) {
+            if (TryHandleLongPressAction(isHit, hitObject)) {
+                return;
+            }
+
             if (TryHandleMoveBuildingAction(isHit, hitObject)) {
                 return;
             }
@@ -128,6 +134,10 @@ public class Player : InteractionDispatcher
         #region ButtonShortPressActions
         /*  Button Short Press Actions  */
         if (isButtonDown) {
+            if (TryHandleShortPressAction(isHit, hitObject)) {
+                return;
+            }
+
             if (TryCollectItemOnMap(isHit, hitObject)) {
                 return;
             }
@@ -154,6 +164,10 @@ public class Player : InteractionDispatcher
 
         #region ButtonReleaseActions
         /*  Button Release Actions  */
+        if (TryHandlePressReleaseAction()) {
+            return;
+        }
+
         if (TryCancelCollectingResource())
         {
             return;
@@ -194,10 +208,7 @@ public class Player : InteractionDispatcher
             return false;
         }
 
-        if (!InteractionReceiver.IsObjectInteractionReciever(hitObject.transform.gameObject))
-            return false;
-
-        InteractionReceiver item = hitObject.transform.gameObject.GetComponent<InteractionReceiver>();
+        InteractiveItem item = hitObject.transform.gameObject.GetComponent<InteractiveItem>();
         SetCarryingItem(item);
         // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
         return EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
@@ -226,10 +237,7 @@ public class Player : InteractionDispatcher
             return false;
         }
 
-        if (!InteractionReceiver.IsObjectInteractionReciever(hitObject.transform.gameObject))
-            return false;
-
-        InteractionReceiver item = hitObject.transform.gameObject.GetComponent<InteractionReceiver>();
+        InteractiveItem item = hitObject.transform.gameObject.GetComponent<InteractiveItem>();
         SetCarryingItem(item);
 
         return true;
@@ -447,33 +455,106 @@ public class Player : InteractionDispatcher
 
     #endregion
 
+    #region InputHandling
+
+    private bool CanHandleInteractiveAction(bool isHit, RaycastHit hitObject)
+    {
+        if (!isHit)
+        {
+            return false;
+        }
+
+        if (hitObject.transform.GetComponent<InteractiveItem>() == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryHandleLongPressAction(bool isHit, RaycastHit hitObject)
+    {
+        if (!CanHandleInteractiveAction(isHit, hitObject))
+        {
+            return false;
+        }
+
+        InteractiveItem item = hitObject.transform.GetComponent<InteractiveItem>();
+        if (item.LongPressAction(this)) {
+            interactingItem = item;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryHandleShortPressAction(bool isHit, RaycastHit hitObject)
+    {
+        if (!CanHandleInteractiveAction(isHit, hitObject))
+        {
+            return false;
+        }
+
+        InteractiveItem item = hitObject.transform.GetComponent<InteractiveItem>();
+        return item.ShortPressAction(this);
+    }
+
+    private bool CanHandlePressReleaseAction() {
+        return interactingItem != null;
+    }
+
+    private bool TryHandlePressReleaseAction()
+    {
+        if (!CanHandlePressReleaseAction()) {
+            return false;
+        }
+
+        bool result = interactingItem.PressReleaseAction(this);
+        interactingItem = null;
+        return result;
+    }
+
+    #endregion
+
     #region OtherFunctions
 
-    public bool IsFirstPlayer() {
+    public bool IsFirstPlayer()
+    {
         return playerId == 0;
     }
 
-    public void SetCarryingItem(InteractionReceiver item) {
+    public InteractiveItem GetCarryingItem()
+    {
+        return carryingItem;
+    }
+
+    public void SetCarryingItem(InteractiveItem item)
+    {
         carryingItem = item;
-        if (carryingItem.GetComponent<BoxCollider>() != null) {
+        if (carryingItem.GetComponent<BoxCollider>() != null)
+        {
             carryingItem.GetComponent<BoxCollider>().enabled = false;
             carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 1.0f, carryingItem.transform.rotation);
-            if (carryingItem.tag == "Building") {
+            if (carryingItem.tag == "Building")
+            {
                 playerActionState = EPlayerActionState.CARRYING_BUILDING;
             }
-            else if(carryingItem.tag == "Item") {
+            else if (carryingItem.tag == "Item")
+            {
                 playerActionState = EPlayerActionState.CARRYING_RESOURCE;
             }
         }
 
-        if (carryingItem.GetComponent<Rigidbody>() != null) {
+        if (carryingItem.GetComponent<Rigidbody>() != null)
+        {
             carryingItem.GetComponent<Rigidbody>().detectCollisions = false;
         }
 
         carryingItem.transform.parent = this.transform;
     }
 
-    public void UnsetCarryingItem() {
+    public void UnsetCarryingItem()
+    {
         if (carryingItem.GetComponent<BoxCollider>() != null)
         {
             carryingItem.GetComponent<BoxCollider>().enabled = true;

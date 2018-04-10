@@ -5,7 +5,7 @@ using ProgressBar;
 
 public enum ResourceEnum {Stone, Wood, Ore, Coal}
 
-public class Resource : InteractionReceiver {
+public class Resource : InteractiveItem {
     public ResourceEnum resourceEnum;
 
     private void Start()
