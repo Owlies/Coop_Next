@@ -23,8 +23,6 @@ public class Player:OverridableMonoBehaviour
     private InteractiveItem interactingItem;
     private int playerId;
     private InputController inputController;
-    private GameObject collectingResource;
-    private float startCollectingTime;
     private EPlayerActionState playerActionState;
 
     #region initialize
@@ -124,10 +122,6 @@ public class Player:OverridableMonoBehaviour
             if (TryHandleLongPressAction(isHit, hitObject)) {
                 return;
             }
-
-            if (TryHandleMoveBuildingAction(isHit, hitObject)) {
-                return;
-            }
         }
         #endregion
 
@@ -138,26 +132,6 @@ public class Player:OverridableMonoBehaviour
                 return;
             }
 
-            if (TryCollectItemOnMap(isHit, hitObject)) {
-                return;
-            }
-
-            if (TryStartCollectingResource(isHit, hitObject)) {
-                return;
-            }
-
-            if (TryAddResourceToForge(isHit, hitObject)) {
-                return;
-            }
-
-            if (TryCollectItemFromBuilding(isHit, hitObject)) {
-                return;
-            }
-
-            if (TryPlaceItemOnMap())
-            {
-                return;
-            }
             return;
         }
         #endregion
@@ -168,296 +142,19 @@ public class Player:OverridableMonoBehaviour
             return;
         }
 
-        if (TryCancelCollectingResource())
-        {
-            return;
-        }
-
-        if (TryCompleteCollectingResource()) {
-            return;
-        }
-
         #endregion
     }
 
     private void CancelActions() {
-        TryCancelCollectingResource();
+        if (interactingItem != null) {
+            interactingItem.PressReleaseAction(this);
+        }
     }
-    #endregion
-
-    #region InteractiveItemActions
-    private bool CanMoveBuilding(bool isHist, RaycastHit hitObject) {
-        if (!isHist) {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.IDLE) {
-            return false;
-        }
-
-        if (hitObject.transform.gameObject.tag != "Building")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryHandleMoveBuildingAction(bool isHit, RaycastHit hitObject) {
-        if (!CanMoveBuilding(isHit, hitObject)) {
-            return false;
-        }
-
-        InteractiveItem item = hitObject.transform.gameObject.GetComponent<InteractiveItem>();
-        SetCarryingItem(item);
-        // Somehow changing parent will change hitObject.transform.gameObject to points to the parent
-        return EventCenter.Instance.ExecuteEvent(new MoveBuildingEvent(this.gameObject, hitObject.transform.gameObject));
-    }
-
-    private bool CanCollectItemOnMap(bool isHit, RaycastHit hitObject) {
-        if (!isHit) {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.IDLE)
-        {
-            return false;
-        }
-
-        if (hitObject.transform.gameObject.tag != "Item")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryCollectItemOnMap(bool isHit, RaycastHit hitObject) {
-        if (!CanCollectItemOnMap(isHit, hitObject)) {
-            return false;
-        }
-
-        InteractiveItem item = hitObject.transform.gameObject.GetComponent<InteractiveItem>();
-        SetCarryingItem(item);
-
-        return true;
-    }
-
-    private bool CanPlaceItemOnMap() {
-        if (carryingItem == null) {
-            return false;
-        }
-
-        if (!(playerActionState != EPlayerActionState.CARRYING_BUILDING ||
-            playerActionState != EPlayerActionState.CARRYING_RESOURCE)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryPlaceItemOnMap() {
-        if (!CanPlaceItemOnMap()) {
-            return false;
-        }
-
-        if (playerActionState == EPlayerActionState.CARRYING_BUILDING) {
-            EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, carryingItem.gameObject));
-        }
-        
-        UnsetCarryingItem();
-
-        playerActionState = EPlayerActionState.IDLE;
-
-        return true;
-    }
-
-    private bool CanCollectItemFromBuilding(bool isHit, RaycastHit hitObject) {
-        if (!isHit) {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.IDLE) {
-            return false;
-        }
-
-        if (hitObject.transform.GetComponent<BuildingBase>() == null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryCollectItemFromBuilding(bool isHit, RaycastHit hitObject) {
-        if (!CanCollectItemFromBuilding(isHit, hitObject)) {
-            return false;
-        }
-
-        return EventCenter.Instance.ExecuteEvent(new CollectItemFromBuildingEvent(this.gameObject, hitObject.transform.gameObject));
-    }
-
-    #endregion
-
-    #region Forging
-    private bool CanAddResourceToForge(bool isHit, RaycastHit hitObject) {
-        if (!isHit)
-        {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.CARRYING_RESOURCE) {
-            return false;
-        }
-
-        if (carryingItem == null)
-        {
-            return false;
-        }
-
-        if (hitObject.transform.gameObject.tag != "Forge")
-        {
-            return false;
-        }
-        
-        return true;
-    }
-
-    private bool TryAddResourceToForge(bool isHit, RaycastHit hitObject) {
-        if (!CanAddResourceToForge(isHit, hitObject)) {
-            return false;
-        }
-
-        return EventCenter.Instance.ExecuteEvent(new AddResourceToForgeEvent(this.gameObject, carryingItem.gameObject, hitObject.transform.gameObject));
-    }
-
-    public void OnAddResourceToForgeComplete() {
-        GameObject.Destroy(carryingItem.gameObject);
-        UnsetCarryingItem();
-    }
-
-    #endregion
-
-    #region CollectResource
-    private bool CanCancelCollectingResource() {
-        if (playerActionState != EPlayerActionState.COLLECTING_RESOURCE) {
-            return false;
-        }
-
-        if (startCollectingTime <= 0.0f) {
-            return false;
-        }
-
-        if (Time.time - startCollectingTime >= AppConstant.Instance.resourceCollectingSeconds) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryCancelCollectingResource() {
-        if (!CanCancelCollectingResource())
-        {
-            return false;
-        }
-
-        if (!EventCenter.Instance.ExecuteEvent(new CancelResourceEvent(this.gameObject, collectingResource))) {
-            return false;
-        }
-
-        collectingResource = null;
-        startCollectingTime = 0;
-        playerActionState = EPlayerActionState.IDLE;
-
-        return true;
-    }
-
-    private bool CanCompleteCollectingResource() {
-        if (startCollectingTime <= 0.0f) {
-            return false;
-        }
-
-        if (Time.time - startCollectingTime < AppConstant.Instance.resourceCollectingSeconds) {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.COLLECTING_RESOURCE) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryCompleteCollectingResource()
-    {
-        if (!CanCompleteCollectingResource())
-        {
-            return false;
-        }
-
-        if (!EventCenter.Instance.ExecuteEvent(new CompleteResourceEvent(this.gameObject, collectingResource))) {
-            return false;
-        }
-
-        collectingResource = null;
-        startCollectingTime = 0;
-
-        playerActionState = EPlayerActionState.CARRYING_RESOURCE;
-        return true;
-    }
-
-    private bool CanStartCollectionResource(bool isHit, RaycastHit hitObject)
-    {
-        if (!isHit)
-        {
-            return false;
-        }
-
-        if (playerActionState != EPlayerActionState.IDLE)
-        {
-            return false;
-        }
-
-        if (collectingResource != null)
-        {
-            return false;
-        }
-
-        if (carryingItem != null)
-        {
-            return false;
-        }
-
-        if (hitObject.transform.tag != "Resource")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool TryStartCollectingResource(bool isHit, RaycastHit hitObject)
-    {
-        if (!CanStartCollectionResource(isHit, hitObject))
-        {
-            return false;
-        }
-
-        if (!EventCenter.Instance.ExecuteEvent(new StartCollectResourceEvent(this.gameObject, hitObject.transform.gameObject)))
-        {
-            return false;
-        }
-        startCollectingTime = Time.time;
-        collectingResource = hitObject.transform.gameObject;
-        playerActionState = EPlayerActionState.COLLECTING_RESOURCE;
-
-        return true;
-    }
-
     #endregion
 
     #region InputHandling
 
-    private bool CanHandleInteractiveAction(bool isHit, RaycastHit hitObject)
+    private bool CanHandleLongPressAction(bool isHit, RaycastHit hitObject)
     {
         if (!isHit)
         {
@@ -474,7 +171,7 @@ public class Player:OverridableMonoBehaviour
 
     private bool TryHandleLongPressAction(bool isHit, RaycastHit hitObject)
     {
-        if (!CanHandleInteractiveAction(isHit, hitObject))
+        if (!CanHandleLongPressAction(isHit, hitObject))
         {
             return false;
         }
@@ -488,15 +185,32 @@ public class Player:OverridableMonoBehaviour
         return false;
     }
 
+    private bool CanHandleShortPressAction(bool isHit, RaycastHit hitObject) {
+        if (!isHit && carryingItem == null) {
+            return false;
+        }
+
+        if (isHit && hitObject.transform.GetComponent<InteractiveItem>() == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     private bool TryHandleShortPressAction(bool isHit, RaycastHit hitObject)
     {
-        if (!CanHandleInteractiveAction(isHit, hitObject))
+        if (!CanHandleShortPressAction(isHit, hitObject))
         {
             return false;
         }
 
-        InteractiveItem item = hitObject.transform.GetComponent<InteractiveItem>();
-        return item.ShortPressAction(this);
+        if (isHit) {
+            InteractiveItem item = hitObject.transform.GetComponent<InteractiveItem>();
+            interactingItem = item;
+            return item.ShortPressAction(this);
+        }
+        
+        return carryingItem.ShortPressAction(this);
     }
 
     private bool CanHandlePressReleaseAction() {
@@ -526,6 +240,15 @@ public class Player:OverridableMonoBehaviour
     public InteractiveItem GetCarryingItem()
     {
         return carryingItem;
+    }
+
+    public void SetPlayerActionState(EPlayerActionState state)
+    {
+        playerActionState = state;
+    }
+
+    public EPlayerActionState GetPlayerActionState() {
+        return playerActionState;
     }
 
     public void SetCarryingItem(InteractiveItem item)

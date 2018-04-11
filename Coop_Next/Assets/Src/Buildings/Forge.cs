@@ -6,7 +6,7 @@ using ProgressBar;
 
 
 
-public class Forge : CollectableBuilding {
+public class Forge : BuildingBase {
     private enum ForgeState { IDLE, FORGING, DESTROYING, READY_TO_COLLECT }
 
     private Canvas receiptCanvas;
@@ -87,36 +87,59 @@ public class Forge : CollectableBuilding {
         destroyProgressBarCanvas.transform.rotation = Camera.main.transform.rotation;
     }
 
-    private bool CanAddResourceToForge(Resource resource) {
-        if (resource == null) {
+    private bool CanAddResourceToForge(Player actor)
+    {
+        if (actor.GetPlayerActionState() != EPlayerActionState.CARRYING_RESOURCE)
+        {
             return false;
         }
 
-        if (forgeState == ForgeState.READY_TO_COLLECT) {
+        if (actor.GetCarryingItem() == null) {
             return false;
         }
 
-        if (resourceList.Count < 3 && !resource.isBasicResource()) {
+        Resource resource = actor.GetCarryingItem().GetComponent<Resource>();
+        if (resource == null)
+        {
             return false;
         }
 
-        if (resourceList.Count == 3 && resource.isBasicResource()) {
+        if (this.transform.gameObject.tag != "Forge")
+        {
             return false;
         }
 
-        if (resourceList.Count >= 4) {
+        if (forgeState == ForgeState.READY_TO_COLLECT)
+        {
+            return false;
+        }
+
+        if (resourceList.Count < 3 && !resource.isBasicResource())
+        {
+            return false;
+        }
+
+        if (resourceList.Count == 3 && resource.isBasicResource())
+        {
+            return false;
+        }
+
+        if (resourceList.Count >= 4)
+        {
             return false;
         }
 
         return true;
     }
 
-    public bool AddResourceToForge(GameObject player, GameObject resourceCube) {
-        Resource resource = resourceCube.GetComponent<Resource>();
-        Debug.Log("AddResourceToForge");
-        if (!CanAddResourceToForge(resource)) {
+    private bool AddResourceToForge(Player actor) {
+        if (!CanAddResourceToForge(actor))
+        {
             return false;
         }
+
+        Resource resource = actor.GetCarryingItem().GetComponent<Resource>();
+        Debug.Log("AddResourceToForge");
 
         switch (resource.resourceEnum) {
             case ResourceEnum.Coal:
@@ -137,13 +160,18 @@ public class Forge : CollectableBuilding {
                 break;
         }
 
-        player.GetComponent<Player>().OnAddResourceToForgeComplete();
+        OnAddResourceToForgeComplete(actor);
 
         StartForgeOrDestroy();
 
         return true;
     }
 
+    public void OnAddResourceToForgeComplete(Player actor)
+    {
+        GameObject.Destroy(actor.GetCarryingItem().gameObject);
+        actor.UnsetCarryingItem();
+    }
 
     private void StartForgeOrDestroy() {
         if (FindMatchingReceiptObject() != null)
@@ -190,24 +218,29 @@ public class Forge : CollectableBuilding {
         ResetAndEnableReceiptCanvas();
     }
 
-    private bool CanCollectItem() {
+    private bool CanCollectItem(Player player) {
         if (forgedPrefab == null) {
+            return false;
+        }
+
+        if (player.GetPlayerActionState() != EPlayerActionState.IDLE)
+        {
             return false;
         }
 
         return true;
     }
 
-    public override bool CollectItem(GameObject player)
+    private bool CollectItem(Player player)
     {
-        if (!CanCollectItem()) {
+        if (!CanCollectItem(player)) {
             return false;
         }
 
         GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, player.transform);
 
         InteractiveItem item = forgedBuilding.GetComponent<InteractiveItem>();
-        player.GetComponent<Player>().SetCarryingItem(item);
+        player.SetCarryingItem(item);
         forgedPrefab = null;
 
         forgeState = ForgeState.IDLE;
@@ -285,5 +318,19 @@ public class Forge : CollectableBuilding {
         ResetResourceImages();
         receiptCanvas.enabled = true;
     }
+
     #endregion
+
+    public override bool ShortPressAction(Player actor)
+    {
+        if (AddResourceToForge(actor)) {
+            return true;
+        }
+
+        if (CollectItem(actor)) {
+            return true;
+        }
+
+        return false;
+    }
 }

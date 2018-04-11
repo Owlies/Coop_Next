@@ -24,6 +24,7 @@ public class AddResourceToForgeEvent : EventCommandBase {
             return false;
         }
 
-        return forgeBuilding.AddResourceToForge(this.actor, resourceCube);
+        //return forgeBuilding.AddResourceToForge(this.actor, resourceCube);
+        return true;
     }
 }

@@ -89,7 +89,7 @@ public class ResourceManager : Singleton<ResourceManager> {
             return false;
         }
         Debug.Log("completeCollecting");
-        Resource resourceType = resource.GetComponent<Resource>();
+        ResourceBuilding resourceType = resource.GetComponent<ResourceBuilding>();
         
         GameObject cube = null;
         switch (resourceType.resourceEnum) {

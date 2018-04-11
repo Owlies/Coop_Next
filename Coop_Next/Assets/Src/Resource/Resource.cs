@@ -7,6 +7,7 @@ public enum ResourceEnum {Stone, Wood, Ore, Coal}
 
 public class Resource : InteractiveItem {
     public ResourceEnum resourceEnum;
+    
 
     private void Start()
     {
@@ -22,4 +23,40 @@ public class Resource : InteractiveItem {
             resourceEnum == ResourceEnum.Wood;
     }
 
+    #region ShortPressAction
+    private bool CanCollectItemOnMap(Player actor)
+    {
+        if (actor.GetPlayerActionState() != EPlayerActionState.IDLE)
+        {
+            return false;
+        }
+
+        if (this.tag != "Item") {
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryCollectItemOnMap(Player actor)
+    {
+        if (!CanCollectItemOnMap(actor))
+        {
+            return false;
+        }
+
+        actor.SetCarryingItem(this);
+
+        return true;
+    }
+
+    public override bool ShortPressAction(Player actor)
+    {
+        if (actor.GetCarryingItem() != null) {
+            return base.ShortPressAction(actor);
+        }
+
+        return TryCollectItemOnMap(actor);
+    }
+    #endregion
 }
