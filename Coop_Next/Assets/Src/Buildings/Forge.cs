@@ -202,7 +202,7 @@ public class Forge : BuildingBase {
     }
 
     private void StartDestroyForging() {
-        receiptCanvas.enabled = false;
+        //receiptCanvas.enabled = false;
         ResetDestroyForgingProgressBar();
         ResetForgingProgressBar();
         destroyProgressBarCanvas.enabled = true;
