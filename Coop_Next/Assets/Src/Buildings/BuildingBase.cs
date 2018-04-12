@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BuildingBase : InteractiveItem {
     public float HitPoint;
+    public int AttackingPriority = 1;
 
     #region LongPressAction
     private bool CanMoveBuilding(Player actor)
