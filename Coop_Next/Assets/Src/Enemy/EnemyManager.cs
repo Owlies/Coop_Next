@@ -3,17 +3,102 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyManager : Singleton<EnemyManager> {
-    private int currentWave;
-
+    public LevelConfig levelConfig;
     public float waveInterval;
     public GameObject[] enemySpawnLocations;
+    public int firstWaveEnemyCount = 2;
+    public int enemyCountIncreaseBetweenWaves = 1;
+    public int maxEnemyCount = 10;
+    public float enemyHPIncreasePercentage = 1.2f;
 
-	// Use this for initialization
-	void Start () {
+    private int currentWave;
+    private int aliveEnemyQuantity;
+    private float waveIntervalTimer = 0.0f;
+
+    // Use this for initialization
+    void Start () {
         currentWave = 1;
+        aliveEnemyQuantity = 0;
+    }
+
+    private bool CanStartNextWave() {
+        if (aliveEnemyQuantity > 0) {
+            return false;
+        }
+
+        if (waveIntervalTimer < waveInterval) {
+            return false;
+        }
+
+        return true;
     }
 
     public void StartNextWave() {
+        int enemyQuantity = GetNumberOfEnemiesForCurrentWave();
+        if (enemyQuantity > maxEnemyCount) {
+            enemyQuantity = maxEnemyCount;
+        }
 
+        aliveEnemyQuantity = enemyQuantity * enemySpawnLocations.Length;
+
+        for (int i = 0; i < enemySpawnLocations.Length; i++) {
+            SpawnRandomEnemyWithQuantity(enemyQuantity, enemySpawnLocations[i]);
+        }
+
+        currentWave++;
     }
+
+    public override void UpdateMe() {
+        if (CanStartNextWave())
+        {
+            StartNextWave();
+        }
+        else if (aliveEnemyQuantity == 0){
+            waveIntervalTimer += Time.deltaTime;
+        }
+    }
+
+    public void OnEnemyKilled() {
+        aliveEnemyQuantity--;
+        if (aliveEnemyQuantity == 0) {
+            OnWaveClear();
+        }
+    }
+
+    private void OnWaveClear() {
+        waveIntervalTimer = 0.0f;
+        // TODO(Huayu): Leave it there for future usage
+    }
+
+    #region HelperFunctions
+
+    private int GetNumberOfEnemiesForCurrentWave() {
+        return firstWaveEnemyCount + enemyCountIncreaseBetweenWaves * (currentWave - 1);
+    }
+
+    private void SpawnRandomEnemyWithQuantity(int quantity, GameObject spawnLocation)
+    {
+        for (int i = 0; i < quantity; i++) {
+            SpawnAnRandomEnemy(spawnLocation);
+        }
+    }
+
+    private void SpawnAnRandomEnemy(GameObject spawnLocation) {
+        GameObject enemyPrefab = levelConfig.enemyPrefabs[Random.Range(0, levelConfig.enemyPrefabs.Length)];
+        SpawnEnemyAtPosition(enemyPrefab, spawnLocation.transform.position);
+    }
+
+    private void SpawnEnemyAtPosition(GameObject enemyPrefab, Vector3 pos) {
+        GameObject enemyObject = GameObject.Instantiate(enemyPrefab, pos, Quaternion.identity);
+        EnemyBase enemy = enemyObject.GetComponent<EnemyBase>();
+        if (enemy == null) {
+            Debug.Log("ERROR: No EnemyBase Component");
+            DestroyImmediate(enemyObject);
+            return;
+        }
+
+        enemy.fullHP = enemy.fullHP * Mathf.Pow(enemyHPIncreasePercentage, currentWave);
+    }
+
+    #endregion
 }

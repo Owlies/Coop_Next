@@ -11,7 +11,7 @@ public class LevelConfig : ScriptableObject {
     public ObjectInstance[] objectInstances;
 
     [SerializeField]
-    public EnemyPrefab[] enemyPrefabs;
+    public GameObject[] enemyPrefabs;
 }
 
 [System.Serializable]
@@ -20,9 +20,4 @@ public struct ObjectInstance
     public int objectID;
     public short angle;//0-3
     public Vector2Int position;
-}
-
-[System.Serializable]
-public struct EnemyPrefab {
-    public GameObject enemyPrefab;
 }

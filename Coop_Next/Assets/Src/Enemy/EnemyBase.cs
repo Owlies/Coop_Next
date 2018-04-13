@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBase : OverridableMonoBehaviour {
+public class EnemyBase : OverridableMonoBehaviour
+{
+    public float attackDamage = 1.0f;
+    public float attackSpeed = 5.0f;
+    public float moveSpeed = 5.0f;
+    public float fullHP = 100.0f;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private float currentHP;
 }
