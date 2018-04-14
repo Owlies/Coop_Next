@@ -141,9 +141,17 @@ public class MapManager : Singleton<MapManager> {
         return PlaceItemOnMap(obj, objData.size, mapIndex);
     }
 
+    public bool IsMapIndexOutOfBound(Vector2Int mapIndex)
+    {
+        return mapIndex.x < 0 || mapIndex.y < 0 || mapIndex.x >= mapSize.x || mapIndex.y >= mapSize.y;
+    }
+
     public bool IsBlocked(Vector2Int mapIndex)
     {
-        return mapNodes[mapIndex.x, mapIndex.y].isBlocked;
+        if (IsMapIndexOutOfBound(mapIndex))
+            return true;
+        else
+            return mapNodes[mapIndex.x, mapIndex.y].isBlocked;
     }
 
     public void RenderGrid(Vector2Int mapIndex, Vector2Int size)

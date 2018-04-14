@@ -60,6 +60,18 @@ public class Player:OverridableMonoBehaviour
     #endregion
 
     #region update
+    public override void UpdateMe()
+    {
+        base.UpdateMe();
+
+        if (carryingItem != null)
+        {
+            MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
+            Vector2Int index = mapManager.WorldPosToMapIndex(carryingItem.transform.position);
+            mapManager.RenderGrid(index, new Vector2Int(1, 1));
+        }
+    }
+
     public override void FixedUpdateMe()
     {
         base.FixedUpdateMe();
