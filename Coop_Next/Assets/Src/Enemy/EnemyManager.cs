@@ -78,8 +78,7 @@ public class EnemyManager : Singleton<EnemyManager> {
         return firstWaveEnemyCount + enemyCountIncreaseBetweenWaves * (currentWave - 1);
     }
 
-    private void SpawnRandomEnemyWithQuantity(int quantity, GameObject spawnLocation)
-    {
+    private void SpawnRandomEnemyWithQuantity(int quantity, GameObject spawnLocation) {
         for (int i = 0; i < quantity; i++) {
             SpawnAnRandomEnemy(spawnLocation);
         }

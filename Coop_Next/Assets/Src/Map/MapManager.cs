@@ -97,8 +97,8 @@ public class MapManager : Singleton<MapManager> {
             {
                 if (mapNodes[i, j].gameObject == obj)
                 {
-                    mapNodes[i, j].Clear();
                     gameObjects.Remove(mapNodes[i, j].gameObject);
+                    mapNodes[i, j].Clear();
                 }
             }
         }
