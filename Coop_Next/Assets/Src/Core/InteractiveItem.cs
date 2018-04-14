@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractiveItem : OverridableMonoBehaviour {
+
+    public Vector2Int size = new Vector2Int(1, 1);
+
     public virtual bool LongPressAction(Player actor) { return false;}
     public virtual bool PressReleaseAction(Player actor) { return false; }
 

@@ -33,9 +33,9 @@ public class MapManager : Singleton<MapManager> {
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
                 ObjectData objectData = objectConfig.objects[instance.objectID];
-                if (objectData.prefab == null)
+                if (objectData.gameObject == null)
                     continue;
-                GameObject obj = GameObject.Instantiate(objectData.prefab, sceneRoot.transform);
+                GameObject obj = GameObject.Instantiate(objectData.gameObject, sceneRoot.transform);
                 obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.x / 2.0f, objectData.size.y / 2.0f));
                 for(int idxX = 0; idxX < objectData.size.x; idxX++)
                 {
@@ -137,7 +137,7 @@ public class MapManager : Singleton<MapManager> {
 
     public bool CreateItemOnMap(ObjectData objData, Vector2Int mapIndex)
     {
-        GameObject obj = GameObject.Instantiate(objData.prefab, sceneRoot.transform);
+        GameObject obj = GameObject.Instantiate(objData.gameObject, sceneRoot.transform);
         return PlaceItemOnMap(obj, objData.size, mapIndex);
     }
 

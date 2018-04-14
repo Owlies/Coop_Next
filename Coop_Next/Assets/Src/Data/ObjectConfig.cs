@@ -17,7 +17,28 @@ public struct Receipt {
 [System.Serializable]
 public struct ObjectData
 {
-    public GameObject prefab;
-    public Vector2Int size;
+    public InteractiveItem item;
     public Receipt[] receipts;
+
+    public Vector2Int size
+    {
+        get
+        {
+            if (item == null)
+                return new Vector2Int(1, 1);
+            else
+                return item.size;
+        }
+    }
+
+    public GameObject gameObject
+    {
+        get
+        {
+            if (item == null)
+                return null;
+            else
+                return item.gameObject;
+        }
+    }
 }

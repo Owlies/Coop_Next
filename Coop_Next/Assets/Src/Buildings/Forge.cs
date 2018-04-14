@@ -277,7 +277,7 @@ public class Forge : BuildingBase {
 
                     if (doesMatch)
                     {
-                        return data.prefab;
+                        return data.gameObject;
                     }
                 }
             }
