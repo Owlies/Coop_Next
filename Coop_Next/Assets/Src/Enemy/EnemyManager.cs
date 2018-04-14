@@ -14,11 +14,13 @@ public class EnemyManager : Singleton<EnemyManager> {
     private int currentWave;
     private int aliveEnemyQuantity;
     private float waveIntervalTimer = 0.0f;
+    private Vector3 targetPosition;
 
     // Use this for initialization
     void Start () {
         currentWave = 1;
         aliveEnemyQuantity = 0;
+        targetPosition = GameObject.FindGameObjectWithTag("Forge").transform.position;
     }
 
     private bool CanStartNextWave() {
@@ -97,7 +99,7 @@ public class EnemyManager : Singleton<EnemyManager> {
             return;
         }
 
-        enemy.fullHP = enemy.fullHP * Mathf.Pow(enemyHPIncreasePercentage, currentWave);
+        enemy.Initialize(currentWave, enemyHPIncreasePercentage, targetPosition);
     }
 
     #endregion
