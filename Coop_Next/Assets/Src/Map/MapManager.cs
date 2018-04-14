@@ -84,7 +84,7 @@ public class MapManager : Singleton<MapManager> {
     public void RemoveItemFromMap(Vector2Int mapIndex)
     {
         if (mapNodes[mapIndex.x, mapIndex.y].gameObject != null)
-            PickUpItemFromMap(mapNodes[mapIndex.x, mapIndex.y].gameObject);
+            RemoveItemFromMap(mapNodes[mapIndex.x, mapIndex.y].gameObject);
     }
 
     public void RemoveItemFromMap(GameObject obj)
