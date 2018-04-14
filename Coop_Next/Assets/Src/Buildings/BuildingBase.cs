@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildingBase : InteractiveItem {
-    public float HitPoint;
+    public float MaxHitPoint = 100.0f;
     public int AttackingPriority = 1;
+
+    private float currentHitPoint;
+
+    public void Start() {
+        currentHitPoint = MaxHitPoint;
+    }
 
     #region LongPressAction
     private bool CanMoveBuilding(Player actor)
@@ -36,6 +42,16 @@ public class BuildingBase : InteractiveItem {
     public override bool LongPressAction(Player actor)
     {
         return TryHandleMoveBuildingAction(actor);
+    }
+    #endregion
+
+    #region OtherFunctions
+    public void TakeDamage(float damage) {
+        currentHitPoint -= damage;
+        if (currentHitPoint <= 0.0f) {
+            MapManager.Instance.RemoveItemFromMap(this.gameObject);
+            Destroy(this.gameObject);
+        }
     }
     #endregion
 }
