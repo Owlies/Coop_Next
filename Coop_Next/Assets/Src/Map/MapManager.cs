@@ -11,6 +11,7 @@ public class MapManager : Singleton<MapManager> {
     private Vector2Int mapSize;
     private Vector3 mapOrigin;
     public bool showDebug = true;
+    private List<GameObject> gameObjects = new List<GameObject>();
 
     static public float MAP_SIZE_UNIT = 2.0f;
 
@@ -27,6 +28,7 @@ public class MapManager : Singleton<MapManager> {
             mapSize = levelConfig.mapSize;
             mapOrigin = new Vector3(-mapSize.x / 2.0f * MAP_SIZE_UNIT, 0, -mapSize.y / 2.0f * MAP_SIZE_UNIT);
             mapNodes = new MapNode[levelConfig.mapSize.x, levelConfig.mapSize.y];
+            gameObjects.Clear();
             for (int i = 0; i < levelConfig.objectInstances.Length; i++)
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
@@ -45,10 +47,21 @@ public class MapManager : Singleton<MapManager> {
                         {
                             mapNodes[index.x, index.y].isBlocked = true;
                             mapNodes[index.x, index.y].gameObject = obj;
+                            gameObjects.Add(obj);
                         }
                     }
                 }
             }
+        }
+    }
+
+    public IEnumerable<T> GetCollectionOf<T>() where T : InteractiveItem
+    {
+        foreach(var gameObject in gameObjects)
+        {
+            T interactiveItem = gameObject.GetComponent<T>();
+            if (interactiveItem != null)
+                yield return interactiveItem;
         }
     }
 
@@ -83,7 +96,10 @@ public class MapManager : Singleton<MapManager> {
             for (int j = 0; j < mapNodes.GetLength(1); j++)
             {
                 if (mapNodes[i, j].gameObject == obj)
+                {
                     mapNodes[i, j].Clear();
+                    gameObjects.Remove(mapNodes[i, j].gameObject);
+                }
             }
         }
         //GameObject.DestroyImmediate(obj);
