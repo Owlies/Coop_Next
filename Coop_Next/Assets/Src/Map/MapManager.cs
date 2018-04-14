@@ -81,13 +81,13 @@ public class MapManager : Singleton<MapManager> {
         return mapNodes[mapIndex.x, mapIndex.y].gameObject;
     }
 
-    public void PickUpItemFromMap(Vector2Int mapIndex)
+    public void RemoveItemFromMap(Vector2Int mapIndex)
     {
         if (mapNodes[mapIndex.x, mapIndex.y].gameObject != null)
             PickUpItemFromMap(mapNodes[mapIndex.x, mapIndex.y].gameObject);
     }
 
-    public void PickUpItemFromMap(GameObject obj)
+    public void RemoveItemFromMap(GameObject obj)
     {
         if (obj == null)
             return;
@@ -102,7 +102,6 @@ public class MapManager : Singleton<MapManager> {
                 }
             }
         }
-        //GameObject.DestroyImmediate(obj);
     }
 
     public bool PlaceItemOnMap(GameObject obj, Vector2Int size, Vector2Int mapIndex)
@@ -127,6 +126,7 @@ public class MapManager : Singleton<MapManager> {
                 {
                     Vector2Int index = mapIndex + new Vector2Int(i, j);
                     mapNodes[index.x, index.y].AddItemToNode(obj);
+                    gameObjects.Add(obj);
                 }
             }
             obj.transform.parent = sceneRoot.transform;
@@ -165,6 +165,8 @@ public class MapManager : Singleton<MapManager> {
     {
         if (showDebug)
             RenderGrid(new Vector2Int(0,0), mapSize);
+
+
     }
 }
 
