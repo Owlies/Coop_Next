@@ -15,6 +15,7 @@ public class EnemyManager : Singleton<EnemyManager> {
     private int aliveEnemyQuantity;
     private float waveIntervalTimer = 0.0f;
     private Vector3 targetPosition;
+    private List<EnemyBase> allEnemies = new List<EnemyBase>();
 
     // Use this for initialization
     void Start () {

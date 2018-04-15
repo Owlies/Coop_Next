@@ -87,4 +87,14 @@ public class EnemyBase : OverridableMonoBehaviour {
 
         return highestAttackPriorityBuilding;
     }
+
+    public void TakeDamage(float damage)
+    {
+        currentHitPoint -= damage;
+        if (currentHitPoint <= 0.0f)
+        {
+            MapManager.Instance.RemoveItemFromMap(this.gameObject);
+            Destroy(this.gameObject);
+        }
+    }
 }
