@@ -37,12 +37,20 @@ public class MapManager : Singleton<MapManager> {
                     continue;
                 GameObject obj = GameObject.Instantiate(objectData.gameObject, sceneRoot.transform);
                 obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.x / 2.0f, objectData.size.y / 2.0f));
+                if (instance.dir == ObjectDir.Vertical)
+                {
+                    obj.transform.localEulerAngles = new Vector3(0, 90, 0);
+                    obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.y / 2.0f, objectData.size.x / 2.0f));
+                }
                 for(int idxX = 0; idxX < objectData.size.x; idxX++)
                 {
                     for (int idxY = 0; idxY < objectData.size.y; idxY++)
                     {
                         Vector2Int index = instance.position + new Vector2Int(idxX, idxY);
-                        if (index.x >= 0 && index.y >= 0 &&
+
+                        if (instance.dir == ObjectDir.Vertical)
+                            index = instance.position + new Vector2Int(idxY, idxX);
+                            if (index.x >= 0 && index.y >= 0 &&
                             index.x < levelConfig.mapSize.x && index.y < levelConfig.mapSize.y)
                         {
                             mapNodes[index.x, index.y].isBlocked = true;
@@ -104,14 +112,18 @@ public class MapManager : Singleton<MapManager> {
         }
     }
 
-    public bool PlaceItemOnMap(GameObject obj, Vector2Int size, Vector2Int mapIndex)
+    public bool PlaceItemOnMap(InteractiveItem item, Vector2Int mapIndex, ObjectDir dir = ObjectDir.Horizontal)
     {
+        GameObject obj = item.gameObject;
+        Vector2Int size = item.size;
         bool accessible = true;
         for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
             {
                 Vector2Int index = mapIndex + new Vector2Int(i, j);
+                if (dir == ObjectDir.Vertical)
+                    index = mapIndex + new Vector2Int(j, i);
                 if (!mapNodes[index.x, index.y].IsEmpty())
                 {
                     accessible = false;
@@ -125,12 +137,16 @@ public class MapManager : Singleton<MapManager> {
                 for (int j = 0; j < size.y; j++)
                 {
                     Vector2Int index = mapIndex + new Vector2Int(i, j);
+                    if (dir == ObjectDir.Vertical)
+                        index = mapIndex + new Vector2Int(j, i);
                     mapNodes[index.x, index.y].AddItemToNode(obj);
                     gameObjects.Add(obj);
                 }
             }
             obj.transform.parent = sceneRoot.transform;
-            obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2Int(size.x / 2, size.y / 2)); ;
+            obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
+            if (dir == ObjectDir.Vertical)
+                obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));
         }
         return accessible;
     }
@@ -138,7 +154,12 @@ public class MapManager : Singleton<MapManager> {
     public bool CreateItemOnMap(ObjectData objData, Vector2Int mapIndex)
     {
         GameObject obj = GameObject.Instantiate(objData.gameObject, sceneRoot.transform);
-        return PlaceItemOnMap(obj, objData.size, mapIndex);
+
+        InteractiveItem item = obj.GetComponent<InteractiveItem>();
+        if (item == null)
+            return false;
+
+        return PlaceItemOnMap(item, mapIndex);
     }
 
     public bool IsMapIndexOutOfBound(Vector2Int mapIndex)
@@ -152,6 +173,22 @@ public class MapManager : Singleton<MapManager> {
             return true;
         else
             return mapNodes[mapIndex.x, mapIndex.y].isBlocked;
+    }
+
+    public bool CanPlaceItemOnMap(InteractiveItem item, Vector2Int pos, ObjectDir dir)
+    {
+        for(int i = 0; i < item.size.x; i++)
+        {
+            for(int j = 0; j < item.size.y; j++)
+            {
+                Vector2Int index = pos + new Vector2Int(i, j);
+                if (dir == ObjectDir.Vertical)
+                    index = pos + new Vector2Int(j, i);
+                if (IsBlocked(index))
+                    return false;
+            }
+        }
+        return true;
     }
 
     public void RenderGrid(Vector2Int mapIndex, Vector2Int size)

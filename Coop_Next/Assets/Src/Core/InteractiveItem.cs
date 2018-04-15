@@ -23,6 +23,12 @@ public class InteractiveItem : OverridableMonoBehaviour {
             return false;
         }
 
+        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
+        if (!mapManager.CanPlaceItemOnMap(actor.GetCarryingItem(), actor.GetCarryingItemPosition(), actor.carryingItemDir))
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -41,9 +47,14 @@ public class InteractiveItem : OverridableMonoBehaviour {
             }
         }
 
-        actor.UnsetCarryingItem();
+        Vector2Int carryingItemPos = actor.GetCarryingItemPosition();
+        ObjectDir carryingItemDir = actor.carryingItemDir;
 
+        actor.UnsetCarryingItem();
         actor.SetPlayerActionState(EPlayerActionState.IDLE);
+
+        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
+        mapManager.PlaceItemOnMap(this, carryingItemPos, carryingItemDir);
 
         return true;
     }

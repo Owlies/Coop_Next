@@ -24,6 +24,8 @@ public class Player:OverridableMonoBehaviour
     private int playerId;
     private InputController inputController;
     private EPlayerActionState playerActionState;
+    public ObjectDir carryingItemDir = ObjectDir.Horizontal;
+    
 
     #region initialize
     public void Initialize(InputController iController, int pId) {
@@ -64,12 +66,7 @@ public class Player:OverridableMonoBehaviour
     {
         base.UpdateMe();
 
-        if (carryingItem != null)
-        {
-            MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
-            Vector2Int index = mapManager.WorldPosToMapIndex(carryingItem.transform.position);
-            mapManager.RenderGrid(index, new Vector2Int(1, 1));
-        }
+        ShowBuildingPlacementIndicator();
     }
 
     public override void FixedUpdateMe()
@@ -79,6 +76,25 @@ public class Player:OverridableMonoBehaviour
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         if (rigidbody.angularVelocity != Vector3.zero) {
             rigidbody.angularVelocity = Vector3.zero;
+        }
+    }
+    
+    public void ShowBuildingPlacementIndicator()
+    {
+        if (carryingItem != null)
+        {
+            MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
+            Vector2Int index = mapManager.WorldPosToMapIndex(carryingItem.transform.position);
+            if (carryingItemDir == ObjectDir.Horizontal)
+            {
+                index -= new Vector2Int(carryingItem.size.x / 2, carryingItem.size.y / 2);
+                mapManager.RenderGrid(index, carryingItem.size);
+            }
+            else
+            {
+                index -= new Vector2Int(carryingItem.size.y / 2, carryingItem.size.x / 2);
+                mapManager.RenderGrid(index, new Vector2Int(carryingItem.size.y, carryingItem.size.x));
+            }
         }
     }
     #endregion
@@ -96,20 +112,24 @@ public class Player:OverridableMonoBehaviour
         if (x < 0) {
             transform.rotation = Quaternion.Euler(0, 270, 0);
             horizontalSpeed = -speed * Time.deltaTime;
+            carryingItemDir = ObjectDir.Vertical;
         } else if (x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 90, 0);
             horizontalSpeed = speed * Time.deltaTime;
+            carryingItemDir = ObjectDir.Vertical;
         }
 
         if (z < 0)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
             verticalSpeed = -speed * Time.deltaTime;
+            carryingItemDir = ObjectDir.Horizontal;
         } else if (z > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
             verticalSpeed = speed * Time.deltaTime;
+            carryingItemDir = ObjectDir.Horizontal;
         }
 
         GetComponent<Rigidbody>().velocity = new Vector3(horizontalSpeed, 0, verticalSpeed);
@@ -243,6 +263,20 @@ public class Player:OverridableMonoBehaviour
     #endregion
 
     #region OtherFunctions
+    
+    public Vector2Int GetCarryingItemPosition()
+    {
+        if (carryingItem == null)
+            return new Vector2Int(int.MinValue, int.MinValue);
+        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
+        Vector2Int index = mapManager.WorldPosToMapIndex(carryingItem.transform.position);
+        if (carryingItemDir == ObjectDir.Horizontal)
+            index -= new Vector2Int(carryingItem.size.x / 2, carryingItem.size.y / 2);
+        else
+            index -= new Vector2Int(carryingItem.size.y / 2, carryingItem.size.x / 2);
+
+        return  index;
+    }
 
     public bool IsFirstPlayer()
     {

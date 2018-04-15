@@ -14,10 +14,16 @@ public class LevelConfig : ScriptableObject {
     public GameObject[] enemyPrefabs;
 }
 
+public enum ObjectDir
+{
+    Horizontal = 0,
+    Vertical,
+}
+
 [System.Serializable]
 public struct ObjectInstance
 {
     public int objectID;
-    public short angle;//0-3
+    public ObjectDir dir;
     public Vector2Int position;
 }
