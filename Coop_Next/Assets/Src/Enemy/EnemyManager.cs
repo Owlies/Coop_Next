@@ -75,6 +75,10 @@ public class EnemyManager : Singleton<EnemyManager> {
 
     #region HelperFunctions
 
+    public List<EnemyBase> GetAllAliveEnemies() {
+        return allEnemies;
+    }
+
     private int GetNumberOfEnemiesForCurrentWave() {
         return firstWaveEnemyCount + enemyCountIncreaseBetweenWaves * (currentWave - 1);
     }
@@ -99,6 +103,7 @@ public class EnemyManager : Singleton<EnemyManager> {
             return;
         }
 
+        allEnemies.Add(enemy);
         enemy.Initialize(currentWave, enemyHPIncreasePercentage, targetPosition);
     }
 

@@ -10,4 +10,5 @@ public class AppConstant : Singleton<AppConstant> {
     public float resourceCollectingSeconds = 2.0f;
     public float moveBuildingScaleChange = 0.5f;
     public float forgingTime = 2.0f;
+    public float buildingDamageMovingFreezeTime = 3.0f;
 }
