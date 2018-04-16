@@ -55,10 +55,10 @@ public class MapManager : Singleton<MapManager> {
                         {
                             mapNodes[index.x, index.y].isBlocked = true;
                             mapNodes[index.x, index.y].gameObject = obj;
-                            gameObjects.Add(obj);
                         }
                     }
                 }
+                gameObjects.Add(obj);
             }
         }
     }
@@ -124,7 +124,7 @@ public class MapManager : Singleton<MapManager> {
                 Vector2Int index = mapIndex + new Vector2Int(i, j);
                 if (dir == ObjectDir.Vertical)
                     index = mapIndex + new Vector2Int(j, i);
-                if (!mapNodes[index.x, index.y].IsEmpty())
+                if (IsMapIndexOutOfBound(index) || !mapNodes[index.x, index.y].IsEmpty())
                 {
                     accessible = false;
                 }
@@ -140,9 +140,9 @@ public class MapManager : Singleton<MapManager> {
                     if (dir == ObjectDir.Vertical)
                         index = mapIndex + new Vector2Int(j, i);
                     mapNodes[index.x, index.y].AddItemToNode(obj);
-                    gameObjects.Add(obj);
                 }
             }
+            gameObjects.Add(obj);
             obj.transform.parent = sceneRoot.transform;
             obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
             if (dir == ObjectDir.Vertical)
