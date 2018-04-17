@@ -36,6 +36,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         enemyAttackState = EEnemyAttackState.IDLE;
         currentHitPoint = MaxHitPoint;
         startTakingDamageTime = 0.0f;
+        attackCoolDownStartTime = 0.0f;
     }
 
     public override void UpdateMe() {
@@ -85,6 +86,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         }
 
         attackingTarget.TakeDamage(AttackDamage);
+        attackCoolDownStartTime = Time.time;
 
         return true;
     }
