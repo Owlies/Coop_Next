@@ -69,7 +69,7 @@ public class AttackBuilding : BuildingBase {
     }
 
     private bool TryAttackEnemy() {
-        if (CanAttackEnemy()) {
+        if (!CanAttackEnemy()) {
             attackingEnemy = null;
             return false;
         }

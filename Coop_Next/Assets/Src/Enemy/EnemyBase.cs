@@ -6,7 +6,9 @@ public class EnemyBase : OverridableMonoBehaviour {
     public enum EEnemyState
     {
         IDLE,
-        MOVING
+        MOVING,
+        UNDER_ATTACK,
+        ATTACKING
     }
 
     public enum EEnemyAttackState
@@ -14,11 +16,12 @@ public class EnemyBase : OverridableMonoBehaviour {
         IDLE,
         COOLING_DOWN
     }
-    public float AttackDamage = 1.0f;
+    public float AttackDamage = 30.0f;
     public float AttackRange = 10.0f;
     public float MoveSpeed = 5.0f;
     public float MaxHitPoint = 100.0f;
     public float AttackCoolDownSeconds = 5.0f;
+    public float UnderAttackRecoverSeconds = 0.5f;
 
     private float currentHitPoint;
     private Vector3 targetPosition;
@@ -44,10 +47,17 @@ public class EnemyBase : OverridableMonoBehaviour {
         attackCoolDownStartTime = 0.0f;
 
         animator = GetComponent<Animator>();
-        SetIdleAnimationState();
+        SetStateToIdle();
     }
 
-    private void SetIdleAnimationState() {
+    private void SetStateToIdle() {
+        enemyState = EEnemyState.IDLE;
+        enemyAttackState = EEnemyAttackState.IDLE;
+        SetIdelAnimationState();
+    }
+
+    private void SetIdelAnimationState()
+    {
         animator.SetBool(ANIMATION_IS_IDLE, true);
         animator.SetBool(ANIMATION_IS_UNDER_STTACK, false);
         animator.SetBool(ANIMATION_IS_ATTACKING, false);
@@ -64,9 +74,24 @@ public class EnemyBase : OverridableMonoBehaviour {
         MoveTowardsTarget();
     }
 
+    private bool CanMoveTowardsTarget() {
+        if (enemyState != EEnemyState.IDLE && enemyState != EEnemyState.MOVING) {
+            return false;
+        }
+
+        return true;
+    }
+
     private void MoveTowardsTarget() {
+        if (!CanMoveTowardsTarget()) {
+            return;
+        }
+
         float step = MoveSpeed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
+        transform.LookAt(targetPosition);
+
+        enemyState = EEnemyState.MOVING;
 
         animator.SetBool(ANIMATION_IS_IDLE, false);
         animator.SetBool(ANIMATION_IS_UNDER_STTACK, false);
@@ -75,6 +100,10 @@ public class EnemyBase : OverridableMonoBehaviour {
     }
 
     private void TryFindBuildingToAttack() {
+        if (attackingTarget != null) {
+            return;
+        }
+
         BuildingBase buildingToAttack = GetHighestAttackPriorityBuildingsWithinRange();
         if (buildingToAttack == null) {
             return;
@@ -92,6 +121,10 @@ public class EnemyBase : OverridableMonoBehaviour {
             return false;
         }
 
+        if (enemyState == EEnemyState.ATTACKING || enemyState == EEnemyState.UNDER_ATTACK) {
+            return false;
+        }
+
         if (Vector3.Distance(attackingTarget.transform.position, transform.position) > AttackRange) {
             return false;
         }
@@ -101,8 +134,8 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private bool TryAttackBuilding() {
         if (!CanAttckCurrentTarget()) {
-            attackingTarget = null;
-            SetIdleAnimationState();
+            SetIdelAnimationState();
+            
             return false;
         }
 
@@ -110,6 +143,8 @@ public class EnemyBase : OverridableMonoBehaviour {
         attackCoolDownStartTime = Time.time;
 
         animator.SetBool(ANIMATION_IS_ATTACKING, true);
+        enemyAttackState = EEnemyAttackState.COOLING_DOWN;
+        enemyState = EEnemyState.ATTACKING;
 
         return true;
     }
@@ -123,7 +158,7 @@ public class EnemyBase : OverridableMonoBehaviour {
 
         if (Time.time - attackCoolDownStartTime >= AttackCoolDownSeconds)
         {
-            enemyAttackState = EEnemyAttackState.IDLE;
+            SetStateToIdle();
         }
     }
 
@@ -145,27 +180,28 @@ public class EnemyBase : OverridableMonoBehaviour {
     public void TakeDamage(float damage)
     {
         animator.SetBool(ANIMATION_IS_UNDER_STTACK, true);
+        enemyState = EEnemyState.UNDER_ATTACK;
         currentHitPoint -= damage;
         if (currentHitPoint <= 0.0f)
         {
             animator.SetBool(ANIMATION_IS_DEAD, true);
             MapManager.Instance.RemoveItemFromMap(this.gameObject);
+            EnemyManager.Instance.OnEnemyKilled(this);
             Destroy(this.gameObject, 2.0f);
         }
     }
 
     private void TryRecoverStateFromTakingDamage()
     {
-        if (enemyState == EEnemyState.IDLE)
+        if (enemyState != EEnemyState.UNDER_ATTACK)
         {
             return;
         }
 
-        if (Time.time - startTakingDamageTime >= AppConstant.Instance.buildingDamageMovingFreezeTime)
+        if (Time.time - startTakingDamageTime >= UnderAttackRecoverSeconds)
         {
             startTakingDamageTime = 0.0f;
-            enemyState = EEnemyState.IDLE;
-            SetIdleAnimationState();
+            SetStateToIdle();
         }
     }
 }

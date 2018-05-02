@@ -28,8 +28,9 @@ public class Forge : BuildingBase {
     private float curProgress = 0.0f;
     private GameObject forgedPrefab;
 
-    private void Start()
+    public new void Start()
     {
+        base.Start();
         receiptCanvas = GetComponentsInChildren<Canvas>()[0];
         progressBarCanvas = GetComponentsInChildren<Canvas>()[1];
         destroyProgressBarCanvas = GetComponentsInChildren<Canvas>()[2];

@@ -29,7 +29,7 @@ public class EnemyManager : Singleton<EnemyManager> {
             return false;
         }
 
-        if (waveIntervalTimer < waveInterval) {
+        if (waveIntervalTimer < 60) {
             return false;
         }
 
@@ -46,6 +46,7 @@ public class EnemyManager : Singleton<EnemyManager> {
 
         for (int i = 0; i < enemySpawnLocations.Length; i++) {
             SpawnRandomEnemyWithQuantity(enemyQuantity, enemySpawnLocations[i]);
+            break;
         }
 
         currentWave++;
@@ -61,7 +62,8 @@ public class EnemyManager : Singleton<EnemyManager> {
         }
     }
 
-    public void OnEnemyKilled() {
+    public void OnEnemyKilled(EnemyBase enemy) {
+        allEnemies.Remove(enemy);
         aliveEnemyQuantity--;
         if (aliveEnemyQuantity == 0) {
             OnWaveClear();
@@ -80,6 +82,7 @@ public class EnemyManager : Singleton<EnemyManager> {
     }
 
     private int GetNumberOfEnemiesForCurrentWave() {
+        return 1;
         return firstWaveEnemyCount + enemyCountIncreaseBetweenWaves * (currentWave - 1);
     }
 
