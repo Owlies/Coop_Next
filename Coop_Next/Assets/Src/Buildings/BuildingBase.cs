@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ERarity
+{
+    COMMON,
+    UNCOMMON,
+    RARE,
+    EPIC,
+    LEGENDARY
+}
+
 public class BuildingBase : InteractiveItem {
     public enum EBuildingState
     {
@@ -11,6 +20,8 @@ public class BuildingBase : InteractiveItem {
 
     public float MaxHitPoint = 100.0f;
     public int AttackingPriority = 1;
+    public ERarity Rarity = ERarity.COMMON;
+    public int maxAllowed = 0;
 
     private float currentHitPoint;
     protected EBuildingState buildingState;
