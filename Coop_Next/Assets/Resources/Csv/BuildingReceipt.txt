@@ -1,0 +1,9 @@
+Name	Receipt
+Forge	
+ResourceWood	
+ResourceCoal	
+ResourceStone	
+ResourceOre	
+	
+Wall	"Stone, Stone, Wood"
+ArcherTower	"Stone, Ore, Wood"
