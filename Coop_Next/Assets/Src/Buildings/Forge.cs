@@ -18,10 +18,6 @@ public class Forge : BuildingBase {
     private Image[] resourceImages;
 
     public Sprite resourceEmptyImage;
-    public Sprite resourceRockImage;
-    public Sprite resourceCoalImage;
-    public Sprite resourceOreImage;
-    public Sprite resourceWoodImage;
     public ObjectConfig objectConfig;
 
     private ForgeState forgeState;
@@ -143,20 +139,7 @@ public class Forge : BuildingBase {
         resourceList.Add(resource);
         Debug.Log("AddResourceToForge");
 
-        switch (resource.resourceEnum) {
-            case ResourceEnum.Coal:
-                resourceImages[resourceList.Count].sprite = resourceCoalImage;
-                break;
-            case ResourceEnum.Ore:
-                resourceImages[resourceList.Count].sprite = resourceOreImage;
-                break;
-            case ResourceEnum.Rock:
-                resourceImages[resourceList.Count].sprite = resourceRockImage;
-                break;
-            case ResourceEnum.Wood:
-                resourceImages[resourceList.Count].sprite = resourceWoodImage;
-                break;
-        }
+        resourceImages[resourceList.Count].sprite = resource.image;
 
         OnAddResourceToForgeComplete(actor);
 
