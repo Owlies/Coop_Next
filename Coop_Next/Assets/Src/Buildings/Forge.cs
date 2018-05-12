@@ -14,7 +14,7 @@ public class Forge : BuildingBase {
     private Canvas destroyProgressBarCanvas;
     private ProgressBarBehaviour forgingProgressBar;
     private ProgressBarBehaviour destroyProgressBar;
-    private List<ResourceEnum> resourceList;
+    private List<Resource> resourceList;
     private Image[] resourceImages;
 
     public Sprite resourceEmptyImage;
@@ -40,7 +40,7 @@ public class Forge : BuildingBase {
         forgingProgressBar = progressBarCanvas.GetComponentInChildren<ProgressBarBehaviour>();
         destroyProgressBar = destroyProgressBarCanvas.GetComponentInChildren<ProgressBarBehaviour>();
 
-        resourceList = new List<ResourceEnum>();
+        resourceList = new List<Resource>();
 
         // [0] - Background image
         // [1 - 4] Resource images
@@ -140,23 +140,20 @@ public class Forge : BuildingBase {
         }
 
         Resource resource = actor.GetCarryingItem().GetComponent<Resource>();
+        resourceList.Add(resource);
         Debug.Log("AddResourceToForge");
 
         switch (resource.resourceEnum) {
             case ResourceEnum.Coal:
-                resourceList.Add(ResourceEnum.Coal);
                 resourceImages[resourceList.Count].sprite = resourceCoalImage;
                 break;
             case ResourceEnum.Ore:
-                resourceList.Add(ResourceEnum.Ore);
                 resourceImages[resourceList.Count].sprite = resourceOreImage;
                 break;
             case ResourceEnum.Stone:
-                resourceList.Add(ResourceEnum.Stone);
                 resourceImages[resourceList.Count].sprite = resourceStoneImage;
                 break;
             case ResourceEnum.Wood:
-                resourceList.Add(ResourceEnum.Wood);
                 resourceImages[resourceList.Count].sprite = resourceWoodImage;
                 break;
         }
@@ -269,7 +266,7 @@ public class Forge : BuildingBase {
                             break;
                         }
 
-                        if (resourceList[i] != receipt.resources[i])
+                        if (resourceList[i].resourceEnum != receipt.resources[i])
                         {
                             doesMatch = false;
                             break;

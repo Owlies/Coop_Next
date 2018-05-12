@@ -16,6 +16,8 @@ public class BuildingBase : InteractiveItem {
     protected EBuildingState buildingState;
     private float startTakingDamageTime;
 
+    public TimingCallbacks callbacks;
+
     public void Start() {
         currentHitPoint = MaxHitPoint;
         buildingState = EBuildingState.IDLE;

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProgressBar;
 
-public enum ResourceEnum {Stone, Wood, Ore, Coal}
+public enum ResourceEnum {Stone, Wood, Ore, Coal, ArcaneOrb, NaturalOrb, ForceOrb}
 
 public class Resource : InteractiveItem {
     public ResourceEnum resourceEnum;
-    
 
     private void Start()
     {
@@ -21,6 +20,13 @@ public class Resource : InteractiveItem {
             resourceEnum == ResourceEnum.Ore ||
             resourceEnum == ResourceEnum.Coal ||
             resourceEnum == ResourceEnum.Wood;
+    }
+
+    public bool isRareResource()
+    {
+        return resourceEnum == ResourceEnum.ArcaneOrb ||
+            resourceEnum == ResourceEnum.NaturalOrb ||
+            resourceEnum == ResourceEnum.ForceOrb;
     }
 
     #region ShortPressAction
