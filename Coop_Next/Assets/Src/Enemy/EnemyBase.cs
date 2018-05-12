@@ -74,6 +74,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         MoveTowardsTarget();
     }
 
+    /* Private Methods */
     private bool CanMoveTowardsTarget() {
         if (enemyState != EEnemyState.IDLE && enemyState != EEnemyState.MOVING) {
             return false;
