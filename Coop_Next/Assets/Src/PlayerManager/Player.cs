@@ -300,9 +300,9 @@ public class Player:OverridableMonoBehaviour
     public void SetCarryingItem(InteractiveItem item)
     {
         carryingItem = item;
-        if (carryingItem.GetComponent<BoxCollider>() != null)
+        if (carryingItem.GetComponentInChildren<BoxCollider>() != null)
         {
-            carryingItem.GetComponent<BoxCollider>().enabled = false;
+            carryingItem.GetComponentInChildren<BoxCollider>().enabled = false;
             carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 1.0f, carryingItem.transform.rotation);
             if (carryingItem.tag == "Building")
             {
@@ -314,9 +314,9 @@ public class Player:OverridableMonoBehaviour
             }
         }
 
-        if (carryingItem.GetComponent<Rigidbody>() != null)
+        if (carryingItem.GetComponentInChildren<Rigidbody>() != null)
         {
-            carryingItem.GetComponent<Rigidbody>().detectCollisions = false;
+            carryingItem.GetComponentInChildren<Rigidbody>().detectCollisions = false;
         }
 
         carryingItem.transform.parent = this.transform;
@@ -324,14 +324,14 @@ public class Player:OverridableMonoBehaviour
 
     public void UnsetCarryingItem()
     {
-        if (carryingItem.GetComponent<BoxCollider>() != null)
+        if (carryingItem.GetComponentInChildren<BoxCollider>() != null)
         {
-            carryingItem.GetComponent<BoxCollider>().enabled = true;
+            carryingItem.GetComponentInChildren<BoxCollider>().enabled = true;
         }
 
-        if (carryingItem.GetComponent<Rigidbody>() != null)
+        if (carryingItem.GetComponentInChildren<Rigidbody>() != null)
         {
-            carryingItem.GetComponent<Rigidbody>().detectCollisions = true;
+            carryingItem.GetComponentInChildren<Rigidbody>().detectCollisions = true;
         }
 
         carryingItem.transform.parent = null;

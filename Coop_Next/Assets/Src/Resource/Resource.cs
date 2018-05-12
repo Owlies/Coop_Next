@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProgressBar;
 
-public enum ResourceEnum {Stone, Wood, Ore, Coal, ArcaneOrb, NaturalOrb, ForceOrb}
+public enum ResourceEnum {Stone, Wood, Ore, Coal, ArcaneOrb, NatureOrb, StrengthOrb}
 
 public class Resource : InteractiveItem {
     public ResourceEnum resourceEnum;
@@ -25,8 +25,8 @@ public class Resource : InteractiveItem {
     public bool isRareResource()
     {
         return resourceEnum == ResourceEnum.ArcaneOrb ||
-            resourceEnum == ResourceEnum.NaturalOrb ||
-            resourceEnum == ResourceEnum.ForceOrb;
+            resourceEnum == ResourceEnum.NatureOrb ||
+            resourceEnum == ResourceEnum.StrengthOrb;
     }
 
     #region ShortPressAction
