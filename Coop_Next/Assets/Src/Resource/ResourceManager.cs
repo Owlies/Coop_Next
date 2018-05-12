@@ -7,7 +7,7 @@ public class ResourceManager : Singleton<ResourceManager> {
     public GameObject coalCubePrefab;
     public GameObject oreCubePrefab;
     public GameObject woodCubePrefab;
-    public GameObject stoneCubePrefab;
+    public GameObject rockCubePrefab;
 
     private Dictionary<Player, GameObject> collectingMap = new Dictionary<Player, GameObject>();
     private Dictionary<GameObject, float> collectingProgressMap = new Dictionary<GameObject, float>();
@@ -99,8 +99,8 @@ public class ResourceManager : Singleton<ResourceManager> {
             case ResourceEnum.Ore:
                 cube = GameObject.Instantiate(oreCubePrefab, player.transform);
                 break;
-            case ResourceEnum.Stone:
-                cube = GameObject.Instantiate(stoneCubePrefab, player.transform);
+            case ResourceEnum.Rock:
+                cube = GameObject.Instantiate(rockCubePrefab, player.transform);
                 break;
             case ResourceEnum.Wood:
                 cube = GameObject.Instantiate(woodCubePrefab, player.transform);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProgressBar;
 
-public enum ResourceEnum {Stone, Wood, Ore, Coal, ArcaneOrb, NatureOrb, StrengthOrb}
+public enum ResourceEnum {Rock, Wood, Ore, Coal, ArcaneOrb, NatureOrb, StrengthOrb}
 
 public class Resource : InteractiveItem {
     public ResourceEnum resourceEnum;
@@ -16,7 +16,7 @@ public class Resource : InteractiveItem {
     }
 
     public bool isBasicResource() {
-        return resourceEnum == ResourceEnum.Stone ||
+        return resourceEnum == ResourceEnum.Rock ||
             resourceEnum == ResourceEnum.Ore ||
             resourceEnum == ResourceEnum.Coal ||
             resourceEnum == ResourceEnum.Wood;

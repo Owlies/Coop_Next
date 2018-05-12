@@ -18,7 +18,7 @@ public class Forge : BuildingBase {
     private Image[] resourceImages;
 
     public Sprite resourceEmptyImage;
-    public Sprite resourceStoneImage;
+    public Sprite resourceRockImage;
     public Sprite resourceCoalImage;
     public Sprite resourceOreImage;
     public Sprite resourceWoodImage;
@@ -150,8 +150,8 @@ public class Forge : BuildingBase {
             case ResourceEnum.Ore:
                 resourceImages[resourceList.Count].sprite = resourceOreImage;
                 break;
-            case ResourceEnum.Stone:
-                resourceImages[resourceList.Count].sprite = resourceStoneImage;
+            case ResourceEnum.Rock:
+                resourceImages[resourceList.Count].sprite = resourceRockImage;
                 break;
             case ResourceEnum.Wood:
                 resourceImages[resourceList.Count].sprite = resourceWoodImage;
