@@ -32,9 +32,17 @@ public class MapManager : Singleton<MapManager> {
             for (int i = 0; i < levelConfig.objectInstances.Length; i++)
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
-                ObjectData objectData = objectConfig.objects[instance.objectID];
-                if (objectData.gameObject == null)
+                if (!objectConfig.objectsDictionary.ContainsKey(instance.objectKey))
+                {
+                    Debug.Log("No " + instance.objectKey + " in config!!!");
                     continue;
+                }
+                ObjectData objectData = objectConfig.objectsDictionary[instance.objectKey];
+                if (objectData == null || objectData.gameObject == null)
+                {
+                    Debug.Log("No " + instance.objectKey + "'s gameobject in config!!!");
+                    continue;
+                }
                 GameObject obj = GameObject.Instantiate(objectData.gameObject, sceneRoot.transform);
                 obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.x / 2.0f, objectData.size.y / 2.0f));
                 if (instance.dir == ObjectDir.Vertical)

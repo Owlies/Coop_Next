@@ -251,8 +251,9 @@ public class Forge : BuildingBase {
     #region HelperFunctions
     private GameObject FindMatchingReceiptObject()
     {
-        foreach (ObjectData data in objectConfig.objects)
+        foreach (var obj in objectConfig.objectsDictionary)
         {
+            ObjectData data = obj.Value;
             if (data.receipts.Length > 0)
             {
                 foreach (Receipt receipt in data.receipts)

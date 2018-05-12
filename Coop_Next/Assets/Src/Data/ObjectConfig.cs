@@ -6,7 +6,7 @@ using UnityEngine;
 public class ObjectConfig : ScriptableObject, ISerializationCallbackReceiver
 {
     [SerializeField]
-    public ObjectData[] objects;
+    private ObjectData[] objects;
 
     public Dictionary<string, ObjectData> objectsDictionary;
 
@@ -20,6 +20,7 @@ public class ObjectConfig : ScriptableObject, ISerializationCallbackReceiver
                 name += "_d";
             objectsDictionary.Add(name,obj);
         }
+        objects = null;
     }
     
     public void OnBeforeSerialize()
@@ -43,7 +44,7 @@ public struct Receipt {
 }
 
 [System.Serializable]
-public struct ObjectData
+public class ObjectData
 {
     public string name;
     public InteractiveItem item;
