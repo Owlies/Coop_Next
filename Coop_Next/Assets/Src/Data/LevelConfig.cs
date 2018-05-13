@@ -12,6 +12,9 @@ public class LevelConfig : ScriptableObject {
 
     [SerializeField]
     public GameObject[] enemyPrefabs;
+
+    [SerializeField]
+    public GameObject[] initialUnlockedBuildings;
 }
 
 public enum ObjectDir

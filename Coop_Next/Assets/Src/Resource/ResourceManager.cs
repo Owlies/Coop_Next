@@ -125,9 +125,11 @@ public class ResourceManager : Singleton<ResourceManager> {
     }
 
     private void EnableProgressBar(GameObject resource, bool enable) {
-        resource.GetComponentInChildren<ProgressBarBehaviour>().enabled = enable;
-        resource.GetComponentInChildren<ProgressBarBehaviour>().Value = 0.0f;
-        resource.GetComponentInChildren<ProgressBarBehaviour>().TransitoryValue = 0.0f;
+        ProgressBarBehaviour progressBar = resource.GetComponentInChildren<ProgressBarBehaviour>();
+        progressBar.enabled = enable;
+        progressBar.Value = 0.0f;
+        progressBar.ProgressSpeed = 1000;
+        progressBar.TransitoryValue = 0.0f;
         resource.GetComponentInChildren<Canvas>().enabled = enable;
     }
 
