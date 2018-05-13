@@ -180,6 +180,13 @@ public class Forge : BuildingBase {
     private void ForgingComplete() {
         receiptCanvas.enabled = false;
         forgedPrefab = FindMatchingReceiptObject();
+
+        InteractiveItem item = forgedPrefab.GetComponent<InteractiveItem>();
+        if (resourceList.Count == 4 && resourceList[3].isRareResource())
+        {
+            (resourceList[3] as Orb).applyOrbEffect(item);
+        }
+
         forgeState = ForgeState.READY_TO_COLLECT;
         ResetForgingProgressBar();
 
