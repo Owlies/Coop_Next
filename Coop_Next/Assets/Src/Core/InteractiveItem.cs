@@ -9,6 +9,8 @@ public class InteractiveItem : OverridableMonoBehaviour {
     public virtual bool LongPressAction(Player actor) { return false;}
     public virtual bool PressReleaseAction(Player actor) { return false; }
 
+    public Sprite iconImage;
+
     #region ShortPressAction
     private bool CanPlaceItemOnMap(Player actor)
     {

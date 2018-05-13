@@ -13,11 +13,15 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         foreach (Transform obj in childs) {
             iconPanels.Add((RectTransform)(obj));
         }
-        Debug.Log("Start");
+
     }
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
+
+    private void updateCraftIcon(int slotIndex, RectTransform iconPanel) {
+
+    }
 }
