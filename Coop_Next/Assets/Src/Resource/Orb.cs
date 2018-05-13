@@ -5,17 +5,8 @@ using System;
 
 public class Orb : Resource {
 
-    //temp
-    private void Start()
-    {
-        applyOrbEffect += Orb.AddAttackDamage;
-    }
+    public OrbData originData;
 
+    [SerializeField]
     public Action<InteractiveItem> applyOrbEffect;
-
-    static public void AddAttackDamage(InteractiveItem item)
-    {
-        if (item is AttackBuilding)
-            (item as AttackBuilding).attackDamage += 10;
-    }
 }

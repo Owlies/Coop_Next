@@ -41,13 +41,13 @@ public class InteractiveItem : OverridableMonoBehaviour {
             return false;
         }
 
-        if (actor.GetPlayerActionState() == EPlayerActionState.CARRYING_BUILDING)
-        {
-            if (!EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, this.gameObject)))
-            {
-                return false;
-            }
-        }
+        //if (actor.GetPlayerActionState() == EPlayerActionState.CARRYING_BUILDING)
+        //{
+        //    if (!EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, this.gameObject)))
+        //    {
+        //        return false;
+        //    }
+        //}
 
         Vector2Int carryingItemPos = actor.GetCarryingItemPosition();
         ObjectDir carryingItemDir = actor.carryingItemDir;

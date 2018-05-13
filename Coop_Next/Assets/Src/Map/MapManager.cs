@@ -44,6 +44,14 @@ public class MapManager : Singleton<MapManager> {
                     continue;
                 }
                 GameObject obj = GameObject.Instantiate(objectData.gameObject, sceneRoot.transform);
+
+                //temp, just for test
+                if (obj.GetComponent<Orb>())
+                {
+                    GameObject.DestroyImmediate(obj);
+                    obj = OrbManager.CreateOrbGameObject(objectConfig.orbData[0]);
+                }
+
                 obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.x / 2.0f, objectData.size.y / 2.0f));
                 if (instance.dir == ObjectDir.Vertical)
                 {

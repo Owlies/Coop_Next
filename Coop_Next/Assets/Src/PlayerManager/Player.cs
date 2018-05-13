@@ -318,8 +318,11 @@ public class Player:OverridableMonoBehaviour
         {
             carryingItem.GetComponentInChildren<Rigidbody>().detectCollisions = false;
         }
-
+        float newScaleX = carryingItem.transform.localScale.x * AppConstant.Instance.moveBuildingScaleChange;
+        float newScaleY = carryingItem.transform.localScale.y * AppConstant.Instance.moveBuildingScaleChange;
+        float newScaleZ = carryingItem.transform.localScale.z * AppConstant.Instance.moveBuildingScaleChange;
         carryingItem.transform.parent = this.transform;
+        carryingItem.transform.localScale = new Vector3(newScaleX, newScaleY, newScaleZ);
     }
 
     public void UnsetCarryingItem()
@@ -333,6 +336,11 @@ public class Player:OverridableMonoBehaviour
         {
             carryingItem.GetComponentInChildren<Rigidbody>().detectCollisions = true;
         }
+
+        float newScaleX = carryingItem.transform.localScale.x / AppConstant.Instance.moveBuildingScaleChange;
+        float newScaleY = carryingItem.transform.localScale.y / AppConstant.Instance.moveBuildingScaleChange;
+        float newScaleZ = carryingItem.transform.localScale.z / AppConstant.Instance.moveBuildingScaleChange;
+        carryingItem.transform.localScale = new Vector3(newScaleX, newScaleY, newScaleZ);
 
         carryingItem.transform.parent = null;
         carryingItem = null;

@@ -7,8 +7,9 @@ public class ObjectConfig : ScriptableObject, ISerializationCallbackReceiver
 {
     [SerializeField]
     private ObjectData[] objects;
-
     public Dictionary<string, ObjectData> objectsDictionary;
+
+    public OrbData[] orbData;
 
     public void OnAfterDeserialize()
     {

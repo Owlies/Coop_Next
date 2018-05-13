@@ -19,6 +19,7 @@ public class BuildingBase : InteractiveItem {
     }
 
     public float MaxHitPoint = 100.0f;
+    public float coolDownFactor = 1.0f;
     public int AttackingPriority = 1;
     public ERarity Rarity = ERarity.COMMON;
     public int maxAllowed = 0;

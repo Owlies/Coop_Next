@@ -22,7 +22,7 @@ public class Forge : BuildingBase {
 
     private ForgeState forgeState;
     private float curProgress = 0.0f;
-    private GameObject forgedPrefab;
+    private GameObject forgedGameObject;
 
     public new void Start()
     {
@@ -179,9 +179,11 @@ public class Forge : BuildingBase {
 
     private void ForgingComplete() {
         receiptCanvas.enabled = false;
-        forgedPrefab = FindMatchingReceiptObject();
+        GameObject forgedPrefab = FindMatchingReceiptObject();
+        forgedGameObject = GameObject.Instantiate<GameObject>(forgedPrefab, transform);
+        forgedGameObject.SetActive(false);
 
-        InteractiveItem item = forgedPrefab.GetComponent<InteractiveItem>();
+        InteractiveItem item = forgedGameObject.GetComponent<InteractiveItem>();
         if (resourceList.Count == 4 && resourceList[3].isRareResource())
         {
             (resourceList[3] as Orb).applyOrbEffect(item);
@@ -211,7 +213,7 @@ public class Forge : BuildingBase {
     }
 
     private bool CanCollectItem(Player player) {
-        if (forgedPrefab == null) {
+        if (forgedGameObject == null) {
             return false;
         }
 
@@ -229,11 +231,10 @@ public class Forge : BuildingBase {
             return false;
         }
 
-        GameObject forgedBuilding = GameObject.Instantiate(forgedPrefab, player.transform);
-
-        InteractiveItem item = forgedBuilding.GetComponent<InteractiveItem>();
+        forgedGameObject.SetActive(true);
+        InteractiveItem item = forgedGameObject.GetComponent<InteractiveItem>();
         player.SetCarryingItem(item);
-        forgedPrefab = null;
+        forgedGameObject = null;
 
         forgeState = ForgeState.IDLE;
         ResetAndEnableReceiptCanvas();
