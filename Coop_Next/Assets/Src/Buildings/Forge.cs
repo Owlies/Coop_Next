@@ -150,8 +150,11 @@ public class Forge : BuildingBase {
 
     public void OnAddResourceToForgeComplete(Player actor)
     {
-        GameObject.Destroy(actor.GetCarryingItem().gameObject);
+        GameObject resource = actor.GetCarryingItem().gameObject;
+        resource.SetActive(false);
+        //GameObject.Destroy(actor.GetCarryingItem().gameObject);
         actor.UnsetCarryingItem();
+        resource.transform.parent = transform;
     }
 
     private void StartForgeOrDestroy() {
@@ -165,7 +168,7 @@ public class Forge : BuildingBase {
     }
 
     private void StartForging() {
-        receiptCanvas.enabled = false;
+        //receiptCanvas.enabled = false;
         ResetDestroyForgingProgressBar();
         ResetForgingProgressBar();
         progressBarCanvas.enabled = true;
@@ -175,6 +178,7 @@ public class Forge : BuildingBase {
     }
 
     private void ForgingComplete() {
+        receiptCanvas.enabled = false;
         forgedPrefab = FindMatchingReceiptObject();
         forgeState = ForgeState.READY_TO_COLLECT;
         ResetForgingProgressBar();
@@ -276,6 +280,13 @@ public class Forge : BuildingBase {
         }
     }
 
+    private void OnDestroy()
+    {
+        for (int i = 0; i < resourceList.Count; i++)
+            GameObject.DestroyImmediate(resourceList[i].gameObject);
+        resourceList.Clear();
+    }
+
     private void ResetForgingProgressBar()
     {
         curProgress = 0.0f;
@@ -296,6 +307,8 @@ public class Forge : BuildingBase {
 
     private void ResetAndEnableReceiptCanvas()
     {
+        for (int i = 0; i < resourceList.Count; i++)
+            GameObject.Destroy(resourceList[i].gameObject);
         resourceList.Clear();
         ResetResourceImages();
         receiptCanvas.enabled = true;

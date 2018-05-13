@@ -9,9 +9,9 @@ public class AttackBuilding : BuildingBase {
         COOLING_DOWN
     }
 
-    public float AttackDamage = 2.0f;
-    public float AttackRange = 5.0f;
-    public float AttackCoolDownSeconds = 1.0f;
+    public float attackDamage = 2.0f;
+    public float attackRange = 5.0f;
+    public float attackCoolDownSeconds = 1.0f;
 
     private EnemyBase attackingEnemy;
     private float attackCoolDownStartTime;
@@ -42,7 +42,7 @@ public class AttackBuilding : BuildingBase {
 
     private EnemyBase GetEnemyWithinRange() {
         foreach (EnemyBase enemy in EnemyManager.Instance.GetAllAliveEnemies()) {
-            if (Vector3.Distance(enemy.transform.position, this.transform.position) <= AttackRange) {
+            if (Vector3.Distance(enemy.transform.position, this.transform.position) <= attackRange) {
                 return enemy;
             }
         }
@@ -60,7 +60,7 @@ public class AttackBuilding : BuildingBase {
             return false;
         }
 
-        if (Vector3.Distance(attackingEnemy.transform.position, transform.position) > AttackRange)
+        if (Vector3.Distance(attackingEnemy.transform.position, transform.position) > attackRange)
         {
             return false;
         }
@@ -74,7 +74,7 @@ public class AttackBuilding : BuildingBase {
             return false;
         }
 
-        attackingEnemy.TakeDamage(AttackDamage);
+        attackingEnemy.TakeDamage(attackDamage);
         attackState = EAttackBuildingState.COOLING_DOWN;
         attackCoolDownStartTime = Time.time;
 
@@ -86,7 +86,7 @@ public class AttackBuilding : BuildingBase {
             return;
         }
 
-        if (Time.time - attackCoolDownStartTime >= AttackCoolDownSeconds) {
+        if (Time.time - attackCoolDownStartTime >= attackCoolDownSeconds) {
             attackState = EAttackBuildingState.IDLE;
         }
     }
