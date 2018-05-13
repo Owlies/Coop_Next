@@ -8,22 +8,27 @@ public class CraftingManager : Singleton<CraftingManager> {
     public int availableSlotsCount = 2;
     public double slotRefreshSeconds = 10.0f;
 
-    private List<GameObject> unlockedCrafts;
-    private List<GameObject> currentAvailableCrafts;
+    private List<InteractiveItem> unlockedCrafts;
+    private List<InteractiveItem> currentAvailableCrafts;
     private Dictionary<int, double> slotIndexRefreshStartTimeMap;
 
-    private HashSet<GameObject> tmpEligibleCrafts;
+    private HashSet<InteractiveItem> tmpEligibleCrafts;
 
     // Use this for initialization
     void Start() {
-        tmpEligibleCrafts = new HashSet<GameObject>();
+        tmpEligibleCrafts = new HashSet<InteractiveItem>();
         slotIndexRefreshStartTimeMap = new Dictionary<int, double>();
-        unlockedCrafts = new List<GameObject>();
-        currentAvailableCrafts = new List<GameObject>();
+        unlockedCrafts = new List<InteractiveItem>();
+        currentAvailableCrafts = new List<InteractiveItem>();
 
         for (int i = 0; i < fixedCrafts.Length; i++) {
-            unlockedCrafts.Add(fixedCrafts[i]);
-            assignSlotWithCraft(i, fixedCrafts[i]);
+            InteractiveItem item = fixedCrafts[i].GetComponent<InteractiveItem>();
+            if (item == null) {
+                Debug.LogError("Mising InteractiveItem Component");
+                continue;
+            }
+            unlockedCrafts.Add(item);
+            assignSlotWithCraft(i, fixedCrafts[i].GetComponent<InteractiveItem>());
         }
 
         tryRefreshAvailableCrafts();
@@ -59,11 +64,15 @@ public class CraftingManager : Singleton<CraftingManager> {
             return;
         }
 
-        GameObject selectedCraft = selectEligibleCraft();
+        InteractiveItem selectedCraft = selectEligibleCraft();
         assignSlotWithCraft(slotIndex, selectedCraft);
     }
 
-    private void assignSlotWithCraft(int slotIndex, GameObject selectedCraft) {
+    private void assignSlotWithCraft(int slotIndex, InteractiveItem selectedCraft) {
+        if (selectedCraft == null) {
+            return;
+        }
+
         slotIndexRefreshStartTimeMap[slotIndex] = Time.time;
 
         if (currentAvailableCrafts.Count <= slotIndex) {
@@ -74,18 +83,24 @@ public class CraftingManager : Singleton<CraftingManager> {
         currentAvailableCrafts[slotIndex] = selectedCraft;
     }
 
-    private GameObject selectEligibleCraft() {
+    private InteractiveItem selectEligibleCraft() {
         tmpEligibleCrafts.Clear();
-        foreach (GameObject craft in unlockedCrafts) {
+        foreach (InteractiveItem craft in unlockedCrafts) {
             tmpEligibleCrafts.Add(craft);
         }
 
+
         foreach (GameObject craft in fixedCrafts) {
-            tmpEligibleCrafts.Remove(craft);
+            InteractiveItem item = craft.GetComponent<InteractiveItem>();
+            if (item == null) {
+                Debug.LogError("Mising InteractiveItem Component");
+                continue;
+            }
+            tmpEligibleCrafts.Remove(item);
         }
 
         int selectedIndex = Random.Range(0, tmpEligibleCrafts.Count);
-        GameObject [] tmpArray = new GameObject[tmpEligibleCrafts.Count];
+        InteractiveItem[] tmpArray = new InteractiveItem[tmpEligibleCrafts.Count];
         tmpEligibleCrafts.CopyTo(tmpArray);
          
         return tmpArray[selectedIndex];
