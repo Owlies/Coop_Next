@@ -8,8 +8,9 @@ public class CraftingManager : Singleton<CraftingManager> {
     public int availableSlotsCount = 2;
     public double slotRefreshSeconds = 10.0f;
 
+    public List<InteractiveItem> currentAvailableCrafts;
+
     private List<InteractiveItem> unlockedCrafts;
-    private List<InteractiveItem> currentAvailableCrafts;
     private Dictionary<int, double> slotIndexRefreshStartTimeMap;
 
     private HashSet<InteractiveItem> tmpEligibleCrafts;
@@ -36,7 +37,6 @@ public class CraftingManager : Singleton<CraftingManager> {
 
     // Update is called once per frame
     public override void UpdateMe() {
-        base.UpdateMe();
         tryRefreshAvailableCrafts();
     }
 
