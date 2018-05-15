@@ -119,4 +119,13 @@ public class CraftingManager : Singleton<CraftingManager> {
         return slotIndexRefreshStartTimeMap[slotIndex];
     }
 
+    public bool IsCraftAvailable(InteractiveItem craft) {
+        foreach (InteractiveItem availableCraft in currentAvailableCrafts) {
+            if (craft == availableCraft) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

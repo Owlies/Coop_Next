@@ -29,6 +29,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         for (int i = 0; i < CraftingManager.Instance.fixedCrafts.Length; i++) {
             iconPanels[i].gameObject.SetActive(true);
             iconPanels[i].GetComponentInChildren<ProgressBarBehaviour>().gameObject.SetActive(false);
+            UpdateCraftIcon(i);
         }
     }
 
@@ -97,6 +98,9 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
 
     private void ResetProgressBar(RectTransform iconPanel) {
         ProgressBarBehaviour progressBar = iconPanel.GetComponentInChildren<ProgressBarBehaviour>();
+        if (progressBar == null || !progressBar.enabled) {
+            return;
+        }
         progressBar.Value = 0.0f;
         progressBar.TransitoryValue = 0.0f;
         iconProgressMap[iconPanel] = 0.0f;

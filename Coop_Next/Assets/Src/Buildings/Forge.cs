@@ -248,7 +248,12 @@ public class Forge : BuildingBase {
     {
         foreach (var obj in objectConfig.objectsDictionary)
         {
+            
             ObjectData data = obj.Value;
+            if (!CraftingManager.Instance.IsCraftAvailable(data.item)) {
+                continue;
+            }
+
             if (data.receipts.Length > 0)
             {
                 foreach (Receipt receipt in data.receipts)
