@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using ProgressBar;
 
 public class CraftingUIManager : Singleton<CraftingUIManager> {
     public RectTransform craftingUIPanel;
@@ -9,34 +10,33 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
 
     private List<RectTransform> iconPanels;
     private List<string> displayingItemNames;
+    private Dictionary<RectTransform, float> iconProgressMap;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         iconPanels = new List<RectTransform>();
         displayingItemNames = new List<string>();
+        iconProgressMap = new Dictionary<RectTransform, float>();
         Transform[] childs = Util.Instance.GetFirstLayerChildComponents(craftingUIPanel);
         foreach (Transform obj in childs) {
             iconPanels.Add((RectTransform)(obj));
+            obj.gameObject.SetActive(false);
+            obj.GetComponentInChildren<ProgressBarBehaviour>().ProgressSpeed = 1000;
+            iconProgressMap[(RectTransform)(obj)] = 0.0f;
+        }
+
+        // Enable fixed crafting slots with disabled progress bar
+        for (int i = 0; i < CraftingManager.Instance.fixedCrafts.Length; i++) {
+            iconPanels[i].gameObject.SetActive(true);
+            iconPanels[i].GetComponentInChildren<ProgressBarBehaviour>().gameObject.SetActive(false);
         }
     }
 
     public override void UpdateMe() {
-        updateCraftDisplay();
+        UpdateCraftProgressBars();
     }
 
-    private void updateCraftDisplay() {
-        int i = 0;
-        while (i < CraftingManager.Instance.currentAvailableCrafts.Count) {
-            updateCraftIcon(i, iconPanels[i++]);
-        }
-
-        while (i < iconPanels.Count) {
-            iconPanels[i].gameObject.SetActive(false);
-            i++;
-        }
-    }
-
-    private bool canUpdateCraftIcon(int slotIndex) {
+    private bool CanUpdateCraftIcon(int slotIndex) {
         if (slotIndex >= CraftingManager.Instance.currentAvailableCrafts.Count) {
             return false;
         }
@@ -44,12 +44,16 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         return true;
     }
 
-    private void updateCraftIcon(int slotIndex, RectTransform iconPanel) {
-        if (!canUpdateCraftIcon(slotIndex)) {
+    public void UpdateCraftIcon(int slotIndex) {
+        if (!CanUpdateCraftIcon(slotIndex)) {
             Debug.LogError("updateCraftIcon out of index");
             return;
         }
 
+        RectTransform iconPanel = iconPanels[slotIndex];
+        ResetProgressBar(iconPanel);
+
+        iconPanel.gameObject.SetActive(true);
         InteractiveItem item = CraftingManager.Instance.currentAvailableCrafts[slotIndex];
         if (displayingItemNames.Count <= slotIndex) {
             displayingItemNames.Add(item.name);
@@ -65,10 +69,10 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         craftName.text = item.name;
 
         // Forth element is the receipt icon panel
-        updateCraftReceiptIcons(iconPanel.GetComponentsInChildren<RectTransform>()[4], item);
+        UpdateCraftReceiptIcons(iconPanel.GetComponentsInChildren<RectTransform>()[4], item);
     }
 
-    private void updateCraftReceiptIcons(RectTransform receiptPanel, InteractiveItem item) {
+    private void UpdateCraftReceiptIcons(RectTransform receiptPanel, InteractiveItem item) {
         ObjectData objectData = objectConfig.objectsDictionary[item.name];
         Receipt selectedReceipt = objectData.receipts[Random.Range(0, objectData.receipts.Length)];
         Image[] receiptIcons = receiptPanel.GetComponentsInChildren<Image>();
@@ -76,5 +80,25 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         for (int i = 0; i < receiptIcons.Length; i++) {
             receiptIcons[i].sprite = objectConfig.resourceEnumToItemMap[selectedReceipt.resources[i]].iconImage;
         }
+    }
+
+    /*      Progress Bar Updates    */
+    private void UpdateCraftProgressBars() {
+        for (int i = CraftingManager.Instance.fixedCrafts.Length; i < CraftingManager.Instance.availableSlotsCount; i++) {
+            UpdateCraftIconProgressBar(i, iconPanels[i]);
+        }
+    }
+
+    private void UpdateCraftIconProgressBar(int slotIndex, RectTransform iconPanel) {
+        ProgressBarBehaviour progressBar = iconPanel.GetComponentInChildren<ProgressBarBehaviour>();
+        iconProgressMap[iconPanel] += Time.deltaTime * 100.0f / CraftingManager.Instance.slotRefreshSeconds;
+        progressBar.Value = iconProgressMap[iconPanel];
+    }
+
+    private void ResetProgressBar(RectTransform iconPanel) {
+        ProgressBarBehaviour progressBar = iconPanel.GetComponentInChildren<ProgressBarBehaviour>();
+        progressBar.Value = 0.0f;
+        progressBar.TransitoryValue = 0.0f;
+        iconProgressMap[iconPanel] = 0.0f;
     }
 }

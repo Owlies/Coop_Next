@@ -6,7 +6,7 @@ public class CraftingManager : Singleton<CraftingManager> {
     public LevelConfig levelConfig;
     public GameObject[] fixedCrafts;
     public int availableSlotsCount = 2;
-    public double slotRefreshSeconds = 10.0f;
+    public float slotRefreshSeconds = 2.0f;
 
     public List<InteractiveItem> currentAvailableCrafts;
 
@@ -22,58 +22,59 @@ public class CraftingManager : Singleton<CraftingManager> {
         unlockedCrafts = new List<InteractiveItem>();
         currentAvailableCrafts = new List<InteractiveItem>();
 
+        for (int i = 0; i < levelConfig.initialUnlockedBuildings.Length; i++) {
+            unlockedCrafts.Add(levelConfig.initialUnlockedBuildings[i].GetComponent<InteractiveItem>());
+        }
+
         for (int i = 0; i < fixedCrafts.Length; i++) {
             InteractiveItem item = fixedCrafts[i].GetComponent<InteractiveItem>();
             if (item == null) {
                 Debug.LogError("Mising InteractiveItem Component");
                 continue;
             }
-            unlockedCrafts.Add(item);
-            assignSlotWithCraft(i, fixedCrafts[i].GetComponent<InteractiveItem>());
-        }
 
-        tryRefreshAvailableCrafts();
+            AssignSlotWithCraft(i, fixedCrafts[i].GetComponent<InteractiveItem>());
+        }
     }
 
     // Update is called once per frame
     public override void UpdateMe() {
-        tryRefreshAvailableCrafts();
+        TryRefreshAvailableCrafts();
     }
 
-    private void tryRefreshAvailableCrafts() {
+    private void TryRefreshAvailableCrafts() {
         for (int i = fixedCrafts.Length; i < availableSlotsCount; i++) {
-            refreshCraftSlot(i);
+            RefreshCraftSlot(i);
         }
     }
 
-    private bool canRefreshCraftSlot(int slotIndex) {
-        if (!slotIndexRefreshStartTimeMap.ContainsKey(slotIndex)) {
-            return false;
-        }
-
-        double startTime = slotIndexRefreshStartTimeMap[slotIndex];
-        if (Time.time - startTime < slotRefreshSeconds) {
-            return false;
+    private bool CanRefreshCraftSlot(int slotIndex) {
+        if (slotIndexRefreshStartTimeMap.ContainsKey(slotIndex)) {
+            double startTime = slotIndexRefreshStartTimeMap[slotIndex];
+            if (Time.time - startTime < slotRefreshSeconds) {
+                return false;
+            }
         }
 
         return true;
     }
 
-    private void refreshCraftSlot(int slotIndex) {
-        if (!canRefreshCraftSlot(slotIndex)) {
+    private void RefreshCraftSlot(int slotIndex) {
+        if (!CanRefreshCraftSlot(slotIndex)) {
             return;
         }
 
-        InteractiveItem selectedCraft = selectEligibleCraft();
-        assignSlotWithCraft(slotIndex, selectedCraft);
+        InteractiveItem selectedCraft = SelectEligibleCraft();
+        AssignSlotWithCraft(slotIndex, selectedCraft);
+
+        slotIndexRefreshStartTimeMap[slotIndex] = Time.time;
+        CraftingUIManager.Instance.UpdateCraftIcon(slotIndex);
     }
 
-    private void assignSlotWithCraft(int slotIndex, InteractiveItem selectedCraft) {
+    private void AssignSlotWithCraft(int slotIndex, InteractiveItem selectedCraft) {
         if (selectedCraft == null) {
             return;
         }
-
-        slotIndexRefreshStartTimeMap[slotIndex] = Time.time;
 
         if (currentAvailableCrafts.Count <= slotIndex) {
             currentAvailableCrafts.Add(selectedCraft);
@@ -83,7 +84,7 @@ public class CraftingManager : Singleton<CraftingManager> {
         currentAvailableCrafts[slotIndex] = selectedCraft;
     }
 
-    private InteractiveItem selectEligibleCraft() {
+    private InteractiveItem SelectEligibleCraft() {
         tmpEligibleCrafts.Clear();
         foreach (InteractiveItem craft in unlockedCrafts) {
             tmpEligibleCrafts.Add(craft);
@@ -99,11 +100,23 @@ public class CraftingManager : Singleton<CraftingManager> {
             tmpEligibleCrafts.Remove(item);
         }
 
+        if (tmpEligibleCrafts.Count == 0) {
+            return null;
+        }
+
         int selectedIndex = Random.Range(0, tmpEligibleCrafts.Count);
         InteractiveItem[] tmpArray = new InteractiveItem[tmpEligibleCrafts.Count];
         tmpEligibleCrafts.CopyTo(tmpArray);
          
         return tmpArray[selectedIndex];
+    }
+
+    public double GetSlotRefreshStartTime(int slotIndex) {
+        if (!slotIndexRefreshStartTimeMap.ContainsKey(slotIndex)) {
+            return 0.0f;
+        }
+
+        return slotIndexRefreshStartTimeMap[slotIndex];
     }
 
 }
