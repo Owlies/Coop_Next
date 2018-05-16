@@ -165,7 +165,7 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private BuildingBase GetHighestAttackPriorityBuildingsWithinRange() {
         BuildingBase highestAttackPriorityBuilding = null;
-        foreach (var item in MapManager.Instance.GetCollectionOf<BuildingBase>()) {
+        foreach (var item in MapManager.Instance.GetCollectionOfItemsOnMap<BuildingBase>()) {
             if (Vector3.Distance(item.transform.position, transform.position) > AttackRange) {
                 continue;
             }

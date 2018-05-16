@@ -87,6 +87,10 @@ public class CraftingManager : Singleton<CraftingManager> {
     private InteractiveItem SelectEligibleCraft() {
         tmpEligibleCrafts.Clear();
         foreach (InteractiveItem craft in unlockedCrafts) {
+            int count = MapManager.Instance.GetNumberOfItemsOnMapWithName(craft.name);
+            if (count >= craft.maxAllowed) {
+                continue;
+            }
             tmpEligibleCrafts.Add(craft);
         }
 

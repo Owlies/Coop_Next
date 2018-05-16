@@ -11,7 +11,9 @@ public class MapManager : Singleton<MapManager> {
     private Vector2Int mapSize;
     private Vector3 mapOrigin;
     public bool showDebug = true;
-    private List<GameObject> gameObjects = new List<GameObject>();
+
+    // <GameObject, isOnMap>
+    private Dictionary<GameObject, bool> gameObjectOnMapDictionary = new Dictionary<GameObject, bool>();
 
     static public float MAP_SIZE_UNIT = 2.0f;
 
@@ -28,7 +30,7 @@ public class MapManager : Singleton<MapManager> {
             mapSize = levelConfig.mapSize;
             mapOrigin = new Vector3(-mapSize.x / 2.0f * MAP_SIZE_UNIT, 0, -mapSize.y / 2.0f * MAP_SIZE_UNIT);
             mapNodes = new MapNode[levelConfig.mapSize.x, levelConfig.mapSize.y];
-            gameObjects.Clear();
+            gameObjectOnMapDictionary.Clear();
             for (int i = 0; i < levelConfig.objectInstances.Length; i++)
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
@@ -74,19 +76,38 @@ public class MapManager : Singleton<MapManager> {
                         }
                     }
                 }
-                gameObjects.Add(obj);
+                gameObjectOnMapDictionary[obj] = true;
             }
         }
     }
 
-    public IEnumerable<T> GetCollectionOf<T>() where T : InteractiveItem
+    public IEnumerable<T> GetCollectionOfItemsOnMap<T>() where T : InteractiveItem
     {
-        foreach(var gameObject in gameObjects)
+        foreach(KeyValuePair <GameObject, bool> entry in gameObjectOnMapDictionary)
         {
-            T interactiveItem = gameObject.GetComponent<T>();
+            T interactiveItem = entry.Key.GetComponent<T>();
+            if (entry.Value && interactiveItem != null)
+                yield return interactiveItem;
+        }
+    }
+
+    public IEnumerable<T> GetCollectionOfItems<T>() where T : InteractiveItem {
+        foreach (KeyValuePair<GameObject, bool> entry in gameObjectOnMapDictionary) {
+            T interactiveItem = entry.Key.GetComponent<T>();
             if (interactiveItem != null)
                 yield return interactiveItem;
         }
+    }
+
+    public int GetNumberOfItemsOnMapWithName(string itemName) {
+        int count = 0;
+        foreach (InteractiveItem item in MapManager.Instance.GetCollectionOfItems<InteractiveItem>()) {
+            if (item.name.Equals(itemName)) {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     public Vector2Int WorldPosToMapIndex(Vector3 worldPos)
@@ -121,11 +142,16 @@ public class MapManager : Singleton<MapManager> {
             {
                 if (mapNodes[i, j].gameObject == obj)
                 {
-                    gameObjects.Remove(mapNodes[i, j].gameObject);
+                    gameObjectOnMapDictionary[mapNodes[i, j].gameObject] = false;
                     mapNodes[i, j].Clear();
                 }
             }
         }
+    }
+
+    public void OnItemDestroyed(GameObject item) {
+        gameObjectOnMapDictionary.Remove(item);
+        RemoveItemFromMap(item);
     }
 
     public bool PlaceItemOnMap(InteractiveItem item, Vector2Int mapIndex, ObjectDir dir = ObjectDir.Horizontal)
@@ -158,13 +184,17 @@ public class MapManager : Singleton<MapManager> {
                     mapNodes[index.x, index.y].AddItemToNode(obj);
                 }
             }
-            gameObjects.Add(obj);
+            gameObjectOnMapDictionary[obj] = true;
             obj.transform.parent = sceneRoot.transform;
             obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
             if (dir == ObjectDir.Vertical)
                 obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));
         }
         return accessible;
+    }
+
+    public void OnItemCreated(GameObject item, bool isOnMap) {
+        gameObjectOnMapDictionary[item] = isOnMap;
     }
 
     public bool CreateItemOnMap(ObjectData objData, Vector2Int mapIndex)
@@ -226,8 +256,6 @@ public class MapManager : Singleton<MapManager> {
     {
         if (showDebug)
             RenderGrid(new Vector2Int(0,0), mapSize);
-
-
     }
 }
 

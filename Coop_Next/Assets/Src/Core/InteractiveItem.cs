@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractiveItem : OverridableMonoBehaviour {
+    public int maxAllowed = 99;
+    public ERarity Rarity = ERarity.COMMON;
 
     public Vector2Int size = new Vector2Int(1, 1);
 

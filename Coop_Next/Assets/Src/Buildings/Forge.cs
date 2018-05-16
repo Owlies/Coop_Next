@@ -164,7 +164,7 @@ public class Forge : BuildingBase {
             return;
         }
 
-        StartDestroyForging();
+        StartDestroyForgingItems();
     }
 
     private void StartForging() {
@@ -181,6 +181,7 @@ public class Forge : BuildingBase {
         receiptCanvas.enabled = false;
         GameObject forgedPrefab = FindMatchingReceiptObject();
         forgedGameObject = GameObject.Instantiate<GameObject>(forgedPrefab, transform);
+        MapManager.Instance.OnItemCreated(forgedGameObject, false);
         forgedGameObject.SetActive(false);
 
         InteractiveItem item = forgedGameObject.GetComponent<InteractiveItem>();
@@ -195,7 +196,7 @@ public class Forge : BuildingBase {
         //TODO(Huayu):Ready to collect UI
     }
 
-    private void StartDestroyForging() {
+    private void StartDestroyForgingItems() {
         //receiptCanvas.enabled = false;
         ResetDestroyForgingProgressBar();
         ResetForgingProgressBar();

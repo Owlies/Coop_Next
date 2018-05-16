@@ -21,8 +21,6 @@ public class BuildingBase : InteractiveItem {
     public float MaxHitPoint = 100.0f;
     public float coolDownFactor = 1.0f;
     public int AttackingPriority = 1;
-    public ERarity Rarity = ERarity.COMMON;
-    public int maxAllowed = 0;
 
     private float currentHitPoint;
     protected EBuildingState buildingState;
@@ -85,7 +83,7 @@ public class BuildingBase : InteractiveItem {
         startTakingDamageTime = Time.time;
         buildingState = EBuildingState.TAKING_DAMAGE;
         if (currentHitPoint <= 0.0f) {
-            MapManager.Instance.RemoveItemFromMap(this.gameObject);
+            MapManager.Instance.OnItemDestroyed(this.gameObject);
             Destroy(this.gameObject);
         }
     }
