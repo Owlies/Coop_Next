@@ -5,6 +5,7 @@ using UnityEngine;
 public class InteractiveItem : OverridableMonoBehaviour {
     public int maxAllowed = 99;
     public ERarity Rarity = ERarity.COMMON;
+    public BuffCollection buffs = new BuffCollection();
 
     public Vector2Int size = new Vector2Int(1, 1);
 

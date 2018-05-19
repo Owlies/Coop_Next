@@ -25,6 +25,7 @@ public class Player:OverridableMonoBehaviour
     private InputController inputController;
     private EPlayerActionState playerActionState;
     public ObjectDir carryingItemDir = ObjectDir.Horizontal;
+    public Transform carryingPivot = null;
     
 
     #region initialize
@@ -321,7 +322,8 @@ public class Player:OverridableMonoBehaviour
         float newScaleX = carryingItem.transform.localScale.x * AppConstant.Instance.moveBuildingScaleChange;
         float newScaleY = carryingItem.transform.localScale.y * AppConstant.Instance.moveBuildingScaleChange;
         float newScaleZ = carryingItem.transform.localScale.z * AppConstant.Instance.moveBuildingScaleChange;
-        carryingItem.transform.parent = this.transform;
+        carryingItem.transform.parent = this.carryingPivot;
+        carryingItem.transform.localPosition = Vector3.zero;
         carryingItem.transform.localScale = new Vector3(newScaleX, newScaleY, newScaleZ);
     }
 

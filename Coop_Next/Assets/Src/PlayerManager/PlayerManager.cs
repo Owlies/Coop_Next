@@ -25,6 +25,7 @@ public class PlayerManager : Singleton<PlayerManager> {
             GameObject playerObject = GameObject.Instantiate(playerPrefab) as GameObject;
             playerObject.AddComponent<Player>();
             Player pController = playerObject.GetComponent<Player>();
+            pController.carryingPivot = playerObject.transform.Find("CarryingPivot");
 
 #if UNITY_EDITOR || UNITY_STANDALONE
             playerObject.AddComponent<PCInputController>();
