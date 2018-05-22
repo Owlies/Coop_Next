@@ -13,6 +13,8 @@ public class AttackBuilding : BuildingBase {
     public float attackRange = 5.0f;
     public float attackCoolDownSeconds = 1.0f;
 
+    public GameObject bulletPrefab;
+
     private EnemyBase attackingEnemy;
     private float attackCoolDownStartTime;
     private EAttackBuildingState attackState;
@@ -74,7 +76,9 @@ public class AttackBuilding : BuildingBase {
             return false;
         }
 
-        attackingEnemy.TakeDamage(attackDamage);
+        GameObject bullet = GameObject.Instantiate(bulletPrefab);
+        bullet.GetComponent<Bullet>().Initialize(attackingEnemy.gameObject, attackDamage);
+        
         attackState = EAttackBuildingState.COOLING_DOWN;
         attackCoolDownStartTime = Time.time;
 

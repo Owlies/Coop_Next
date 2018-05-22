@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour {
+public class Bullet : OverridableMonoBehaviour {
 	public GameObject target;
-
-	private float movingSpeed;
+	public float bulletSpeed = 10.0f;
 	private float damage;
 	
-	public void Initialize(GameObject target, float speed, float damage) {
+	public void Initialize(GameObject target, float damage) {
 		this.target = target;
-		this.movingSpeed = speed;
 		this.damage = damage;
+	}
+
+	public override void FixedUpdateMe() {
+		float step = Time.deltaTime * bulletSpeed;
+		transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
 	}
 
 	/// <summary>
@@ -20,6 +23,10 @@ public class Bullet : MonoBehaviour {
 	/// <param name="other">The other Collider involved in this collision.</param>
 	void OnTriggerEnter(Collider other)
 	{
-		
+		if(other.gameObject != target) {
+			return;
+		}
+
+		target.SendMessage("TakeDamage", damage);
 	}
 }
