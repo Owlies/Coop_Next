@@ -54,8 +54,7 @@ public class Resource : InteractiveItem {
 
         actor.SetCarryingItem(this);
 
-        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
-        mapManager.RemoveItemFromMap(this.gameObject);
+        MapManager.Instance.RemoveItemFromMap(this.gameObject);
 
         return true;
     }

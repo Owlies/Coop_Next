@@ -203,6 +203,7 @@ public class MapManager : Singleton<MapManager> {
             obj.transform.parent = sceneRoot.transform;
             obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
             obj.transform.rotation = Quaternion.identity;
+
             if (dir == ObjectDir.Vertical)
                 obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));
         }
@@ -241,9 +242,12 @@ public class MapManager : Singleton<MapManager> {
             return mapNodes[mapIndex.x, mapIndex.y].isBlocked;
     }
 
-    public bool CanPlaceItemOnMap(InteractiveItem item, Vector2Int pos, ObjectDir dir)
+    public bool CanPlaceItemOnMap(InteractiveItem item)
     {
-        for(int i = 0; i < item.size.x; i++)
+        ObjectDir dir = item.GetItemDirection();
+        Vector2Int pos = GeItemMapPosition(item);
+
+        for (int i = 0; i < item.size.x; i++)
         {
             for(int j = 0; j < item.size.y; j++)
             {
@@ -270,6 +274,22 @@ public class MapManager : Singleton<MapManager> {
                 gridRender.Draw(MapIndexToWorldPos(index), color);
             }
         }
+    }
+
+    public Vector2Int GeItemMapPosition(InteractiveItem item) {
+        if (item == null) {
+            return new Vector2Int(int.MinValue, int.MinValue);
+        }
+            
+        ObjectDir itemDirection = item.GetItemDirection();
+        Vector2Int index = MapManager.Instance.WorldPosToMapIndex(item.transform.position);
+        if (itemDirection == ObjectDir.Horizontal) {
+            index -= new Vector2Int(item.size.x / 2, item.size.y / 2);
+        } else {
+            index -= new Vector2Int(item.size.y / 2, item.size.x / 2);
+        }
+            
+        return index;
     }
 
     public override void UpdateMe()

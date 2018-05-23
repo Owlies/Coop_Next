@@ -19,8 +19,7 @@ public class MoveBuildingEvent : EventCommandBase
         this.receiver.transform.localPosition = Vector3.forward * moveingBuildingAnchorMultplier;
 
 
-        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
-        mapManager.RemoveItemFromMap(this.receiver);
+        MapManager.Instance.RemoveItemFromMap(this.receiver);
 
         return true;
     }

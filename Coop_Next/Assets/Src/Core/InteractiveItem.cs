@@ -14,6 +14,14 @@ public class InteractiveItem : OverridableMonoBehaviour {
 
     public Sprite iconImage;
 
+    public ObjectDir GetItemDirection() {
+        if (transform.rotation.eulerAngles.y.Equals(0.0f) || transform.rotation.eulerAngles.y.Equals(180.0f)) {
+            return ObjectDir.Horizontal;
+        } else {
+            return ObjectDir.Vertical;
+        }
+    }
+
     #region ShortPressAction
     private bool CanPlaceItemOnMap(Player actor)
     {
@@ -28,8 +36,7 @@ public class InteractiveItem : OverridableMonoBehaviour {
             return false;
         }
 
-        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
-        if (!mapManager.CanPlaceItemOnMap(actor.GetCarryingItem(), actor.GetCarryingItemPosition(), actor.carryingItemDir))
+        if (!MapManager.Instance.CanPlaceItemOnMap(actor.GetCarryingItem()))
         {
             return false;
         }
@@ -44,22 +51,13 @@ public class InteractiveItem : OverridableMonoBehaviour {
             return false;
         }
 
-        //if (actor.GetPlayerActionState() == EPlayerActionState.CARRYING_BUILDING)
-        //{
-        //    if (!EventCenter.Instance.ExecuteEvent(new PlaceBuildingEvent(this.gameObject, this.gameObject)))
-        //    {
-        //        return false;
-        //    }
-        //}
-
-        Vector2Int carryingItemPos = actor.GetCarryingItemPosition();
-        ObjectDir carryingItemDir = actor.carryingItemDir;
+        Vector2Int itemPos = MapManager.Instance.GeItemMapPosition(this);
+        ObjectDir itemDirection = GetItemDirection();
 
         actor.UnsetCarryingItem();
         actor.SetPlayerActionState(EPlayerActionState.IDLE);
 
-        MapManager mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
-        mapManager.PlaceItemOnMap(this, carryingItemPos, carryingItemDir);
+        MapManager.Instance.PlaceItemOnMap(this, itemPos, itemDirection);
 
         return true;
     }
