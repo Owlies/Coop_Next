@@ -30,4 +30,14 @@ public class Util : Singleton<Util> {
 
         return result.ToArray();
     }
+
+    public GameObject GetChildComponentWithName(GameObject parentGameObject, string name) {
+        foreach (GameObject childComponent in parentGameObject.GetComponentsInChildren<GameObject>()) {
+            if (childComponent.name.Equals(name)) {
+                return childComponent;
+            }
+        }
+
+        return null;
+    }
 }

@@ -93,7 +93,7 @@ public class AttackBuilding : BuildingBase {
             attackingEnemy = null;
             return false;
         }
-
+        firingPosition = new Vector3(transform.position.x, transform.position.y + (float)(GetComponent<MeshFilter>().mesh.bounds.extents.y * 0.8), transform.position.z);
         GameObject bullet = GameObject.Instantiate(bulletPrefab, firingPosition, Quaternion.LookRotation(attackingEnemy.gameObject.transform.position));
         bullet.GetComponent<Bullet>().Initialize(attackingEnemy.gameObject, bulletSpeed, attackDamage);
         Destroy(bullet, 30.0f);

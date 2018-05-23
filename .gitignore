@@ -35,6 +35,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-Coop_Next/Library/ShaderCache/*
-Coop_Next/Library/metadata/*
+Coop_Next/Library/ShaderCache/
+Coop_Next/Library/metadata/
 

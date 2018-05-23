@@ -24,18 +24,22 @@ public class Player:OverridableMonoBehaviour
     private int playerId;
     private InputController inputController;
     private EPlayerActionState playerActionState;
+    private Transform carryingPivot = null;
+    private GameObject detectingComponent = null;
+    private HashSet<GameObject> nearbyInteractiveGameObjects;
+
     public ObjectDir carryingItemDir = ObjectDir.Horizontal;
-    public Transform carryingPivot = null;
-    
 
     #region initialize
-    public void Initialize(InputController iController, int pId) {
+    public void Initialize(InputController iController, int pId, Transform carryingPivot, GameObject detectingComponent) {
         base.Awake();
 
         inputController = iController;
         playerId = pId;
         carryingItem = null;
         playerActionState = EPlayerActionState.IDLE;
+        this.carryingPivot = carryingPivot;
+        this.detectingComponent = detectingComponent;
 
         PlayerInputConfig inputConfig = new PlayerInputConfig();
         if (!AppConstant.Instance.isMultiPlayer)
@@ -59,6 +63,11 @@ public class Player:OverridableMonoBehaviour
         }
 
         inputController.inputConfig = inputConfig;
+
+        if (detectingComponent == null) {
+            Debug.LogError("Cant'f find TriggerDetection Component for player!");
+        }
+        nearbyInteractiveGameObjects = new HashSet<GameObject>();
     }
     #endregion
 
@@ -146,13 +155,12 @@ public class Player:OverridableMonoBehaviour
     }
 
     public void PlayerAction(bool isLongPress, bool isButtonDown) {
-        RaycastHit hitObject;
-        bool isHit = Physics.Raycast(new Vector3(transform.position.x, 0.01f, transform.position.z), transform.forward, out hitObject, AppConstant.Instance.playerActionRange, 1 << 8);
+        GameObject interactiveObject = GetNearestInteractiveGameObject();
 
         #region ButtonLongPressActions
         /*  Button Long Press Actions   */
         if (isLongPress) {
-            if (TryHandleLongPressAction(isHit, hitObject)) {
+            if (TryHandleLongPressAction(interactiveObject)) {
                 return;
             }
         }
@@ -161,7 +169,7 @@ public class Player:OverridableMonoBehaviour
         #region ButtonShortPressActions
         /*  Button Short Press Actions  */
         if (isButtonDown) {
-            if (TryHandleShortPressAction(isHit, hitObject)) {
+            if (TryHandleShortPressAction(interactiveObject)) {
                 return;
             }
 
@@ -187,14 +195,14 @@ public class Player:OverridableMonoBehaviour
 
     #region InputHandling
 
-    private bool CanHandleLongPressAction(bool isHit, RaycastHit hitObject)
+    private bool CanHandleLongPressAction(GameObject inteactiveObject)
     {
-        if (!isHit)
+        if (inteactiveObject == null)
         {
             return false;
         }
 
-        if (hitObject.transform.GetComponent<InteractiveItem>() == null)
+        if (inteactiveObject.GetComponent<InteractiveItem>() == null)
         {
             return false;
         }
@@ -202,14 +210,14 @@ public class Player:OverridableMonoBehaviour
         return true;
     }
 
-    private bool TryHandleLongPressAction(bool isHit, RaycastHit hitObject)
+    private bool TryHandleLongPressAction(GameObject inteactiveObject)
     {
-        if (!CanHandleLongPressAction(isHit, hitObject))
+        if (!CanHandleLongPressAction(inteactiveObject))
         {
             return false;
         }
 
-        InteractiveItem item = hitObject.transform.GetComponent<InteractiveItem>();
+        InteractiveItem item = inteactiveObject.GetComponent<InteractiveItem>();
         if (item.LongPressAction(this)) {
             interactingItem = item;
             return true;
@@ -218,31 +226,31 @@ public class Player:OverridableMonoBehaviour
         return false;
     }
 
-    private bool CanHandleShortPressAction(bool isHit, RaycastHit hitObject) {
-        if (!isHit && carryingItem == null) {
+    private bool CanHandleShortPressAction(GameObject inteactiveObject) {
+        if (inteactiveObject == null && carryingItem == null) {
             return false;
         }
 
-        if (isHit && hitObject.transform.GetComponent<InteractiveItem>() == null) {
+        if (inteactiveObject != null && inteactiveObject.GetComponent<InteractiveItem>() == null) {
             return false;
         }
 
         return true;
     }
 
-    private bool TryHandleShortPressAction(bool isHit, RaycastHit hitObject)
+    private bool TryHandleShortPressAction(GameObject inteactiveObject)
     {
-        if (!CanHandleShortPressAction(isHit, hitObject))
+        if (!CanHandleShortPressAction(inteactiveObject))
         {
             return false;
         }
 
-        if (isHit) {
-            InteractiveItem item = hitObject.transform.GetComponent<InteractiveItem>();
+        if ((carryingItem == null) || (inteactiveObject != null && inteactiveObject.GetComponent<BuildingBase>() != null)) {
+            InteractiveItem item = inteactiveObject.GetComponent<InteractiveItem>();
             interactingItem = item;
             return item.ShortPressAction(this);
         }
-        
+
         return carryingItem.ShortPressAction(this);
     }
 
@@ -347,6 +355,45 @@ public class Player:OverridableMonoBehaviour
         carryingItem.transform.parent = null;
         carryingItem = null;
         playerActionState = EPlayerActionState.IDLE;
+    }
+
+    public void AddNearbyInteractiveGameObject(GameObject gameObjectToAdd) {
+        if (nearbyInteractiveGameObjects.Contains(gameObjectToAdd)) {
+            return;
+        }
+        nearbyInteractiveGameObjects.Add(gameObjectToAdd);
+    }
+
+    public void RemoveNearbyInteractiveGameObject(GameObject gameObjectToRemove) {
+        nearbyInteractiveGameObjects.Remove(gameObjectToRemove);
+    }
+
+    private void RemoveDestroyedNearbyObjects() {
+        foreach (GameObject obj in nearbyInteractiveGameObjects) {
+            if (obj == null) {
+                nearbyInteractiveGameObjects.Remove(obj);
+            }
+        }
+    }
+
+    private GameObject GetNearestInteractiveGameObject() {
+        // Obj might be destroyed
+        RemoveDestroyedNearbyObjects();
+
+        GameObject result = null;
+        float minDis = int.MaxValue;
+        foreach (GameObject obj in nearbyInteractiveGameObjects) {
+            if (obj == null) {
+                continue;
+            }
+            float dis = Vector3.Distance(transform.position, obj.transform.position);
+            if (minDis > dis) {
+                minDis = dis;
+                result = obj;
+            }
+        }
+
+        return result;
     }
 
     #endregion
