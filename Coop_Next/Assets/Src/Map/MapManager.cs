@@ -150,7 +150,10 @@ public class MapManager : Singleton<MapManager> {
             {
                 if (mapNodes[i, j].gameObject == obj)
                 {
-                    gameObjectOnMapDictionary[mapNodes[i, j].gameObject] = false;
+                    if (gameObjectOnMapDictionary.ContainsKey(obj)) {
+                        gameObjectOnMapDictionary[obj] = false;
+                    }
+                    
                     mapNodes[i, j].Clear();
                 }
             }
@@ -161,9 +164,9 @@ public class MapManager : Singleton<MapManager> {
         if (!gameObjectOnMapDictionary.ContainsKey(item)) {
             return;
         }
-        Debug.Log("OnItemDestroyed");
-        gameObjectOnMapDictionary.Remove(item);
+        
         RemoveItemFromMap(item);
+        gameObjectOnMapDictionary.Remove(item);
     }
 
     public bool PlaceItemOnMap(InteractiveItem item, Vector2Int mapIndex, ObjectDir dir = ObjectDir.Horizontal)

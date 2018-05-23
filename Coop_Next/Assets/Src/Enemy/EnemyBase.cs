@@ -66,13 +66,17 @@ public class EnemyBase : OverridableMonoBehaviour {
     }
 
     public override void UpdateMe() {
+        base.UpdateMe();
+        UpdateAttackCoolDown();
+        MoveTowardsTarget();
+    }
+
+    public override void FixedUpdateMe() {
         if (TryAttackBuilding()) {
             return;
         }
 
-        UpdateAttackCoolDown();
         TryFindBuildingToAttack();
-        MoveTowardsTarget();
     }
 
     /* Private Methods */
@@ -185,7 +189,6 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     public void TakeDamage(float damage)
     {
-        Debug.Log("EnemyTakeDamage " + damage + ", " + currentHitPoint);
         animator.SetBool(ANIMATION_IS_UNDER_STTACK, true);
         enemyState = EEnemyState.UNDER_ATTACK;
         currentHitPoint -= damage;

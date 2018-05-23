@@ -85,7 +85,6 @@ public class BuildingBase : InteractiveItem {
         if (currentHitPoint <= Constants.EPS) {
             MapManager.Instance.OnItemDestroyed(this.gameObject);
             Destroy(this.gameObject);
-            Debug.Log("Building Destroyed");
         }
     }
 
