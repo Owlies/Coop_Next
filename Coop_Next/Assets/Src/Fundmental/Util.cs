@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+static class Constants
+{
+    public const double EPS = 10e-6;
+
+}
+
 public class Util : Singleton<Util> {
     public GameObject[] GetFirstLayerChildComponents(GameObject parentGameObject) {
         List<GameObject> result = new List<GameObject>();

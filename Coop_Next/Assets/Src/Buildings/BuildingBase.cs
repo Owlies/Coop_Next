@@ -82,9 +82,10 @@ public class BuildingBase : InteractiveItem {
         currentHitPoint -= damage;
         startTakingDamageTime = Time.time;
         buildingState = EBuildingState.TAKING_DAMAGE;
-        if (currentHitPoint <= 0.0f) {
+        if (currentHitPoint <= Constants.EPS) {
             MapManager.Instance.OnItemDestroyed(this.gameObject);
             Destroy(this.gameObject);
+            Debug.Log("Building Destroyed");
         }
     }
 

@@ -8,7 +8,8 @@ public class EnemyBase : OverridableMonoBehaviour {
         IDLE,
         MOVING,
         UNDER_ATTACK,
-        ATTACKING
+        ATTACKING,
+        STUNNED
     }
 
     public enum EEnemyAttackState
@@ -17,7 +18,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         COOLING_DOWN
     }
     public float AttackDamage = 30.0f;
-    public float AttackRange = 10.0f;
+    public float AttackRange = 100.0f;
     public float MoveSpeed = 5.0f;
     public float MaxHitPoint = 100.0f;
     public float AttackCoolDownSeconds = 5.0f;
@@ -76,7 +77,7 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     /* Private Methods */
     private bool CanMoveTowardsTarget() {
-        if (enemyState != EEnemyState.IDLE && enemyState != EEnemyState.MOVING) {
+        if (enemyState == EEnemyState.STUNNED || enemyState == EEnemyState.ATTACKING) {
             return false;
         }
 
@@ -178,13 +179,19 @@ public class EnemyBase : OverridableMonoBehaviour {
         return highestAttackPriorityBuilding;
     }
 
+    public float GetCurrentHitPoint() {
+        return currentHitPoint;
+    }
+
     public void TakeDamage(float damage)
     {
+        Debug.Log("EnemyTakeDamage " + damage + ", " + currentHitPoint);
         animator.SetBool(ANIMATION_IS_UNDER_STTACK, true);
         enemyState = EEnemyState.UNDER_ATTACK;
         currentHitPoint -= damage;
-        if (currentHitPoint <= 0.0f)
+        if (currentHitPoint <= Constants.EPS)
         {
+            //TODO(Huayu): death animations is not played
             animator.SetBool(ANIMATION_IS_DEAD, true);
             MapManager.Instance.RemoveItemFromMap(this.gameObject);
             EnemyManager.Instance.OnEnemyKilled(this);

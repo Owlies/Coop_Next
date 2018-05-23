@@ -29,7 +29,7 @@ public class EnemyManager : Singleton<EnemyManager> {
             return false;
         }
 
-        if (waveIntervalTimer < 60) {
+        if (waveIntervalTimer < waveInterval) {
             return false;
         }
 

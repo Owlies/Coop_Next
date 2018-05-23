@@ -85,6 +85,10 @@ public class MapManager : Singleton<MapManager> {
     {
         foreach(KeyValuePair <GameObject, bool> entry in gameObjectOnMapDictionary)
         {
+            if (entry.Key == null) {
+                Debug.LogError("[GetCollectionOfItemsOnMap] Empty objects found in gameObjectOnMapDictionary");
+                continue;
+            }
             T interactiveItem = entry.Key.GetComponent<T>();
             if (entry.Value && interactiveItem != null)
                 yield return interactiveItem;
@@ -93,6 +97,10 @@ public class MapManager : Singleton<MapManager> {
 
     public IEnumerable<T> GetCollectionOfItems<T>() where T : InteractiveItem {
         foreach (KeyValuePair<GameObject, bool> entry in gameObjectOnMapDictionary) {
+            if (entry.Key == null) {
+                Debug.LogError("[GetCollectionOfItems] Empty objects found in gameObjectOnMapDictionary");
+                continue;
+            }
             T interactiveItem = entry.Key.GetComponent<T>();
             if (interactiveItem != null)
                 yield return interactiveItem;
@@ -150,6 +158,10 @@ public class MapManager : Singleton<MapManager> {
     }
 
     public void OnItemDestroyed(GameObject item) {
+        if (!gameObjectOnMapDictionary.ContainsKey(item)) {
+            return;
+        }
+        Debug.Log("OnItemDestroyed");
         gameObjectOnMapDictionary.Remove(item);
         RemoveItemFromMap(item);
     }
@@ -191,6 +203,10 @@ public class MapManager : Singleton<MapManager> {
                 obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));
         }
         return accessible;
+    }
+
+    public void OnItemCreated(GameObject item) {
+        gameObjectOnMapDictionary[item] = false;
     }
 
     public void OnItemCreated(GameObject item, bool isOnMap) {

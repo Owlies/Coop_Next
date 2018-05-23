@@ -181,7 +181,7 @@ public class Forge : BuildingBase {
         receiptCanvas.enabled = false;
         GameObject forgedPrefab = FindMatchingReceiptObject();
         forgedGameObject = GameObject.Instantiate<GameObject>(forgedPrefab, transform);
-        MapManager.Instance.OnItemCreated(forgedGameObject, false);
+        MapManager.Instance.OnItemCreated(forgedGameObject);
         forgedGameObject.SetActive(false);
 
         InteractiveItem item = forgedGameObject.GetComponent<InteractiveItem>();
@@ -321,8 +321,11 @@ public class Forge : BuildingBase {
 
     private void ResetAndEnableReceiptCanvas()
     {
-        for (int i = 0; i < resourceList.Count; i++)
+        for (int i = 0; i < resourceList.Count; i++) {
+            MapManager.Instance.OnItemDestroyed(resourceList[i].gameObject);
             GameObject.Destroy(resourceList[i].gameObject);
+        }
+            
         resourceList.Clear();
         ResetResourceImages();
         receiptCanvas.enabled = true;
