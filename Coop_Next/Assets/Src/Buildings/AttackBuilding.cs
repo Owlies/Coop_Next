@@ -24,8 +24,6 @@ public class AttackBuilding : BuildingBase {
 
     public new void Start() {
         base.Start();
-
-        attackDamage = 30.0f;
     }
     public override void UpdateMe()
     {

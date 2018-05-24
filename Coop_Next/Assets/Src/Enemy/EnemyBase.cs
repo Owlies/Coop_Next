@@ -30,7 +30,6 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private Animator animator;
     private string ANIMATION_IS_IDLE = "isIdle";
-    private string ANIMATION_IS_UNDER_STTACK = "isUnderAttack";
     private string ANIMATION_IS_ATTACKING = "isAttacking";
     private string ANIMATION_IS_DEAD = "isDead";
 
@@ -45,7 +44,8 @@ public class EnemyBase : OverridableMonoBehaviour {
         animator = GetComponent<Animator>();
         SetStateToIdle();
 
-        AttackRange = 10.0f;
+        // ANIMATION_IS_DEAD should only be set to false at the beginning
+        animator.SetBool(ANIMATION_IS_DEAD, false);
     }
 
     private void SetStateToIdle() {
@@ -57,9 +57,7 @@ public class EnemyBase : OverridableMonoBehaviour {
     private void SetIdelAnimationState()
     {
         animator.SetBool(ANIMATION_IS_IDLE, true);
-        animator.SetBool(ANIMATION_IS_UNDER_STTACK, false);
         animator.SetBool(ANIMATION_IS_ATTACKING, false);
-        animator.SetBool(ANIMATION_IS_DEAD, false);
     }
 
     public override void UpdateMe() {
@@ -74,6 +72,10 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     /* Private Methods */
     private bool CanMoveTowardsTarget() {
+        if (IsDead()) {
+            return false;
+        }
+
         if ((enemyState != EEnemyState.IDLE) && (enemyState != EEnemyState.MOVING)) {
             return false;
         }
@@ -97,9 +99,6 @@ public class EnemyBase : OverridableMonoBehaviour {
         enemyState = EEnemyState.MOVING;
 
         animator.SetBool(ANIMATION_IS_IDLE, false);
-        // animator.SetBool(ANIMATION_IS_UNDER_STTACK, false);
-        // animator.SetBool(ANIMATION_IS_ATTACKING, false);
-        // animator.SetBool(ANIMATION_IS_DEAD, false);
     }
 
     private void TryFindBuildingToAttack() {
@@ -120,6 +119,10 @@ public class EnemyBase : OverridableMonoBehaviour {
             return false;
         }
 
+        if (IsDead()) {
+            return false;
+        }
+
         if (enemyAttackState == EEnemyAttackState.COOLING_DOWN) {
             return false;
         }
@@ -137,7 +140,6 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private bool TryAttackBuilding() {
         if (!CanAttckCurrentTarget()) {
-            // SetIdelAnimationState();
             animator.SetBool(ANIMATION_IS_IDLE, true);
             return false;
         }
@@ -188,20 +190,16 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     public void TakeDamage(float damage)
     {
-        // animator.SetBool(ANIMATION_IS_UNDER_STTACK, true);
-        if (animator.GetAnimatorTransitionInfo(0).IsName("bat_damage")) {
-            Debug.Log("bat_damage");
-        }
         currentHitPoint -= damage;
         if (currentHitPoint <= Constants.EPS)
         {
-            //TODO(Huayu): death animations is not played
             animator.SetBool(ANIMATION_IS_DEAD, true);
             MapManager.Instance.RemoveItemFromMap(this.gameObject);
             EnemyManager.Instance.OnEnemyKilled(this);
-            if (animator.GetAnimatorTransitionInfo(0).IsName("bat_die")) {
-                Debug.Log("bat_die");
-            }
         }
+    }
+
+    public bool IsDead() {
+        return currentHitPoint <= Constants.EPS;
     }
 }
