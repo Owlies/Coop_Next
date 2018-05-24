@@ -82,7 +82,6 @@ public class EnemyManager : Singleton<EnemyManager> {
     }
 
     private int GetNumberOfEnemiesForCurrentWave() {
-        return 1;
         return firstWaveEnemyCount + enemyCountIncreaseBetweenWaves * (currentWave - 1);
     }
 
