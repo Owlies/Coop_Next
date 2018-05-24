@@ -24,10 +24,8 @@ public class AttackBuilding : BuildingBase {
 
     public new void Start() {
         base.Start();
-        // This guarantees only one shot is in flight
-        if(attackRange / bulletSpeed < attackCoolDownSeconds) {
-            attackCoolDownSeconds = attackRange / bulletSpeed;
-        }
+
+        attackDamage = 30.0f;
     }
     public override void UpdateMe()
     {

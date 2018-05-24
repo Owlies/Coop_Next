@@ -7,9 +7,7 @@ public class EnemyBase : OverridableMonoBehaviour {
     {
         IDLE,
         MOVING,
-        UNDER_ATTACK,
-        ATTACKING,
-        STUNNED
+        ATTACKING
     }
 
     public enum EEnemyAttackState
@@ -22,14 +20,12 @@ public class EnemyBase : OverridableMonoBehaviour {
     public float MoveSpeed = 5.0f;
     public float MaxHitPoint = 100.0f;
     public float AttackCoolDownSeconds = 5.0f;
-    public float UnderAttackRecoverSeconds = 0.5f;
 
     private float currentHitPoint;
     private Vector3 targetPosition;
     private EEnemyState enemyState;
     private EEnemyAttackState enemyAttackState;
     private BuildingBase attackingTarget;
-    private float startTakingDamageTime;
     private float attackCoolDownStartTime;
 
     private Animator animator;
@@ -44,11 +40,12 @@ public class EnemyBase : OverridableMonoBehaviour {
         enemyState = EEnemyState.IDLE;
         enemyAttackState = EEnemyAttackState.IDLE;
         currentHitPoint = MaxHitPoint;
-        startTakingDamageTime = 0.0f;
         attackCoolDownStartTime = 0.0f;
 
         animator = GetComponent<Animator>();
         SetStateToIdle();
+
+        AttackRange = 10.0f;
     }
 
     private void SetStateToIdle() {
@@ -66,22 +63,22 @@ public class EnemyBase : OverridableMonoBehaviour {
     }
 
     public override void UpdateMe() {
-        base.UpdateMe();
-        UpdateAttackCoolDown();
-        MoveTowardsTarget();
-    }
-
-    public override void FixedUpdateMe() {
         if (TryAttackBuilding()) {
             return;
         }
 
         TryFindBuildingToAttack();
+        UpdateAttackCoolDown();
+        MoveTowardsTarget();
     }
 
     /* Private Methods */
     private bool CanMoveTowardsTarget() {
-        if (enemyState == EEnemyState.STUNNED || enemyState == EEnemyState.ATTACKING) {
+        if ((enemyState != EEnemyState.IDLE) && (enemyState != EEnemyState.MOVING)) {
+            return false;
+        }
+
+        if (attackingTarget != null && Vector3.Distance(attackingTarget.transform.position, transform.position) <= AttackRange) {
             return false;
         }
 
@@ -100,9 +97,9 @@ public class EnemyBase : OverridableMonoBehaviour {
         enemyState = EEnemyState.MOVING;
 
         animator.SetBool(ANIMATION_IS_IDLE, false);
-        animator.SetBool(ANIMATION_IS_UNDER_STTACK, false);
-        animator.SetBool(ANIMATION_IS_ATTACKING, false);
-        animator.SetBool(ANIMATION_IS_DEAD, false);
+        // animator.SetBool(ANIMATION_IS_UNDER_STTACK, false);
+        // animator.SetBool(ANIMATION_IS_ATTACKING, false);
+        // animator.SetBool(ANIMATION_IS_DEAD, false);
     }
 
     private void TryFindBuildingToAttack() {
@@ -127,7 +124,7 @@ public class EnemyBase : OverridableMonoBehaviour {
             return false;
         }
 
-        if (enemyState == EEnemyState.ATTACKING || enemyState == EEnemyState.UNDER_ATTACK) {
+        if (enemyState == EEnemyState.ATTACKING) {
             return false;
         }
 
@@ -140,8 +137,8 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private bool TryAttackBuilding() {
         if (!CanAttckCurrentTarget()) {
-            SetIdelAnimationState();
-            
+            // SetIdelAnimationState();
+            animator.SetBool(ANIMATION_IS_IDLE, true);
             return false;
         }
 
@@ -149,8 +146,10 @@ public class EnemyBase : OverridableMonoBehaviour {
         attackCoolDownStartTime = Time.time;
 
         animator.SetBool(ANIMATION_IS_ATTACKING, true);
+
         enemyAttackState = EEnemyAttackState.COOLING_DOWN;
         enemyState = EEnemyState.ATTACKING;
+        transform.LookAt(attackingTarget.transform);
 
         return true;
     }
@@ -189,8 +188,10 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     public void TakeDamage(float damage)
     {
-        animator.SetBool(ANIMATION_IS_UNDER_STTACK, true);
-        enemyState = EEnemyState.UNDER_ATTACK;
+        // animator.SetBool(ANIMATION_IS_UNDER_STTACK, true);
+        if (animator.GetAnimatorTransitionInfo(0).IsName("bat_damage")) {
+            Debug.Log("bat_damage");
+        }
         currentHitPoint -= damage;
         if (currentHitPoint <= Constants.EPS)
         {
@@ -198,21 +199,9 @@ public class EnemyBase : OverridableMonoBehaviour {
             animator.SetBool(ANIMATION_IS_DEAD, true);
             MapManager.Instance.RemoveItemFromMap(this.gameObject);
             EnemyManager.Instance.OnEnemyKilled(this);
-            Destroy(this.gameObject, 2.0f);
-        }
-    }
-
-    private void TryRecoverStateFromTakingDamage()
-    {
-        if (enemyState != EEnemyState.UNDER_ATTACK)
-        {
-            return;
-        }
-
-        if (Time.time - startTakingDamageTime >= UnderAttackRecoverSeconds)
-        {
-            startTakingDamageTime = 0.0f;
-            SetStateToIdle();
+            if (animator.GetAnimatorTransitionInfo(0).IsName("bat_die")) {
+                Debug.Log("bat_die");
+            }
         }
     }
 }
