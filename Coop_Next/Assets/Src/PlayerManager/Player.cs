@@ -348,11 +348,14 @@ public class Player:OverridableMonoBehaviour
     }
 
     private void RemoveDestroyedNearbyObjects() {
+        HashSet<GameObject> newSet = new HashSet<GameObject>(nearbyInteractiveGameObjects);
         foreach (GameObject obj in nearbyInteractiveGameObjects) {
-            if (obj == null) {
-                nearbyInteractiveGameObjects.Remove(obj);
+            if (obj == null || obj.activeSelf == false) {
+                newSet.Remove(obj);
             }
         }
+
+        nearbyInteractiveGameObjects = newSet;
     }
 
     private GameObject GetNearestInteractiveGameObject() {

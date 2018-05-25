@@ -152,7 +152,6 @@ public class Forge : BuildingBase {
     {
         GameObject resource = actor.GetCarryingItem().gameObject;
         resource.SetActive(false);
-        //GameObject.Destroy(actor.GetCarryingItem().gameObject);
         actor.UnsetCarryingItem();
         resource.transform.parent = transform;
     }
