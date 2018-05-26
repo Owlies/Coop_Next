@@ -139,7 +139,7 @@ public class Forge : BuildingBase {
         resourceList.Add(resource);
         Debug.Log("AddResourceToForge");
 
-        resourceImages[resourceList.Count].sprite = resource.image;
+        resourceImages[resourceList.Count].sprite = resource.iconImage;
 
         OnAddResourceToForgeComplete(actor);
 

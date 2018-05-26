@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,32 +10,49 @@ public class ObjectConfig : ScriptableObject, ISerializationCallbackReceiver
     [SerializeField]
     private ObjectData[] objects;
     public Dictionary<string, ObjectData> objectsDictionary;
+    
+    public Dictionary<ObjectType, Dictionary<ObjectSubType, List<ObjectData>>> objectCollection;
 
     public OrbData[] orbData;
 
-    public ResourceItemMapping[] resourceObject;
-    public Dictionary<ResourceEnum, Resource> resourceEnumToItemMap;
+    public Resource GetResourceByType(ResourceEnum e)
+    {
+        if (objectCollection.ContainsKey(ObjectType.Item) &&
+            objectCollection[ObjectType.Item].ContainsKey(ObjectSubType.ResourceItem))
+        {
+            List<ObjectData> list = objectCollection[ObjectType.Item][ObjectSubType.ResourceItem];
+            foreach(var objectData in list)
+            {
+                if (objectData.item is Resource)
+                {
+                    Resource resource = objectData.item as Resource;
+                    if (resource.resourceEnum == e)
+                        return resource;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public void OnAfterDeserialize()
     {
         // Convert ObjectData
         objectsDictionary = new Dictionary<string, ObjectData>();
-        foreach(var obj in objects)
+        objectCollection = new Dictionary<ObjectType, Dictionary<ObjectSubType, List<ObjectData>>>();
+        foreach (var obj in objects)
         {
+            if (!objectCollection.ContainsKey(obj.type))
+                objectCollection.Add(obj.type, new Dictionary<ObjectSubType, List<ObjectData>>());
+            if (!objectCollection[obj.type].ContainsKey(obj.subType))
+                objectCollection[obj.type].Add(obj.subType, new List<ObjectData>());
+            objectCollection[obj.type][obj.subType].Add(obj);
             string name = obj.name;
             while (objectsDictionary.ContainsKey(name))
                 name += "_d";
             objectsDictionary.Add(name,obj);
         }
         objects = null;
-
-        // Convert ResourceObjets
-        resourceEnumToItemMap = new Dictionary<ResourceEnum, Resource>();
-        foreach (ResourceItemMapping mapping in resourceObject) {
-            resourceEnumToItemMap[mapping.resourceEnum] = mapping.resourceItem;
-        }
-        resourceObject = null;
-
     }
     
     public void OnBeforeSerialize()
@@ -47,18 +65,6 @@ public class ObjectConfig : ScriptableObject, ISerializationCallbackReceiver
             foreach(var obj in objectsDictionary)
             {
                 objects[i++] = obj.Value;
-            }
-        }
-
-        // Convert ResourceObjets
-        if (resourceEnumToItemMap != null && resourceEnumToItemMap.Count > 0) {
-            resourceObject = new ResourceItemMapping[resourceEnumToItemMap.Count];
-            int index = 0;
-            foreach (KeyValuePair<ResourceEnum, Resource> entry in resourceEnumToItemMap) {
-                ResourceItemMapping tmpMapping = new ResourceItemMapping();
-                tmpMapping.resourceEnum = entry.Key;
-                tmpMapping.resourceItem = entry.Value;
-                resourceObject[index++] = tmpMapping;
             }
         }
     }
@@ -75,12 +81,30 @@ public struct ResourceItemMapping {
     public Resource resourceItem;
 }
 
+public enum ObjectType
+{
+    Building,
+    Item,
+}
+
+public enum ObjectSubType
+{
+    AttackBuilding,
+    DefendBuilding,
+    SupportBuilding,
+    FunctionalBuilding,
+    EquipmentItem,
+    ResourceItem,
+}
+
 [System.Serializable]
 public class ObjectData
 {
     public string name;
     public InteractiveItem item;
     public Receipt[] receipts;
+    public ObjectType type;
+    public ObjectSubType subType;
 
     public Vector2Int size
     {

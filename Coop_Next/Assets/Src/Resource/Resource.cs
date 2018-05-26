@@ -7,7 +7,6 @@ public enum ResourceEnum {Rock, Wood, Ore, Coal, ArcaneOrb, NatureOrb, StrengthO
 
 public class Resource : InteractiveItem {
     public ResourceEnum resourceEnum;
-    public Sprite image;
 
     private void Start()
     {

@@ -132,7 +132,8 @@ public class UpdateManager : MonoBehaviour
 		{
 			if (regularArray[i] == null) continue;
 
-			regularArray[i].UpdateMe();
+            if (regularArray[i].isActiveAndEnabled)
+			    regularArray[i].UpdateMe();
 		}
 	}
 

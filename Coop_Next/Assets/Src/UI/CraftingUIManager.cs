@@ -79,7 +79,9 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         Image[] receiptIcons = receiptPanel.GetComponentsInChildren<Image>();
 
         for (int i = 0; i < receiptIcons.Length; i++) {
-            receiptIcons[i].sprite = objectConfig.resourceEnumToItemMap[selectedReceipt.resources[i]].iconImage;
+            Resource resource = objectConfig.GetResourceByType(selectedReceipt.resources[i]);
+            if (resource != null)
+                receiptIcons[i].sprite = resource.iconImage;
         }
     }
 
