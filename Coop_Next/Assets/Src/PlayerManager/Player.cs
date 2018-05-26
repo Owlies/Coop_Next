@@ -75,6 +75,7 @@ public class Player:OverridableMonoBehaviour
         base.UpdateMe();
 
         ShowBuildingPlacementIndicator();
+        SetCarryingItemDirection();
     }
 
     public override void FixedUpdateMe()
@@ -104,6 +105,14 @@ public class Player:OverridableMonoBehaviour
                 MapManager.Instance.RenderGrid(index, new Vector2Int(carryingItem.size.y, carryingItem.size.x));
             }
         }
+    }
+
+    private void SetCarryingItemDirection() {
+        if(carryingItem == null) {
+            return;
+        }
+
+        carryingItem.transform.rotation = gameObject.transform.rotation;
     }
     #endregion
 
@@ -330,7 +339,8 @@ public class Player:OverridableMonoBehaviour
         float newScaleY = carryingItem.transform.localScale.y / AppConstant.Instance.moveBuildingScaleChange;
         float newScaleZ = carryingItem.transform.localScale.z / AppConstant.Instance.moveBuildingScaleChange;
         carryingItem.transform.localScale = new Vector3(newScaleX, newScaleY, newScaleZ);
-
+        carryingItem.transform.rotation = transform.rotation;
+        
         carryingItem.transform.parent = null;
         carryingItem = null;
         playerActionState = EPlayerActionState.IDLE;

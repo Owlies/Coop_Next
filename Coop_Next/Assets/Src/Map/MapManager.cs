@@ -202,7 +202,6 @@ public class MapManager : Singleton<MapManager> {
             gameObjectOnMapDictionary[obj] = true;
             obj.transform.parent = sceneRoot.transform;
             obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
-            obj.transform.rotation = Quaternion.identity;
 
             if (dir == ObjectDir.Vertical)
                 obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));

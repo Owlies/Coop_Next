@@ -54,10 +54,10 @@ public class InteractiveItem : OverridableMonoBehaviour {
         Vector2Int itemPos = MapManager.Instance.GeItemMapPosition(this);
         ObjectDir itemDirection = GetItemDirection();
 
+        MapManager.Instance.PlaceItemOnMap(this, itemPos, itemDirection);
+        
         actor.UnsetCarryingItem();
         actor.SetPlayerActionState(EPlayerActionState.IDLE);
-
-        MapManager.Instance.PlaceItemOnMap(this, itemPos, itemDirection);
 
         return true;
     }
