@@ -12,7 +12,6 @@ public class GameManager : Singleton<GameManager> {
     {
         DontDestroyOnLoad(gameObject);
         SceneManager.LoadScene("Level1", LoadSceneMode.Additive);
-        SQLiteHelper.Instance.InitializeDBConnection();
     }
 	
 	// Update is called once per frame
