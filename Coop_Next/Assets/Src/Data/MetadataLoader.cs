@@ -26,7 +26,6 @@ public class MetadataLoader : Singleton<MetadataLoader> {
     void Initialize(Scene scene, LoadSceneMode sceneMode) {
         sqlHelper = new SQLiteHelper();
 		sqlHelper.InitializeDBConnection();
-        LoadBuildingMetadata();
     }
 	
 	public List<EnemyMetadataDBObject> LoadEnemyMetadata() {
@@ -67,7 +66,6 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         while (reader.Read()) {
             BuildingMetadataDBObject row = new BuildingMetadataDBObject(reader);
             buildingList.Add(row);
-            Debug.Log(row.buildingName);
         }
         sqlHelper.CloseResultReader(reader);
 

@@ -10,18 +10,52 @@ public class EnemyManager : Singleton<EnemyManager> {
     public int enemyCountIncreaseBetweenWaves = 1;
     public int maxEnemyCount = 10;
     public float enemyHPIncreasePercentage = 1.2f;
-
     private int currentWave;
     private int aliveEnemyQuantity;
     private float waveIntervalTimer = 0.0f;
     private Vector3 targetPosition;
-    private List<EnemyBase> allEnemies = new List<EnemyBase>();
-
+    private List<EnemyBase> allEnemies;
+    private Dictionary<int, WaveEnemyConfigMetadataDBObject> waveConfigDictionary;
+    private Dictionary<string, EnemyMetadataDBObject> waveEnemyConfigDictionary;
     // Use this for initialization
     void Start () {
         currentWave = 1;
         aliveEnemyQuantity = 0;
         targetPosition = GameObject.FindGameObjectWithTag("Forge").transform.position;
+
+        allEnemies = new List<EnemyBase>();
+        InitializeWaveConfigDictionary();
+        InitializeWaveEnemyConfigDictionary();
+    }
+
+    private void InitializeWaveConfigDictionary() {
+        waveConfigDictionary = new Dictionary<int, WaveEnemyConfigMetadataDBObject>();
+        List<WaveEnemyConfigMetadataDBObject> configList = MetadataLoader.Instance.LoadWaveEnemyConfigMeatadata();
+        if (configList == null) {
+            Debug.LogError("Failed to InitializeWaveConfigDictionary");
+            return;
+        }
+
+        foreach(WaveEnemyConfigMetadataDBObject config in configList) {
+            waveConfigDictionary[config.waveNumber] = config;
+        }
+    }
+
+    public string GetKeyForEnemyConfig(int waveNumber, EnemyTypeEnum enemyType) {
+        return waveNumber + "_" + enemyType.ToString();
+    }
+
+    private void InitializeWaveEnemyConfigDictionary() {
+        waveEnemyConfigDictionary = new Dictionary<string, EnemyMetadataDBObject>();
+        List<EnemyMetadataDBObject> enemyList = MetadataLoader.Instance.LoadEnemyMetadata();
+        if (enemyList == null) {
+            Debug.LogError("Failed to InitializeWaveEnemyConfigDictionary");
+            return;
+        }
+
+        foreach(EnemyMetadataDBObject enemyConfig in enemyList) {
+            waveEnemyConfigDictionary[GetKeyForEnemyConfig(enemyConfig.waveNumber, enemyConfig.enemyType)] = enemyConfig;
+        }
     }
 
     private bool CanStartNextWave() {
