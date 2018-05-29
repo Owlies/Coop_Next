@@ -27,15 +27,24 @@ public class EnemyBase : OverridableMonoBehaviour {
     private EEnemyAttackState enemyAttackState;
     private BuildingBase attackingTarget;
     private float attackCoolDownStartTime;
+    private EnemyTypeEnum type;
 
     private Animator animator;
     private string ANIMATION_IS_IDLE = "isIdle";
     private string ANIMATION_IS_ATTACKING = "isAttacking";
     private string ANIMATION_IS_DEAD = "isDead";
 
-    public void Initialize(int currentWave, float enemyHPIncreasePercentage, Vector3 targetPos) {
-        MaxHitPoint = MaxHitPoint * Mathf.Pow(enemyHPIncreasePercentage, currentWave);
+    public void Initialize(int currentWave, float hp, int attack, int attackFrequenccy, float attackRange, float moveSpeed, EnemyTypeEnum enemyType, Vector3 targetPos) {
+        MaxHitPoint = hp;
         targetPosition = targetPos;
+        AttackDamage = attack;
+
+        AttackRange = attackRange;
+
+        type = enemyType;
+        AttackCoolDownSeconds = 1.0f / attackFrequenccy;
+        MoveSpeed = moveSpeed;
+
         enemyState = EEnemyState.IDLE;
         enemyAttackState = EEnemyAttackState.IDLE;
         currentHitPoint = MaxHitPoint;

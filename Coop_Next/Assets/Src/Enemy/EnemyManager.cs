@@ -6,22 +6,63 @@ public class EnemyManager : Singleton<EnemyManager> {
     public LevelConfig levelConfig;
     public float waveInterval;
     public GameObject[] enemySpawnLocations;
-    public int firstWaveEnemyCount = 2;
-    public int enemyCountIncreaseBetweenWaves = 1;
-    public int maxEnemyCount = 10;
-    public float enemyHPIncreasePercentage = 1.2f;
 
     private int currentWave;
     private int aliveEnemyQuantity;
     private float waveIntervalTimer = 0.0f;
     private Vector3 targetPosition;
-    private List<EnemyBase> allEnemies = new List<EnemyBase>();
-
+    private List<EnemyBase> allEnemies;
+    private Dictionary<int, WaveEnemyConfigMetadataDBObject> waveConfigDictionary;
+    private Dictionary<string, EnemyMetadataDBObject> enemyConfigDictionary;
     // Use this for initialization
     void Start () {
         currentWave = 1;
         aliveEnemyQuantity = 0;
         targetPosition = GameObject.FindGameObjectWithTag("Forge").transform.position;
+
+        allEnemies = new List<EnemyBase>();
+        InitializeWaveConfigDictionary();
+        InitializeEnemyConfigDictionary();
+    }
+
+    private void InitializeWaveConfigDictionary() {
+        waveConfigDictionary = new Dictionary<int, WaveEnemyConfigMetadataDBObject>();
+        List<WaveEnemyConfigMetadataDBObject> configList = MetadataLoader.Instance.LoadWaveEnemyConfigMeatadata();
+        if (configList == null) {
+            Debug.LogError("Failed to InitializeWaveConfigDictionary");
+            return;
+        }
+
+        foreach(WaveEnemyConfigMetadataDBObject config in configList) {
+            waveConfigDictionary[config.waveNumber] = config;
+        }
+    }
+
+    public string GetKeyForEnemyConfig(int waveNumber, EnemyTypeEnum enemyType) {
+        return waveNumber + "_" + enemyType.ToString();
+    }
+
+    private void InitializeEnemyConfigDictionary() {
+        enemyConfigDictionary = new Dictionary<string, EnemyMetadataDBObject>();
+        List<EnemyMetadataDBObject> enemyList = MetadataLoader.Instance.LoadEnemyMetadata();
+        if (enemyList == null) {
+            Debug.LogError("Failed to InitializeWaveEnemyConfigDictionary");
+            return;
+        }
+
+        foreach(EnemyMetadataDBObject enemyConfig in enemyList) {
+            enemyConfigDictionary[GetKeyForEnemyConfig(enemyConfig.waveNumber, enemyConfig.enemyType)] = enemyConfig;
+        }
+    }
+
+    public override void UpdateMe() {
+        if (CanStartNextWave())
+        {
+            StartNextWave();
+        }
+        else if (aliveEnemyQuantity == 0){
+            waveIntervalTimer += Time.deltaTime;
+        }
     }
 
     private bool CanStartNextWave() {
@@ -37,28 +78,60 @@ public class EnemyManager : Singleton<EnemyManager> {
     }
 
     public void StartNextWave() {
-        int enemyQuantity = GetNumberOfEnemiesForCurrentWave();
-        if (enemyQuantity > maxEnemyCount) {
-            enemyQuantity = maxEnemyCount;
-        }
-
-        aliveEnemyQuantity = enemyQuantity * enemySpawnLocations.Length;
-
-        for (int i = 0; i < enemySpawnLocations.Length; i++) {
-            SpawnRandomEnemyWithQuantity(enemyQuantity, enemySpawnLocations[i]);
-            break;
-        }
+        SpawnEnemyForWaveWithType(EnemyTypeEnum.AVERAGE);
+        SpawnEnemyForWaveWithType(EnemyTypeEnum.ATTACK);
+        SpawnEnemyForWaveWithType(EnemyTypeEnum.DEFEND);
+        SpawnEnemyForWaveWithType(EnemyTypeEnum.SMALL_BOSS);
+        SpawnEnemyForWaveWithType(EnemyTypeEnum.BIG_BOSS);
 
         currentWave++;
     }
 
-    public override void UpdateMe() {
-        if (CanStartNextWave())
-        {
-            StartNextWave();
+    private void SpawnEnemyForWaveWithType(EnemyTypeEnum type) {
+        WaveEnemyConfigMetadataDBObject waveConfig = waveConfigDictionary[currentWave];
+        int enemyQuantity = 0;
+
+        switch(type) {
+            case EnemyTypeEnum.AVERAGE:
+                enemyQuantity = waveConfig.averageEnemyQuantity;
+                break;
+            case EnemyTypeEnum.ATTACK:
+                enemyQuantity = waveConfig.attackEnemyQuantity;
+                break;
+            case EnemyTypeEnum.DEFEND:
+                enemyQuantity = waveConfig.defendEnemyQuantity;
+                break;
+            case EnemyTypeEnum.SMALL_BOSS:
+                enemyQuantity = waveConfig.smallBossQuantity;
+                break;
+            case EnemyTypeEnum.BIG_BOSS:
+                enemyQuantity = waveConfig.bigBossQuantity;
+                break;
+
         }
-        else if (aliveEnemyQuantity == 0){
-            waveIntervalTimer += Time.deltaTime;
+
+        if (enemyQuantity == 0) {
+            return;
+        }
+        
+        aliveEnemyQuantity += enemyQuantity * enemySpawnLocations.Length;
+
+        string key = GetKeyForEnemyConfig(currentWave, type);
+        if(!enemyConfigDictionary.ContainsKey(key)) {
+            Debug.LogError("Can't find " + key + " config in enemyConfigDictionary");
+        }
+        EnemyMetadataDBObject config = enemyConfigDictionary[key];
+
+        for (int i = 0; i < enemySpawnLocations.Length; i++) {
+            SpawnEnemyWithConfig(enemySpawnLocations[i], enemyQuantity, config);
+        }
+        
+    }
+
+    private void SpawnEnemyWithConfig(GameObject spawnLocation, int quantity, EnemyMetadataDBObject config) {
+        GameObject enemyPrefab = levelConfig.enemyPrefabs[Random.Range(0, levelConfig.enemyPrefabs.Length)];
+        for(int i = 0; i < quantity; i++) {
+            SpawnEnemyAtPosition(enemyPrefab, spawnLocation.transform.position, config);
         }
     }
 
@@ -81,22 +154,7 @@ public class EnemyManager : Singleton<EnemyManager> {
         return allEnemies;
     }
 
-    private int GetNumberOfEnemiesForCurrentWave() {
-        return firstWaveEnemyCount + enemyCountIncreaseBetweenWaves * (currentWave - 1);
-    }
-
-    private void SpawnRandomEnemyWithQuantity(int quantity, GameObject spawnLocation) {
-        for (int i = 0; i < quantity; i++) {
-            SpawnAnRandomEnemy(spawnLocation);
-        }
-    }
-
-    private void SpawnAnRandomEnemy(GameObject spawnLocation) {
-        GameObject enemyPrefab = levelConfig.enemyPrefabs[Random.Range(0, levelConfig.enemyPrefabs.Length)];
-        SpawnEnemyAtPosition(enemyPrefab, spawnLocation.transform.position);
-    }
-
-    private void SpawnEnemyAtPosition(GameObject enemyPrefab, Vector3 pos) {
+    private void SpawnEnemyAtPosition(GameObject enemyPrefab, Vector3 pos, EnemyMetadataDBObject config) {
         GameObject enemyObject = GameObject.Instantiate(enemyPrefab, pos, Quaternion.identity);
         EnemyBase enemy = enemyObject.GetComponent<EnemyBase>();
         if (enemy == null) {
@@ -106,7 +164,7 @@ public class EnemyManager : Singleton<EnemyManager> {
         }
 
         allEnemies.Add(enemy);
-        enemy.Initialize(currentWave, enemyHPIncreasePercentage, targetPosition);
+        enemy.Initialize(currentWave, config.hp, config.attack, config.attackFrequency, config.attackFrequency, config.moveSpeed, config.enemyType, targetPosition);
     }
 
     #endregion
