@@ -20,36 +20,39 @@ public class EnemyBase : OverridableMonoBehaviour {
     public float MoveSpeed = 5.0f;
     public float MaxHitPoint = 100.0f;
     public float AttackCoolDownSeconds = 5.0f;
+    public float SearchRange = 15.0f;
 
     private float currentHitPoint;
-    private Vector3 targetPosition;
+    private List<GameObject> targetGameOjbects;
     private EEnemyState enemyState;
     private EEnemyAttackState enemyAttackState;
     private BuildingBase attackingTarget;
     private float attackCoolDownStartTime;
     private EnemyTypeEnum type;
+    
 
     private Animator animator;
     private string ANIMATION_IS_IDLE = "isIdle";
     private string ANIMATION_IS_ATTACKING = "isAttacking";
     private string ANIMATION_IS_DEAD = "isDead";
 
-    public void Initialize(int currentWave, float hp, int attack, int attackFrequenccy, float attackRange, float moveSpeed, EnemyTypeEnum enemyType, Vector3 targetPos) {
-        MaxHitPoint = hp;
-        targetPosition = targetPos;
-        AttackDamage = attack;
+    public void Initialize(int currentWave, EnemyMetadataDBObject config, GameObject targetGameObject) {
+        targetGameOjbects = new List<GameObject>();
+        targetGameOjbects.Add(targetGameObject);
 
-        AttackRange = attackRange;
-
-        type = enemyType;
-        AttackCoolDownSeconds = 1.0f / attackFrequenccy;
-        MoveSpeed = moveSpeed;
+        MaxHitPoint = config.hp;
+        AttackDamage = config.attack;
+        AttackRange = config.attackRange;
+        type = config.enemyType;
+        AttackCoolDownSeconds = 1.0f / config.attackFrequency;
+        MoveSpeed = config.moveSpeed;
+        SearchRange = config.searchRange;
 
         enemyState = EEnemyState.IDLE;
         enemyAttackState = EEnemyAttackState.IDLE;
         currentHitPoint = MaxHitPoint;
         attackCoolDownStartTime = 0.0f;
-
+        
         animator = GetComponent<Animator>();
         SetStateToIdle();
 
@@ -77,9 +80,32 @@ public class EnemyBase : OverridableMonoBehaviour {
         TryFindBuildingToAttack();
         UpdateAttackCoolDown();
         MoveTowardsTarget();
+        UpdateMovingTargets();
     }
 
     /* Private Methods */
+    private void UpdateMovingTargets() {
+        List<GameObject> newTargetList = new List<GameObject>();
+        newTargetList.Add(targetGameOjbects[0]);
+        for(int i = 1; i < targetGameOjbects.Count; i++) {
+            if(targetGameOjbects[i] != null) {
+                newTargetList.Add(targetGameOjbects[i]);
+            }
+        }
+
+        targetGameOjbects = newTargetList;
+    }
+    private Vector3 GetCurrentMovingTargetPosition() {
+        for(int i = targetGameOjbects.Count - 1; i >= 0; i--) {
+            if (targetGameOjbects[i] == null) {
+                continue;
+            }
+
+            return targetGameOjbects[i].transform.position;
+        }
+
+        return targetGameOjbects[0].transform.position;
+    }
     private bool CanMoveTowardsTarget() {
         if (IsDead()) {
             return false;
@@ -102,8 +128,10 @@ public class EnemyBase : OverridableMonoBehaviour {
         }
 
         float step = MoveSpeed * Time.deltaTime;
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
-        transform.LookAt(targetPosition);
+
+        Vector3 targetPos = GetCurrentMovingTargetPosition();
+        transform.position = Vector3.MoveTowards(transform.position, targetPos, step);
+        transform.LookAt(targetPos);
 
         enemyState = EEnemyState.MOVING;
 
@@ -121,6 +149,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         }
 
         attackingTarget = buildingToAttack;
+        targetGameOjbects.Add(attackingTarget.gameObject);
     }
 
     private bool CanAttckCurrentTarget() {
@@ -180,13 +209,23 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private BuildingBase GetHighestAttackPriorityBuildingsWithinRange() {
         BuildingBase highestAttackPriorityBuilding = null;
+        float minDistance = int.MaxValue;
         foreach (var item in MapManager.Instance.GetCollectionOfItemsOnMap<BuildingBase>()) {
-            if (Vector3.Distance(item.transform.position, transform.position) > AttackRange) {
+            if (item.gameObject.tag != "Building" || Vector3.Distance(item.transform.position, transform.position) > SearchRange) {
                 continue;
             }
 
             if (highestAttackPriorityBuilding == null || highestAttackPriorityBuilding.AttackingPriority < item.AttackingPriority) {
                 highestAttackPriorityBuilding = item;
+                continue;
+            }
+
+            if (highestAttackPriorityBuilding.AttackingPriority == item.AttackingPriority) {
+                float dis = Vector3.Distance(transform.position, item.transform.position);
+                if (minDistance > dis) {
+                    highestAttackPriorityBuilding = item;
+                    minDistance = dis;
+                }
             }
         }
 
