@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProgressBar;
 
 public class EnemyBase : OverridableMonoBehaviour {
     public enum EEnemyState
@@ -36,6 +37,8 @@ public class EnemyBase : OverridableMonoBehaviour {
     private string ANIMATION_IS_ATTACKING = "isAttacking";
     private string ANIMATION_IS_DEAD = "isDead";
 
+    private ProgressBarBehaviour hpProgressBar;
+
     public void Initialize(int currentWave, EnemyMetadataDBObject config, GameObject targetGameObject) {
         targetGameOjbects = new List<GameObject>();
         targetGameOjbects.Add(targetGameObject);
@@ -53,6 +56,11 @@ public class EnemyBase : OverridableMonoBehaviour {
         currentHitPoint = MaxHitPoint;
         attackCoolDownStartTime = 0.0f;
         
+        hpProgressBar = GetComponentInChildren<ProgressBarBehaviour>();
+        hpProgressBar.Value = 100.0f;
+        hpProgressBar.TransitoryValue = 0.0f;
+        hpProgressBar.ProgressSpeed = 1000;
+
         animator = GetComponent<Animator>();
         SetStateToIdle();
 
@@ -81,9 +89,15 @@ public class EnemyBase : OverridableMonoBehaviour {
         UpdateAttackCoolDown();
         MoveTowardsTarget();
         UpdateMovingTargets();
+        UpdateHPBar();
     }
 
     /* Private Methods */
+    private void UpdateHPBar() {
+        float value = 100.0f * (currentHitPoint / MaxHitPoint);
+        hpProgressBar.Value = value;
+        Debug.Log(value);
+    }
     private void UpdateMovingTargets() {
         List<GameObject> newTargetList = new List<GameObject>();
         newTargetList.Add(targetGameOjbects[0]);
