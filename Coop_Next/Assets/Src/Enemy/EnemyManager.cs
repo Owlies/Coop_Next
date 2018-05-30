@@ -124,7 +124,6 @@ public class EnemyManager : Singleton<EnemyManager> {
 
         for (int i = 0; i < enemySpawnLocations.Length; i++) {
             SpawnEnemyWithConfig(enemySpawnLocations[i], enemyQuantity, config);
-            break;
         }
         
     }
