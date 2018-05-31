@@ -10,7 +10,7 @@ public class EnemyManager : Singleton<EnemyManager> {
     private int currentWave;
     private int aliveEnemyQuantity;
     private float waveIntervalTimer = 0.0f;
-    private Vector3 targetPosition;
+    private GameObject targetGameObject;
     private List<EnemyBase> allEnemies;
     private Dictionary<int, WaveEnemyConfigMetadataDBObject> waveConfigDictionary;
     private Dictionary<string, EnemyMetadataDBObject> enemyConfigDictionary;
@@ -18,7 +18,7 @@ public class EnemyManager : Singleton<EnemyManager> {
     void Start () {
         currentWave = 1;
         aliveEnemyQuantity = 0;
-        targetPosition = GameObject.FindGameObjectWithTag("Forge").transform.position;
+        targetGameObject = GameObject.FindGameObjectWithTag("Forge");
 
         allEnemies = new List<EnemyBase>();
         InitializeWaveConfigDictionary();
@@ -164,7 +164,7 @@ public class EnemyManager : Singleton<EnemyManager> {
         }
 
         allEnemies.Add(enemy);
-        enemy.Initialize(currentWave, config.hp, config.attack, config.attackFrequency, config.attackFrequency, config.moveSpeed, config.enemyType, targetPosition);
+        enemy.Initialize(currentWave, config, targetGameObject);
     }
 
     #endregion
