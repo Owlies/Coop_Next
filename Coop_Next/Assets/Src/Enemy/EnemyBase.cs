@@ -57,6 +57,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         attackCoolDownStartTime = 0.0f;
         
         hpProgressBar = GetComponentInChildren<ProgressBarBehaviour>();
+
         hpProgressBar.Value = 100.0f;
         hpProgressBar.TransitoryValue = 0.0f;
         hpProgressBar.ProgressSpeed = 1000;
@@ -94,9 +95,7 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     /* Private Methods */
     private void UpdateHPBar() {
-        float value = 100.0f * (currentHitPoint / MaxHitPoint);
-        hpProgressBar.Value = value;
-        Debug.Log(value);
+        hpProgressBar.Value = 100.0f * (currentHitPoint / MaxHitPoint);
     }
     private void UpdateMovingTargets() {
         List<GameObject> newTargetList = new List<GameObject>();

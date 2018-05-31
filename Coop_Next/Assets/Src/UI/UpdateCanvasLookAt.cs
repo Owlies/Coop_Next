@@ -8,6 +8,9 @@ public class UpdateCanvasLookAt : OverridableMonoBehaviour {
     // Use this for initialization
     void Start () {
         canvas = GetComponentInChildren<Canvas>();
+        if(canvas == null) {
+            return;
+        }
         canvas.worldCamera = Camera.main;
         canvas.enabled = canvasEnableOnStart;
     }
@@ -15,7 +18,10 @@ public class UpdateCanvasLookAt : OverridableMonoBehaviour {
     // Update is called once per frame
     public override void LateUpdateMe()
     {
-        //canvas.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
+        if (canvas == null) {
+            return;
+        }
+        // canvas.transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
         canvas.transform.rotation = Camera.main.transform.rotation;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProgressBar;
 
 public enum ERarity
 {
@@ -26,18 +27,31 @@ public class BuildingBase : InteractiveItem {
     protected EBuildingState buildingState;
     private float startTakingDamageTime;
 
+    private ProgressBarBehaviour hpProgressBar;
+
     public TimingCallbacks callbacks;
 
     public void Start() {
         currentHitPoint = MaxHitPoint;
         buildingState = EBuildingState.IDLE;
         startTakingDamageTime = 0.0f;
+
+        hpProgressBar = GetComponentInChildren<ProgressBarBehaviour>();
+
+        hpProgressBar.Value = 100.0f;
+        hpProgressBar.TransitoryValue = 0.0f;
+        hpProgressBar.ProgressSpeed = 1000;
     }
 
     public override void UpdateMe()
     {
         base.UpdateMe();
         TryRecoverStateFromTakingDamage();
+        UpdateHPBar();
+    }
+
+    private void UpdateHPBar() {
+        hpProgressBar.Value = 100.0f * (currentHitPoint / MaxHitPoint);
     }
 
     #region LongPressAction
