@@ -27,7 +27,7 @@ public class BuildingBase : InteractiveItem {
     protected EBuildingState buildingState;
     private float startTakingDamageTime;
 
-    private ProgressBarBehaviour hpProgressBar;
+    private HpBarBehaviour hpBarBehaviour;
 
     public TimingCallbacks callbacks;
 
@@ -36,22 +36,13 @@ public class BuildingBase : InteractiveItem {
         buildingState = EBuildingState.IDLE;
         startTakingDamageTime = 0.0f;
 
-        hpProgressBar = GetComponentInChildren<ProgressBarBehaviour>();
-
-        hpProgressBar.Value = 100.0f;
-        hpProgressBar.TransitoryValue = 0.0f;
-        hpProgressBar.ProgressSpeed = 1000;
+        hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
     }
 
     public override void UpdateMe()
     {
         base.UpdateMe();
         TryRecoverStateFromTakingDamage();
-        UpdateHPBar();
-    }
-
-    private void UpdateHPBar() {
-        hpProgressBar.Value = 100.0f * (currentHitPoint / MaxHitPoint);
     }
 
     #region LongPressAction
@@ -96,6 +87,11 @@ public class BuildingBase : InteractiveItem {
         currentHitPoint -= damage;
         startTakingDamageTime = Time.time;
         buildingState = EBuildingState.TAKING_DAMAGE;
+
+        if (hpBarBehaviour != null) {
+            hpBarBehaviour.UpdateHpBar(currentHitPoint, MaxHitPoint);
+        }
+        
         if (currentHitPoint <= Constants.EPS) {
             MapManager.Instance.OnItemDestroyed(this.gameObject);
             Destroy(this.gameObject);

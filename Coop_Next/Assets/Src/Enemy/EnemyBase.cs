@@ -37,7 +37,7 @@ public class EnemyBase : OverridableMonoBehaviour {
     private string ANIMATION_IS_ATTACKING = "isAttacking";
     private string ANIMATION_IS_DEAD = "isDead";
 
-    private ProgressBarBehaviour hpProgressBar;
+    private HpBarBehaviour hpBarBehaviour;
 
     public void Initialize(int currentWave, EnemyMetadataDBObject config, GameObject targetGameObject) {
         targetGameOjbects = new List<GameObject>();
@@ -55,12 +55,11 @@ public class EnemyBase : OverridableMonoBehaviour {
         enemyAttackState = EEnemyAttackState.IDLE;
         currentHitPoint = MaxHitPoint;
         attackCoolDownStartTime = 0.0f;
-        
-        hpProgressBar = GetComponentInChildren<ProgressBarBehaviour>();
 
-        hpProgressBar.Value = 100.0f;
-        hpProgressBar.TransitoryValue = 0.0f;
-        hpProgressBar.ProgressSpeed = 1000;
+        hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
+        if (hpBarBehaviour == null) {
+            Debug.LogError("Enemy missing HP bar component");
+        }
 
         animator = GetComponent<Animator>();
         SetStateToIdle();
@@ -90,13 +89,9 @@ public class EnemyBase : OverridableMonoBehaviour {
         UpdateAttackCoolDown();
         MoveTowardsTarget();
         UpdateMovingTargets();
-        UpdateHPBar();
     }
 
     /* Private Methods */
-    private void UpdateHPBar() {
-        hpProgressBar.Value = 100.0f * (currentHitPoint / MaxHitPoint);
-    }
     private void UpdateMovingTargets() {
         List<GameObject> newTargetList = new List<GameObject>();
         newTargetList.Add(targetGameOjbects[0]);
@@ -252,6 +247,12 @@ public class EnemyBase : OverridableMonoBehaviour {
     public void TakeDamage(float damage)
     {
         currentHitPoint -= damage;
+        
+        if (hpBarBehaviour != null) {
+            hpBarBehaviour.UpdateHpBar(currentHitPoint, MaxHitPoint);
+        }
+        
+
         if (currentHitPoint <= Constants.EPS)
         {
             animator.SetBool(ANIMATION_IS_DEAD, true);
