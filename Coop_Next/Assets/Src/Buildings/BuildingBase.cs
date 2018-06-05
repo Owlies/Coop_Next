@@ -31,6 +31,10 @@ public class BuildingBase : InteractiveItem {
 
     public TimingCallbacks callbacks;
 
+    private void InitializeWithBuildingConfig() {
+
+    }
+
     public void Start() {
         currentHitPoint = MaxHitPoint;
         buildingState = EBuildingState.IDLE;
