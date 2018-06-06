@@ -13,8 +13,6 @@ public class ObjectConfig : ScriptableObject, ISerializationCallbackReceiver
     
     public Dictionary<ObjectType, Dictionary<ObjectSubType, List<ObjectData>>> objectCollection;
 
-    public OrbData[] orbData;
-
     public Resource GetResourceByType(ResourceEnum e)
     {
         if (objectCollection.ContainsKey(ObjectType.Item) &&
@@ -127,4 +125,18 @@ public class ObjectData
                 return item.gameObject;
         }
     }
+}
+
+[System.Serializable]
+public class ItemData
+{
+    public string name;
+    public string description;
+    public string actionName;
+}
+
+[System.Serializable]
+public class LootData
+{
+
 }

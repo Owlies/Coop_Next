@@ -96,7 +96,6 @@ public class EnemyBase : OverridableMonoBehaviour {
     private void UpdateHPBar() {
         float value = 100.0f * (currentHitPoint / MaxHitPoint);
         hpProgressBar.Value = value;
-        Debug.Log(value);
     }
     private void UpdateMovingTargets() {
         List<GameObject> newTargetList = new List<GameObject>();
