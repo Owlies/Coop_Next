@@ -19,9 +19,9 @@ public class BuildingBase : InteractiveItem {
         TAKING_DAMAGE
     }
 
-    public float MaxHitPoint = 100.0f;
+    public float maxHitPoint = 100.0f;
     public float coolDownFactor = 1.0f;
-    public int AttackingPriority = 1;
+    public int underAttackingPriority = 1;
 
     private float currentHitPoint;
     protected EBuildingState buildingState;
@@ -31,16 +31,25 @@ public class BuildingBase : InteractiveItem {
 
     public TimingCallbacks callbacks;
 
-    private void InitializeWithBuildingConfig() {
-
-    }
-
     public void Start() {
-        currentHitPoint = MaxHitPoint;
+        InitializeWithBuildingConfig();
+
+        currentHitPoint = maxHitPoint;
         buildingState = EBuildingState.IDLE;
         startTakingDamageTime = 0.0f;
 
         hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
+    }
+
+    private void InitializeWithBuildingConfig() {
+        BuildingMetadataDBObject metadata = MapManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+        if (metadata == null) {
+            return;
+        }
+        maxHitPoint = metadata.hp;
+        underAttackingPriority = metadata.underAttackPriority;
+        name = metadata.buildingName;
+        itemId = metadata.buildingId;
     }
 
     public override void UpdateMe()
@@ -93,7 +102,7 @@ public class BuildingBase : InteractiveItem {
         buildingState = EBuildingState.TAKING_DAMAGE;
 
         if (hpBarBehaviour != null) {
-            hpBarBehaviour.UpdateHpBar(currentHitPoint, MaxHitPoint);
+            hpBarBehaviour.UpdateHpBar(currentHitPoint, maxHitPoint);
         }
         
         if (currentHitPoint <= Constants.EPS) {

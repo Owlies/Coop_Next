@@ -4,8 +4,31 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager> {
-    private EventCenter eventCenter;
-    private PlayerManager playerManager;
+
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += this.OnSceneLoaded;
+    }
+
+    /// <summary>
+    /// This function is called when the behaviour becomes disabled or inactive.
+    /// </summary>
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= this.OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) {
+        // Don't initialize server for main scene
+        if (scene.name.Equals("main")) {
+            return;
+        }
+
+        InitializeServices();
+    }
 
     // Use this for initialization
     void Start ()
@@ -13,15 +36,20 @@ public class GameManager : Singleton<GameManager> {
         DontDestroyOnLoad(gameObject);
         SceneManager.LoadScene("Level1", LoadSceneMode.Additive);
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     void InitializeServices() {
-        eventCenter = EventCenter.Instance;
-        playerManager = PlayerManager.Instance;
+         Debug.Log("InitializeServices");
+
+        MetadataLoader.Instance.Initialize();
+        TechTreeManager.Instance.Initialize();
+
+        MapManager.Instance.Initialize();
+        EnemyManager.Instance.Initialize();
+
+        // TODO(Huayu): Hook up with real player number
+        PlayerManager.Instance.Initialize(1);
+
+        CraftingManager.Instance.Initialize();
     }
 
 }

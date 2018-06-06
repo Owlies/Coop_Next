@@ -16,7 +16,7 @@ public class CraftingManager : Singleton<CraftingManager> {
     private HashSet<InteractiveItem> tmpEligibleCrafts;
 
     // Use this for initialization
-    void Start() {
+    public void Initialize() {
         tmpEligibleCrafts = new HashSet<InteractiveItem>();
         slotIndexRefreshStartTimeMap = new Dictionary<int, double>();
         unlockedCrafts = new List<InteractiveItem>();

@@ -24,6 +24,14 @@ public class AttackBuilding : BuildingBase {
 
     public new void Start() {
         base.Start();
+        InitializeWithBuildingConfig();
+    }
+
+    private void InitializeWithBuildingConfig() {
+        BuildingMetadataDBObject metadata = MapManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+        attackDamage = metadata.attack;
+        attackCoolDownSeconds = 1.0f / metadata.attackFrequency;
+        attackRange = metadata.attackRange;
     }
     public override void UpdateMe()
     {
@@ -39,6 +47,10 @@ public class AttackBuilding : BuildingBase {
 
     private void TryFindEnemyToAttack()
     {
+        if (attackingEnemy != null) {
+            return;
+        }
+        
         EnemyBase enemy = GetEnemyWithinRange();
         if (enemy == null)
         {

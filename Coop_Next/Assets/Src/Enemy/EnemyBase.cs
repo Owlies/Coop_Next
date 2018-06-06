@@ -19,7 +19,7 @@ public class EnemyBase : OverridableMonoBehaviour {
     public float AttackDamage = 30.0f;
     public float AttackRange = 100.0f;
     public float MoveSpeed = 5.0f;
-    public float MaxHitPoint = 100.0f;
+    public float maxHitPoint = 100.0f;
     public float AttackCoolDownSeconds = 5.0f;
     public float SearchRange = 15.0f;
 
@@ -43,7 +43,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         targetGameOjbects = new List<GameObject>();
         targetGameOjbects.Add(targetGameObject);
 
-        MaxHitPoint = config.hp;
+        maxHitPoint = config.hp;
         AttackDamage = config.attack;
         AttackRange = config.attackRange;
         type = config.enemyType;
@@ -53,7 +53,7 @@ public class EnemyBase : OverridableMonoBehaviour {
 
         enemyState = EEnemyState.IDLE;
         enemyAttackState = EEnemyAttackState.IDLE;
-        currentHitPoint = MaxHitPoint;
+        currentHitPoint = maxHitPoint;
         attackCoolDownStartTime = 0.0f;
 
         hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
@@ -225,13 +225,13 @@ public class EnemyBase : OverridableMonoBehaviour {
 
             float dis = Vector3.Distance(transform.position, item.transform.position);
 
-            if (highestAttackPriorityBuilding == null || highestAttackPriorityBuilding.AttackingPriority < item.AttackingPriority) {
+            if (highestAttackPriorityBuilding == null || highestAttackPriorityBuilding.underAttackingPriority < item.underAttackingPriority) {
                 highestAttackPriorityBuilding = item;
                 minDistance = dis;
                 continue;
             }
 
-            if (highestAttackPriorityBuilding.AttackingPriority == item.AttackingPriority) { 
+            if (highestAttackPriorityBuilding.underAttackingPriority == item.underAttackingPriority) { 
                 if (minDistance > dis) {
                     highestAttackPriorityBuilding = item;
                     minDistance = dis;
@@ -251,7 +251,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         currentHitPoint -= damage;
         
         if (hpBarBehaviour != null) {
-            hpBarBehaviour.UpdateHpBar(currentHitPoint, MaxHitPoint);
+            hpBarBehaviour.UpdateHpBar(currentHitPoint, maxHitPoint);
         }
         
 

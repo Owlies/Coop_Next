@@ -7,19 +7,6 @@ public class PlayerManager : Singleton<PlayerManager> {
     public GameObject playerPrefab;
     private List<Player> players = new List<Player>();
 
-	// Use this for initialization
-	void Start () {
-        //TODO(Huayu): Hook up with GameManager
-
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
-    }
-
-    void OnSceneLoaded(Scene scence, LoadSceneMode mod)
-    {
-        Initialize(1);
-    }
-
     public void Initialize(int numberOfPlayers) {
         for (int playerId = 0; playerId < numberOfPlayers; playerId++) {
             GameObject playerObject = GameObject.Instantiate(playerPrefab) as GameObject;

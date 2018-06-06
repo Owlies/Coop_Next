@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TechTreeManager : Singleton<TechTreeManager> {
     private Dictionary<string, int> techTreeLevelMap;
 
-	// Use this for initialization
-	void Start () {
+    public void Initialize() {
         InitializeWithBuildings();
     }
 
@@ -50,5 +50,13 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         }
 
         return techTreeLevelMap[item.techTreeId];
+    }
+
+    public int GetItemLevel(string techTreeId) {
+        if (!techTreeLevelMap.ContainsKey(techTreeId)) {
+            return 0;
+        }
+
+        return techTreeLevelMap[techTreeId];
     }
 }

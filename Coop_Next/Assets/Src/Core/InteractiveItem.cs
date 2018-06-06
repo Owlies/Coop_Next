@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractiveItem : OverridableMonoBehaviour {
+    public int itemId;
     public int maxAllowed = 99;
     public ERarity rarity = ERarity.COMMON;
     public string techTreeId = "";

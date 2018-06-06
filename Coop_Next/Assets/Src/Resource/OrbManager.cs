@@ -46,7 +46,7 @@ public class OrbManager : Singleton<OrbManager>
     static public void AddBasicHitPoint(InteractiveItem item)
     {
         if (item is BuildingBase)
-            (item as BuildingBase).MaxHitPoint *= 1.5f;
+            (item as BuildingBase).maxHitPoint *= 1.5f;
     }
 
     static public void AddAttackDamage(InteractiveItem item)
@@ -59,7 +59,7 @@ public class OrbManager : Singleton<OrbManager>
     static public void AddHitPoint(InteractiveItem item)
     {
         if (item is BuildingBase)
-            (item as BuildingBase).MaxHitPoint *= 3f;
+            (item as BuildingBase).maxHitPoint *= 3f;
     }
 
     static public void ReduceCoolDown(InteractiveItem item)
