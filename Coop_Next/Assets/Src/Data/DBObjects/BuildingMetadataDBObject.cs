@@ -11,6 +11,8 @@ public class BuildingMetadataDBObject {
 	public int hp;
 	public int attack;
 	public int attackFrequency;
+	public int attackRange;
+	public int underAttackPriority;
 
 	public BuildingMetadataDBObject(SqliteDataReader reader) {
 		buildingId = reader.GetInt32(0);
@@ -20,5 +22,7 @@ public class BuildingMetadataDBObject {
 		hp = reader.GetInt32(4);
 		attack = reader.GetInt32(5);
 		attackFrequency = reader.GetInt32(6);
+		attackRange = reader.GetInt32(7);
+		underAttackPriority = reader.GetInt32(8);
 	}
 }

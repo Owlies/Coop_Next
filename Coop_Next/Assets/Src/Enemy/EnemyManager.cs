@@ -15,7 +15,7 @@ public class EnemyManager : Singleton<EnemyManager> {
     private Dictionary<int, WaveEnemyConfigMetadataDBObject> waveConfigDictionary;
     private Dictionary<string, EnemyMetadataDBObject> enemyConfigDictionary;
     // Use this for initialization
-    void Start () {
+    public void Initialize() {
         currentWave = 1;
         aliveEnemyQuantity = 0;
         targetGameObject = GameObject.FindGameObjectWithTag("Forge");
@@ -130,8 +130,13 @@ public class EnemyManager : Singleton<EnemyManager> {
 
     private void SpawnEnemyWithConfig(GameObject spawnLocation, int quantity, EnemyMetadataDBObject config) {
         GameObject enemyPrefab = levelConfig.enemyPrefabs[Random.Range(0, levelConfig.enemyPrefabs.Length)];
+        
         for(int i = 0; i < quantity; i++) {
-            SpawnEnemyAtPosition(enemyPrefab, spawnLocation.transform.position, config);
+            float xOffset = Random.Range(1.0f, 3.0f);
+            float zOffset = Random.Range(1.0f, 3.0f);
+            Vector3 spawnPos = new Vector3(spawnLocation.transform.position.x + xOffset, spawnLocation.transform.position.y, spawnLocation.transform.position.z + zOffset);
+            
+            SpawnEnemyAtPosition(enemyPrefab, spawnPos, config);
         }
     }
 

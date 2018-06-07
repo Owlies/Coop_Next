@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapManager : Singleton<MapManager> {
     private MapGridRender gridRender;
@@ -14,13 +15,31 @@ public class MapManager : Singleton<MapManager> {
 
     // <GameObject, isOnMap>
     private Dictionary<GameObject, bool> gameObjectOnMapDictionary = new Dictionary<GameObject, bool>();
+    private List<BuildingMetadataDBObject> buildingMetaDataList;
 
     static public float MAP_SIZE_UNIT = 2.0f;
 
-    public void Start()
+    public void Initialize()
     {
         LoadLevel();
+        LoadBuildingMetaData();
         gridRender = new MapGridRender(MAP_SIZE_UNIT);
+    }
+
+    private void LoadBuildingMetaData() {
+        buildingMetaDataList = MetadataLoader.Instance.LoadBuildingMetadata();
+    }
+
+    public BuildingMetadataDBObject GetBuildingMetadataWithTechTreeId(string techTreeId) {
+        int curLevel = TechTreeManager.Instance.GetItemLevel(techTreeId);
+
+        foreach(BuildingMetadataDBObject metadata in buildingMetaDataList) {
+            if (metadata.techTreeId.Equals(techTreeId) && metadata.level == curLevel) {
+                return metadata;
+            }
+        }
+
+        return null;
     }
 
     private void LoadLevel()

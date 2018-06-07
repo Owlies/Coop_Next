@@ -7,23 +7,7 @@ using UnityEngine.SceneManagement;
 public class MetadataLoader : Singleton<MetadataLoader> {
 	private SQLiteHelper sqlHelper;
 
-    /// <summary>
-    /// This function is called when the object becomes enabled and active.
-    /// </summary>
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += this.Initialize;
-    }
-
-    /// <summary>
-    /// This function is called when the behaviour becomes disabled or inactive.
-    /// </summary>
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= this.Initialize;
-    }
-
-    void Initialize(Scene scene, LoadSceneMode sceneMode) {
+    public void Initialize() {
         sqlHelper = new SQLiteHelper();
 		sqlHelper.InitializeDBConnection();
     }
