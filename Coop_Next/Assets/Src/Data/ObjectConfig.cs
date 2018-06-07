@@ -97,7 +97,7 @@ public enum ObjectSubType
 
 [System.Serializable]
 public class ObjectData
-{
+ {
     public string name;
     public InteractiveItem item;
     public Receipt[] receipts;

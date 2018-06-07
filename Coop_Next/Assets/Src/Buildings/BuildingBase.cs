@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProgressBar;
 
 public enum ERarity
 {
@@ -26,12 +27,20 @@ public class BuildingBase : InteractiveItem {
     protected EBuildingState buildingState;
     private float startTakingDamageTime;
 
+    private HpBarBehaviour hpBarBehaviour;
+
     public TimingCallbacks callbacks;
+
+    private void InitializeWithBuildingConfig() {
+
+    }
 
     public void Start() {
         currentHitPoint = MaxHitPoint;
         buildingState = EBuildingState.IDLE;
         startTakingDamageTime = 0.0f;
+
+        hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
     }
 
     public override void UpdateMe()
@@ -82,6 +91,11 @@ public class BuildingBase : InteractiveItem {
         currentHitPoint -= damage;
         startTakingDamageTime = Time.time;
         buildingState = EBuildingState.TAKING_DAMAGE;
+
+        if (hpBarBehaviour != null) {
+            hpBarBehaviour.UpdateHpBar(currentHitPoint, MaxHitPoint);
+        }
+        
         if (currentHitPoint <= Constants.EPS) {
             MapManager.Instance.OnItemDestroyed(this.gameObject);
             Destroy(this.gameObject);

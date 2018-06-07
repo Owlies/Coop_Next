@@ -5,6 +5,7 @@ using Mono.Data.Sqlite;
 
 public class BuildingMetadataDBObject {
 	public int buildingId;
+    public string techTreeId;
 	public string buildingName;
 	public int level;
 	public int hp;
@@ -13,10 +14,11 @@ public class BuildingMetadataDBObject {
 
 	public BuildingMetadataDBObject(SqliteDataReader reader) {
 		buildingId = reader.GetInt32(0);
-		buildingName = reader.GetString(1).Replace("\n", string.Empty);
-		level = reader.GetInt32(2);
-		hp = reader.GetInt32(3);
-		attack = reader.GetInt32(4);
-		attackFrequency = reader.GetInt32(5);
+        techTreeId = reader.GetString(1).Replace("\n", string.Empty);
+		buildingName = reader.GetString(2).Replace("\n", string.Empty);
+		level = reader.GetInt32(3);
+		hp = reader.GetInt32(4);
+		attack = reader.GetInt32(5);
+		attackFrequency = reader.GetInt32(6);
 	}
 }

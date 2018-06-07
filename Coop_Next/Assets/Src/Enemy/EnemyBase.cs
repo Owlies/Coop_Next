@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProgressBar;
 
-public class EnemyBase : OverridableMonoBehaviour {
+public class EnemyBase : OverridableMonoBehaviour
+{
     public enum EEnemyState
     {
         IDLE,
@@ -30,7 +31,7 @@ public class EnemyBase : OverridableMonoBehaviour {
     private BuildingBase attackingTarget;
     private float attackCoolDownStartTime;
     private EnemyTypeEnum type;
-    
+
 
     private Animator animator;
     private string ANIMATION_IS_IDLE = "isIdle";
@@ -39,7 +40,8 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private ProgressBarBehaviour hpProgressBar;
 
-    public void Initialize(int currentWave, EnemyMetadataDBObject config, GameObject targetGameObject) {
+    public void Initialize(int currentWave, EnemyMetadataDBObject config, GameObject targetGameObject)
+    {
         targetGameOjbects = new List<GameObject>();
         targetGameOjbects.Add(targetGameObject);
 
@@ -55,7 +57,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         enemyAttackState = EEnemyAttackState.IDLE;
         currentHitPoint = MaxHitPoint;
         attackCoolDownStartTime = 0.0f;
-        
+
         hpProgressBar = GetComponentInChildren<ProgressBarBehaviour>();
         hpProgressBar.Value = 100.0f;
         hpProgressBar.TransitoryValue = 0.0f;
@@ -68,7 +70,8 @@ public class EnemyBase : OverridableMonoBehaviour {
         animator.SetBool(ANIMATION_IS_DEAD, false);
     }
 
-    private void SetStateToIdle() {
+    private void SetStateToIdle()
+    {
         enemyState = EEnemyState.IDLE;
         enemyAttackState = EEnemyAttackState.IDLE;
         SetIdelAnimationState();
@@ -80,8 +83,10 @@ public class EnemyBase : OverridableMonoBehaviour {
         animator.SetBool(ANIMATION_IS_ATTACKING, false);
     }
 
-    public override void UpdateMe() {
-        if (TryAttackBuilding()) {
+    public override void UpdateMe()
+    {
+        if (TryAttackBuilding())
+        {
             return;
         }
 
@@ -93,24 +98,31 @@ public class EnemyBase : OverridableMonoBehaviour {
     }
 
     /* Private Methods */
-    private void UpdateHPBar() {
+    private void UpdateHPBar()
+    {
         float value = 100.0f * (currentHitPoint / MaxHitPoint);
         hpProgressBar.Value = value;
     }
-    private void UpdateMovingTargets() {
+    private void UpdateMovingTargets()
+    {
         List<GameObject> newTargetList = new List<GameObject>();
         newTargetList.Add(targetGameOjbects[0]);
-        for(int i = 1; i < targetGameOjbects.Count; i++) {
-            if(targetGameOjbects[i] != null) {
+        for (int i = 1; i < targetGameOjbects.Count; i++)
+        {
+            if (targetGameOjbects[i] != null)
+            {
                 newTargetList.Add(targetGameOjbects[i]);
             }
         }
 
         targetGameOjbects = newTargetList;
     }
-    private Vector3 GetCurrentMovingTargetPosition() {
-        for(int i = targetGameOjbects.Count - 1; i >= 0; i--) {
-            if (targetGameOjbects[i] == null) {
+    private Vector3 GetCurrentMovingTargetPosition()
+    {
+        for (int i = targetGameOjbects.Count - 1; i >= 0; i--)
+        {
+            if (targetGameOjbects[i] == null)
+            {
                 continue;
             }
 
@@ -119,24 +131,30 @@ public class EnemyBase : OverridableMonoBehaviour {
 
         return targetGameOjbects[0].transform.position;
     }
-    private bool CanMoveTowardsTarget() {
-        if (IsDead()) {
+    private bool CanMoveTowardsTarget()
+    {
+        if (IsDead())
+        {
             return false;
         }
 
-        if ((enemyState != EEnemyState.IDLE) && (enemyState != EEnemyState.MOVING)) {
+        if ((enemyState != EEnemyState.IDLE) && (enemyState != EEnemyState.MOVING))
+        {
             return false;
         }
 
-        if (attackingTarget != null && Vector3.Distance(attackingTarget.transform.position, transform.position) <= AttackRange) {
+        if (attackingTarget != null && Vector3.Distance(attackingTarget.transform.position, transform.position) <= AttackRange)
+        {
             return false;
         }
 
         return true;
     }
 
-    private void MoveTowardsTarget() {
-        if (!CanMoveTowardsTarget()) {
+    private void MoveTowardsTarget()
+    {
+        if (!CanMoveTowardsTarget())
+        {
             return;
         }
 
@@ -151,13 +169,16 @@ public class EnemyBase : OverridableMonoBehaviour {
         animator.SetBool(ANIMATION_IS_IDLE, false);
     }
 
-    private void TryFindBuildingToAttack() {
-        if (attackingTarget != null) {
+    private void TryFindBuildingToAttack()
+    {
+        if (attackingTarget != null)
+        {
             return;
         }
 
         BuildingBase buildingToAttack = GetHighestAttackPriorityBuildingsWithinRange();
-        if (buildingToAttack == null) {
+        if (buildingToAttack == null)
+        {
             return;
         }
 
@@ -165,32 +186,40 @@ public class EnemyBase : OverridableMonoBehaviour {
         targetGameOjbects.Add(attackingTarget.gameObject);
     }
 
-    private bool CanAttckCurrentTarget() {
-        if (attackingTarget == null) {
+    private bool CanAttckCurrentTarget()
+    {
+        if (attackingTarget == null)
+        {
             return false;
         }
 
-        if (IsDead()) {
+        if (IsDead())
+        {
             return false;
         }
 
-        if (enemyAttackState == EEnemyAttackState.COOLING_DOWN) {
+        if (enemyAttackState == EEnemyAttackState.COOLING_DOWN)
+        {
             return false;
         }
 
-        if (enemyState == EEnemyState.ATTACKING) {
+        if (enemyState == EEnemyState.ATTACKING)
+        {
             return false;
         }
 
-        if (Vector3.Distance(attackingTarget.transform.position, transform.position) > AttackRange) {
+        if (Vector3.Distance(attackingTarget.transform.position, transform.position) > AttackRange)
+        {
             return false;
         }
 
         return true;
     }
 
-    private bool TryAttackBuilding() {
-        if (!CanAttckCurrentTarget()) {
+    private bool TryAttackBuilding()
+    {
+        if (!CanAttckCurrentTarget())
+        {
             animator.SetBool(ANIMATION_IS_IDLE, true);
             return false;
         }
@@ -220,22 +249,28 @@ public class EnemyBase : OverridableMonoBehaviour {
         }
     }
 
-    private BuildingBase GetHighestAttackPriorityBuildingsWithinRange() {
+    private BuildingBase GetHighestAttackPriorityBuildingsWithinRange()
+    {
         BuildingBase highestAttackPriorityBuilding = null;
         float minDistance = int.MaxValue;
-        foreach (var item in MapManager.Instance.GetCollectionOfItemsOnMap<BuildingBase>()) {
-            if (item.gameObject.tag != "Building" || Vector3.Distance(item.transform.position, transform.position) > SearchRange) {
+        foreach (var item in MapManager.Instance.GetCollectionOfItemsOnMap<BuildingBase>())
+        {
+            if (item.gameObject.tag != "Building" || Vector3.Distance(item.transform.position, transform.position) > SearchRange)
+            {
                 continue;
             }
 
-            if (highestAttackPriorityBuilding == null || highestAttackPriorityBuilding.AttackingPriority < item.AttackingPriority) {
+            if (highestAttackPriorityBuilding == null || highestAttackPriorityBuilding.AttackingPriority < item.AttackingPriority)
+            {
                 highestAttackPriorityBuilding = item;
                 continue;
             }
 
-            if (highestAttackPriorityBuilding.AttackingPriority == item.AttackingPriority) {
+            if (highestAttackPriorityBuilding.AttackingPriority == item.AttackingPriority)
+            {
                 float dis = Vector3.Distance(transform.position, item.transform.position);
-                if (minDistance > dis) {
+                if (minDistance > dis)
+                {
                     highestAttackPriorityBuilding = item;
                     minDistance = dis;
                 }
@@ -245,7 +280,8 @@ public class EnemyBase : OverridableMonoBehaviour {
         return highestAttackPriorityBuilding;
     }
 
-    public float GetCurrentHitPoint() {
+    public float GetCurrentHitPoint()
+    {
         return currentHitPoint;
     }
 
@@ -260,7 +296,8 @@ public class EnemyBase : OverridableMonoBehaviour {
         }
     }
 
-    public bool IsDead() {
+    public bool IsDead()
+    {
         return currentHitPoint <= Constants.EPS;
     }
 }

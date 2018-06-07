@@ -19,6 +19,7 @@ public class SQLiteHelper {
         cmd.CommandText = query;
         return cmd; 
     }
+
     public SqliteDataReader ExecuteCommand(SqliteCommand cmd) {
         sqliteConnection.Open();
         SqliteDataReader reader = cmd.ExecuteReader();
