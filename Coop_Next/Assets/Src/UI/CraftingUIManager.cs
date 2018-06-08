@@ -75,7 +75,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
 
     private void UpdateCraftReceiptIcons(RectTransform receiptPanel, InteractiveItem item) {
         ObjectData objectData = objectConfig.objectsDictionary[item.name];
-        Receipt selectedReceipt = objectData.receipts[Random.Range(0, objectData.receipts.Length)];
+        Recipe selectedReceipt = objectData.receipts[Random.Range(0, objectData.receipts.Length)];
         Image[] receiptIcons = receiptPanel.GetComponentsInChildren<Image>();
 
         for (int i = 0; i < receiptIcons.Length; i++) {

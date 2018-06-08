@@ -69,7 +69,7 @@ public class ObjectConfig : ScriptableObject, ISerializationCallbackReceiver
 }
 
 [System.Serializable]
-public struct Receipt {
+public struct Recipe {
     public ResourceEnum[] resources;
 }
 
@@ -98,9 +98,11 @@ public enum ObjectSubType
 [System.Serializable]
 public class ObjectData
  {
+    public int id;
     public string name;
+    public string description;
     public InteractiveItem item;
-    public Receipt[] receipts;
+    public Recipe[] receipts;
     public ObjectType type;
     public ObjectSubType subType;
 
@@ -128,10 +130,8 @@ public class ObjectData
 }
 
 [System.Serializable]
-public class ItemData
+public class ItemData : ObjectData
 {
-    public string name;
-    public string description;
     public string actionName;
 }
 

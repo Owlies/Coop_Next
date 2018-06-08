@@ -256,7 +256,7 @@ public class Forge : BuildingBase {
 
             if (data.receipts.Length > 0)
             {
-                foreach (Receipt receipt in data.receipts)
+                foreach (Recipe receipt in data.receipts)
                 {
                     bool doesMatch = true;
                     for (int i = 0; i < receipt.resources.Length; i++)
