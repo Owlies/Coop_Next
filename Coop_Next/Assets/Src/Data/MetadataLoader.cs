@@ -10,10 +10,19 @@ public class MetadataLoader : Singleton<MetadataLoader> {
     List<WaveEnemyConfigMetadataDBObject> configList = null;
     List<ItemMetadataDBObject> itemList = null;
     List<EnemyMetadataDBObject> enemyList = null;
+    List<RecipeMetadataDBObject> recipeList = null;
 
     public void Initialize() {
         sqlHelper = new SQLiteHelper();
 		sqlHelper.InitializeDBConnection();
+
+        //load all the metaData into game.
+        //todo : do it separately and may do it when loading.
+        GetEnemyMetadata();
+        GetWaveEnemyConfigMeatadata();
+        GetBuildingMetadata();
+        GetItemMetadata();
+        GetRecipeMetadata();
     }
 	
 	public List<EnemyMetadataDBObject> GetEnemyMetadata() {
@@ -68,7 +77,25 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         return buildingList;
     }
 
-    public List<ItemMetadataDBObject> GetItemMetadata()
+    public List<RecipeMetadataDBObject> GetItemMetadata()
+    {
+        if (recipeList != null)
+            return recipeList;
+        recipeList = new List<RecipeMetadataDBObject>();
+
+        SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM recipe_metadata");
+        SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
+
+        while (reader.Read())
+        {
+            RecipeMetadataDBObject row = new RecipeMetadataDBObject(reader);
+            recipeList.Add(row);
+        }
+        sqlHelper.CloseResultReader(reader);
+
+        return recipeList;
+    }
+    public List<ItemMetadataDBObject> GetRecipeMetadata()
     {
         if (itemList != null)
             return itemList;

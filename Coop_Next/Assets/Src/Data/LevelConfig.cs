@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 [CreateAssetMenu(fileName = "Level", menuName = "CoopNext/Level Config", order = 1)]
 public class LevelConfig : ScriptableObject {
