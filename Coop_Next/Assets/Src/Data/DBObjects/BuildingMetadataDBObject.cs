@@ -13,6 +13,10 @@ public class BuildingMetadataDBObject {
 	public int attackFrequency;
 	public int attackRange;
 	public int underAttackPriority;
+    public string prefabPath;
+    public string description;
+    public int type;
+    public int recipeID;
 
 	public BuildingMetadataDBObject(SqliteDataReader reader) {
 		buildingId = reader.GetInt32(0);
@@ -23,6 +27,10 @@ public class BuildingMetadataDBObject {
 		attack = reader.GetInt32(5);
 		attackFrequency = reader.GetInt32(6);
 		attackRange = reader.GetInt32(7);
-		underAttackPriority = reader.GetInt32(8);
-	}
+        underAttackPriority = reader.GetInt32(8);
+        prefabPath = reader.GetString(9).Replace("\n", string.Empty);
+        description = reader.GetString(10).Replace("\n", string.Empty);
+        type = reader.GetInt32(11);
+        recipeID = reader.GetInt32(12);
+    }
 }

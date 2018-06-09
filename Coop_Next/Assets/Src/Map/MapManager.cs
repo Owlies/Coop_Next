@@ -27,7 +27,7 @@ public class MapManager : Singleton<MapManager> {
     }
 
     private void LoadBuildingMetaData() {
-        buildingMetaDataList = MetadataLoader.Instance.LoadBuildingMetadata();
+        buildingMetaDataList = MetadataLoader.Instance.GetBuildingMetadata();
     }
 
     public BuildingMetadataDBObject GetBuildingMetadataWithTechTreeId(string techTreeId) {

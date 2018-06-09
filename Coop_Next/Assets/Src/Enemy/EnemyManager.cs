@@ -27,7 +27,7 @@ public class EnemyManager : Singleton<EnemyManager> {
 
     private void InitializeWaveConfigDictionary() {
         waveConfigDictionary = new Dictionary<int, WaveEnemyConfigMetadataDBObject>();
-        List<WaveEnemyConfigMetadataDBObject> configList = MetadataLoader.Instance.LoadWaveEnemyConfigMeatadata();
+        List<WaveEnemyConfigMetadataDBObject> configList = MetadataLoader.Instance.GetWaveEnemyConfigMeatadata();
         if (configList == null) {
             Debug.LogError("Failed to InitializeWaveConfigDictionary");
             return;
@@ -44,7 +44,7 @@ public class EnemyManager : Singleton<EnemyManager> {
 
     private void InitializeEnemyConfigDictionary() {
         enemyConfigDictionary = new Dictionary<string, EnemyMetadataDBObject>();
-        List<EnemyMetadataDBObject> enemyList = MetadataLoader.Instance.LoadEnemyMetadata();
+        List<EnemyMetadataDBObject> enemyList = MetadataLoader.Instance.GetEnemyMetadata();
         if (enemyList == null) {
             Debug.LogError("Failed to InitializeWaveEnemyConfigDictionary");
             return;
