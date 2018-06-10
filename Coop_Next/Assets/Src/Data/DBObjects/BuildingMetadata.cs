@@ -12,9 +12,9 @@ public class BuildingMetadata : ObjectMetadata
 	public int underAttackPriority;
 
 	public BuildingMetadata(SqliteDataReader reader) {
-		id = reader.GetInt32(0);
+		objectId = reader.GetInt32(0);
         techTreeId = reader.GetString(1).Replace("\n", string.Empty);
-		name = reader.GetString(2).Replace("\n", string.Empty);
+		objectName = reader.GetString(2).Replace("\n", string.Empty);
         level = reader.GetInt32(3);
         hp = reader.GetInt32(4);
 		attack = reader.GetInt32(5);
@@ -24,7 +24,7 @@ public class BuildingMetadata : ObjectMetadata
         prefabPath = reader.GetString(9).Replace("\n", string.Empty);
         description = reader.GetString(10).Replace("\n", string.Empty);
         subType = (ObjectSubType)reader.GetInt32(11);
-        recipeID = reader.GetInt32(12);
+        recipeId = reader.GetInt32(12);
         size.x = reader.GetInt32(13);
         size.y = reader.GetInt32(14);
 

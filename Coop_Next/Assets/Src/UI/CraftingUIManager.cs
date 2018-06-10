@@ -75,7 +75,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
     }
 
     private void UpdateCraftRecipeIcons(RectTransform recipePanel, InteractiveItem item) {
-        ObjectMetadata objectData = metadataManager.objectsDictionary[item.name];
+        ObjectMetadata objectData = metadataManager.objectsDictionary[item.itemId];
         RecipeMetadata selectedRecipe = objectData.recipe;
         Image[] recipeIcons = recipePanel.GetComponentsInChildren<Image>();
 

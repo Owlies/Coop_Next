@@ -54,15 +54,15 @@ public class MapManager : Singleton<MapManager> {
             for (int i = 0; i < levelConfig.objectInstances.Length; i++)
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
-                if (!metadataManager.objectsDictionary.ContainsKey(instance.objectKey))
+                if (!metadataManager.objectsDictionary.ContainsKey(instance.objectId))
                 {
-                    Debug.Log("No " + instance.objectKey + " in config!!!");
+                    Debug.Log("No " + instance.objectId + " in config!!!");
                     continue;
                 }
-                ObjectMetadata objectData = metadataManager.objectsDictionary[instance.objectKey];
+                ObjectMetadata objectData = metadataManager.objectsDictionary[instance.objectId];
                 if (objectData == null || objectData.gameObject == null)
                 {
-                    Debug.Log("No " + instance.objectKey + "'s gameobject in config!!!");
+                    Debug.Log("No " + instance.objectId + "'s gameobject in config!!!");
                     continue;
                 }
                 GameObject obj = GameObject.Instantiate(objectData.gameObject, sceneRoot.transform);

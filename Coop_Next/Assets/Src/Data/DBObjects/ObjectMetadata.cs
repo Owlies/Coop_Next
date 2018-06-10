@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectMetadata {
-    public int id;
-    public string name;
+    public int objectId;
+    public string objectName;
     public string description;
     public string prefabPath;
-    public int recipeID;
+    public int recipeId;
     public string techTreeId;
     public Vector2Int size;
     public ObjectSubType subType;
@@ -27,7 +27,7 @@ public class ObjectMetadata {
     {
         get
         {
-            return MetadataLoader.Instance.GetRecipeMetadataByID(recipeID);
+            return MetadataLoader.Instance.GetRecipeMetadataById(recipeId);
         }
     }
 }

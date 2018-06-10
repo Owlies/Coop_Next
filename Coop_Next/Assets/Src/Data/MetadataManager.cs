@@ -7,7 +7,7 @@ using Mono.Data.Sqlite;
 
 public class MetadataManager : Singleton<MetadataManager>
 {
-    public Dictionary<string, ObjectMetadata> objectsDictionary;
+    public Dictionary<int, ObjectMetadata> objectsDictionary;
     public Dictionary<ObjectType, Dictionary<ObjectSubType, List<ObjectMetadata>>> objectCollection;
 
     public Resource GetResourceByType(ResourceEnum e)
@@ -47,13 +47,13 @@ public class MetadataManager : Singleton<MetadataManager>
         objectCollection[ObjectType.Item].Add(ObjectSubType.EquipmentItem, new List<ObjectMetadata>());
         objectCollection[ObjectType.Item].Add(ObjectSubType.ResourceItem, new List<ObjectMetadata>());
 
-        objectsDictionary = new Dictionary<string, ObjectMetadata>();
+        objectsDictionary = new Dictionary<int, ObjectMetadata>();
 
         var buildingList = MetadataLoader.Instance.GetBuildingMetadata();
         for (int i = 0; i < buildingList.Count; i++)
         {
             BuildingMetadata building = buildingList[i];
-            objectsDictionary.Add(building.name, building);
+            objectsDictionary.Add(building.objectId, building);
             objectCollection[ObjectType.Building][building.subType].Add(building);
         }
 
@@ -61,7 +61,7 @@ public class MetadataManager : Singleton<MetadataManager>
         for (int i = 0; i < itemList.Count; i++)
         {
             ItemMetadata item = itemList[i];
-            objectsDictionary.Add(item.name, item);
+            objectsDictionary.Add(item.objectId, item);
             objectCollection[ObjectType.Item][item.subType].Add(item);
         }
     }

@@ -48,8 +48,8 @@ public class BuildingBase : InteractiveItem {
         }
         maxHitPoint = metadata.hp;
         underAttackingPriority = metadata.underAttackPriority;
-        name = metadata.name;
-        itemId = metadata.id;
+        name = metadata.objectName;
+        itemId = metadata.objectId;
     }
 
     public override void UpdateMe()

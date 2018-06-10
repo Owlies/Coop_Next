@@ -12,7 +12,7 @@ public class MetadataLoader : Singleton<MetadataLoader> {
     List<EnemyMetadata> enemyList = null;
     List<RecipeMetadata> recipeList = null;
 
-    public RecipeMetadata GetRecipeMetadataByID(int id)
+    public RecipeMetadata GetRecipeMetadataById(int id)
     {
         if (id == -1)
             return null;

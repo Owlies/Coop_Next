@@ -25,7 +25,7 @@ public enum ObjectDir
 [System.Serializable]
 public struct ObjectInstance
 {
-    public string objectKey;
+    public int objectId;
     public ObjectDir dir;
     public Vector2Int position;
 }

@@ -9,11 +9,11 @@ public class ItemMetadata : ObjectMetadata
 
     public ItemMetadata(SqliteDataReader reader)
     {
-        id = reader.GetInt32(0);
-        name = reader.GetString(1).Replace("\n", string.Empty);
+        objectId = reader.GetInt32(0);
+        objectName = reader.GetString(1).Replace("\n", string.Empty);
         description = reader.GetString(2).Replace("\n", string.Empty);
         prefabPath = reader.GetString(3).Replace("\n", string.Empty);
-        recipeID = reader.GetInt32(4);
+        recipeId = reader.GetInt32(4);
         techTreeId = reader.GetString(5).Replace("\n", string.Empty);
         actionName = reader.GetString(6).Replace("\n", string.Empty);
         subType = (ObjectSubType)reader.GetInt32(7);
