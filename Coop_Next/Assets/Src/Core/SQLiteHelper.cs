@@ -9,7 +9,16 @@ public class SQLiteHelper {
     private string dbPath;
 
     public void InitializeDBConnection() {
-        dbPath = "URI=file:" + Application.dataPath + "/Metadata/Metadata.db";
+    #if UNITY_IOS
+        dbPath = "URI=file:" + Application.dataPath + "/Raw" + "/Metadata/Metadata.db";
+        
+    #elif UNITY_ANDROID
+        //TODO(Huayu): load sql from jar on android
+        dbPath = "jar:file://" + Application.dataPath + "!/assets/" + "/Metadata/Metadata.db";
+    #else
+        dbPath = "URI=file:" + Application.dataPath + "/StreamingAssets" + "/Metadata/Metadata.db";
+    #endif
+        Debug.Log("InitializeDBConnection: " + dbPath);
         sqliteConnection = new SqliteConnection(dbPath);
     }
 
