@@ -30,4 +30,22 @@ public class ObjectMetadata {
             return MetadataLoader.Instance.GetRecipeMetadataByID(recipeID);
         }
     }
+
+    public ObjectSubType GetSubType(string subTypeName)
+    {
+        if (subTypeName.Equals("AttackBuilding"))
+            return ObjectSubType.AttackBuilding;
+        if (subTypeName.Equals("DefendBuilding"))
+            return ObjectSubType.DefendBuilding;
+        if (subTypeName.Equals("SupportBuilding"))
+            return ObjectSubType.SupportBuilding;
+        if (subTypeName.Equals("FunctionalBuilding"))
+            return ObjectSubType.FunctionalBuilding;
+        if (subTypeName.Equals("EquipmentItem"))
+            return ObjectSubType.EquipmentItem;
+        if (subTypeName.Equals("ResourceItem"))
+            return ObjectSubType.ResourceItem;
+
+        return ObjectSubType.None;
+    }
 }

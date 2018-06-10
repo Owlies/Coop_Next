@@ -260,7 +260,7 @@ public class Forge : BuildingBase {
                 RecipeMetadata recipe = data.recipe;
 
                 bool doesMatch = true;
-                for (int i = 0; i < recipe.resources.Length; i++)
+                for (int i = 0; i < recipe.resources.Count; i++)
                 {
                     if (i == resourceList.Count)
                     {
