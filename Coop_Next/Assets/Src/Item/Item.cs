@@ -6,7 +6,7 @@ using System;
 public class Item : InteractiveItem {
     
     [HideInInspector]
-    public ItemData originData;
+    public ItemMetadata originData;
     
     //public Action<InteractiveItem> applyItemEffect;
 }

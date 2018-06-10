@@ -12,8 +12,8 @@ public class EnemyManager : Singleton<EnemyManager> {
     private float waveIntervalTimer = 0.0f;
     private GameObject targetGameObject;
     private List<EnemyBase> allEnemies;
-    private Dictionary<int, WaveEnemyConfigMetadataDBObject> waveConfigDictionary;
-    private Dictionary<string, EnemyMetadataDBObject> enemyConfigDictionary;
+    private Dictionary<int, WaveEnemyConfigMetadata> waveConfigDictionary;
+    private Dictionary<string, EnemyMetadata> enemyConfigDictionary;
     // Use this for initialization
     public void Initialize() {
         currentWave = 1;
@@ -26,14 +26,14 @@ public class EnemyManager : Singleton<EnemyManager> {
     }
 
     private void InitializeWaveConfigDictionary() {
-        waveConfigDictionary = new Dictionary<int, WaveEnemyConfigMetadataDBObject>();
-        List<WaveEnemyConfigMetadataDBObject> configList = MetadataLoader.Instance.GetWaveEnemyConfigMeatadata();
+        waveConfigDictionary = new Dictionary<int, WaveEnemyConfigMetadata>();
+        List<WaveEnemyConfigMetadata> configList = MetadataLoader.Instance.GetWaveEnemyConfigMeatadata();
         if (configList == null) {
             Debug.LogError("Failed to InitializeWaveConfigDictionary");
             return;
         }
 
-        foreach(WaveEnemyConfigMetadataDBObject config in configList) {
+        foreach(WaveEnemyConfigMetadata config in configList) {
             waveConfigDictionary[config.waveNumber] = config;
         }
     }
@@ -43,14 +43,14 @@ public class EnemyManager : Singleton<EnemyManager> {
     }
 
     private void InitializeEnemyConfigDictionary() {
-        enemyConfigDictionary = new Dictionary<string, EnemyMetadataDBObject>();
-        List<EnemyMetadataDBObject> enemyList = MetadataLoader.Instance.GetEnemyMetadata();
+        enemyConfigDictionary = new Dictionary<string, EnemyMetadata>();
+        List<EnemyMetadata> enemyList = MetadataLoader.Instance.GetEnemyMetadata();
         if (enemyList == null) {
             Debug.LogError("Failed to InitializeWaveEnemyConfigDictionary");
             return;
         }
 
-        foreach(EnemyMetadataDBObject enemyConfig in enemyList) {
+        foreach(EnemyMetadata enemyConfig in enemyList) {
             enemyConfigDictionary[GetKeyForEnemyConfig(enemyConfig.waveNumber, enemyConfig.enemyType)] = enemyConfig;
         }
     }
@@ -88,7 +88,7 @@ public class EnemyManager : Singleton<EnemyManager> {
     }
 
     private void SpawnEnemyForWaveWithType(EnemyTypeEnum type) {
-        WaveEnemyConfigMetadataDBObject waveConfig = waveConfigDictionary[currentWave];
+        WaveEnemyConfigMetadata waveConfig = waveConfigDictionary[currentWave];
         int enemyQuantity = 0;
 
         switch(type) {
@@ -120,7 +120,7 @@ public class EnemyManager : Singleton<EnemyManager> {
         if(!enemyConfigDictionary.ContainsKey(key)) {
             Debug.LogError("Can't find " + key + " config in enemyConfigDictionary");
         }
-        EnemyMetadataDBObject config = enemyConfigDictionary[key];
+        EnemyMetadata config = enemyConfigDictionary[key];
 
         for (int i = 0; i < enemySpawnLocations.Length; i++) {
             SpawnEnemyWithConfig(enemySpawnLocations[i], enemyQuantity, config);
@@ -128,7 +128,7 @@ public class EnemyManager : Singleton<EnemyManager> {
         
     }
 
-    private void SpawnEnemyWithConfig(GameObject spawnLocation, int quantity, EnemyMetadataDBObject config) {
+    private void SpawnEnemyWithConfig(GameObject spawnLocation, int quantity, EnemyMetadata config) {
         GameObject enemyPrefab = levelConfig.enemyPrefabs[Random.Range(0, levelConfig.enemyPrefabs.Length)];
         
         for(int i = 0; i < quantity; i++) {
@@ -159,7 +159,7 @@ public class EnemyManager : Singleton<EnemyManager> {
         return allEnemies;
     }
 
-    private void SpawnEnemyAtPosition(GameObject enemyPrefab, Vector3 pos, EnemyMetadataDBObject config) {
+    private void SpawnEnemyAtPosition(GameObject enemyPrefab, Vector3 pos, EnemyMetadata config) {
         GameObject enemyObject = GameObject.Instantiate(enemyPrefab, pos, Quaternion.identity);
         EnemyBase enemy = enemyObject.GetComponent<EnemyBase>();
         if (enemy == null) {

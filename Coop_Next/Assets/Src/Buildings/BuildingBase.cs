@@ -42,14 +42,14 @@ public class BuildingBase : InteractiveItem {
     }
 
     private void InitializeWithBuildingConfig() {
-        BuildingMetadataDBObject metadata = MapManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+        BuildingMetadata metadata = MapManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
         if (metadata == null) {
             return;
         }
         maxHitPoint = metadata.hp;
         underAttackingPriority = metadata.underAttackPriority;
-        name = metadata.buildingName;
-        itemId = metadata.buildingId;
+        name = metadata.name;
+        itemId = metadata.id;
     }
 
     public override void UpdateMe()

@@ -9,7 +9,7 @@ using ProgressBar;
 public class Forge : BuildingBase {
     private enum ForgeState { IDLE, FORGING, DESTROYING, READY_TO_COLLECT }
 
-    private Canvas receiptCanvas;
+    private Canvas recipeCanvas;
     private Canvas progressBarCanvas;
     private Canvas destroyProgressBarCanvas;
     private ProgressBarBehaviour forgingProgressBar;
@@ -18,7 +18,7 @@ public class Forge : BuildingBase {
     private Image[] resourceImages;
 
     public Sprite resourceEmptyImage;
-    public ObjectConfig objectConfig;
+    public MetadataManager metadataManager;
 
     private ForgeState forgeState;
     private float curProgress = 0.0f;
@@ -27,7 +27,7 @@ public class Forge : BuildingBase {
     public new void Start()
     {
         base.Start();
-        receiptCanvas = GetComponentsInChildren<Canvas>()[0];
+        recipeCanvas = GetComponentsInChildren<Canvas>()[0];
         progressBarCanvas = GetComponentsInChildren<Canvas>()[1];
         destroyProgressBarCanvas = GetComponentsInChildren<Canvas>()[2];
 
@@ -54,6 +54,8 @@ public class Forge : BuildingBase {
             destroyProgressBar.enabled = false;
             destroyProgressBarCanvas.enabled = false;
         }
+
+        metadataManager = MetadataManager.Instance;
     }
 
     public override void UpdateMe()
@@ -157,7 +159,7 @@ public class Forge : BuildingBase {
     }
 
     private void StartForgeOrDestroy() {
-        if (FindMatchingReceiptObject() != null)
+        if (FindMatchingRecipeObject() != null)
         {
             StartForging();
             return;
@@ -167,7 +169,7 @@ public class Forge : BuildingBase {
     }
 
     private void StartForging() {
-        //receiptCanvas.enabled = false;
+        //recipeCanvas.enabled = false;
         ResetDestroyForgingProgressBar();
         ResetForgingProgressBar();
         progressBarCanvas.enabled = true;
@@ -177,8 +179,8 @@ public class Forge : BuildingBase {
     }
 
     private void ForgingComplete() {
-        receiptCanvas.enabled = false;
-        GameObject forgedPrefab = FindMatchingReceiptObject();
+        recipeCanvas.enabled = false;
+        GameObject forgedPrefab = FindMatchingRecipeObject();
         forgedGameObject = GameObject.Instantiate<GameObject>(forgedPrefab, transform);
         MapManager.Instance.OnItemCreated(forgedGameObject);
         forgedGameObject.SetActive(false);
@@ -196,7 +198,7 @@ public class Forge : BuildingBase {
     }
 
     private void StartDestroyForgingItems() {
-        //receiptCanvas.enabled = false;
+        //recipeCanvas.enabled = false;
         ResetDestroyForgingProgressBar();
         ResetForgingProgressBar();
         destroyProgressBarCanvas.enabled = true;
@@ -209,7 +211,7 @@ public class Forge : BuildingBase {
     public void DestroyForging() {
         forgeState = ForgeState.IDLE;
         ResetDestroyForgingProgressBar();
-        ResetAndEnableReceiptCanvas();
+        ResetAndEnableRecipeCanvas();
     }
 
     private bool CanCollectItem(Player player) {
@@ -237,47 +239,45 @@ public class Forge : BuildingBase {
         forgedGameObject = null;
 
         forgeState = ForgeState.IDLE;
-        ResetAndEnableReceiptCanvas();
+        ResetAndEnableRecipeCanvas();
 
         return true;
     }
 
 
     #region HelperFunctions
-    private GameObject FindMatchingReceiptObject()
+    private GameObject FindMatchingRecipeObject()
     {
-        foreach (var obj in objectConfig.objectsDictionary)
+        foreach (var obj in metadataManager.objectsDictionary)
         {
-            
-            ObjectData data = obj.Value;
+            ObjectMetadata data = obj.Value;
             if (!CraftingManager.Instance.IsCraftAvailable(data.item)) {
                 continue;
             }
 
-            if (data.receipts.Length > 0)
+            if (data.recipe!= null)
             {
-                foreach (Recipe receipt in data.receipts)
+                RecipeMetadata recipe = data.recipe;
+
+                bool doesMatch = true;
+                for (int i = 0; i < recipe.resources.Length; i++)
                 {
-                    bool doesMatch = true;
-                    for (int i = 0; i < receipt.resources.Length; i++)
+                    if (i == resourceList.Count)
                     {
-                        if (i == resourceList.Count)
-                        {
-                            doesMatch = false;
-                            break;
-                        }
-
-                        if (resourceList[i].resourceEnum != receipt.resources[i])
-                        {
-                            doesMatch = false;
-                            break;
-                        }
+                        doesMatch = false;
+                        break;
                     }
 
-                    if (doesMatch)
+                    if (resourceList[i].resourceEnum != recipe.resources[i])
                     {
-                        return data.gameObject;
+                        doesMatch = false;
+                        break;
                     }
+                }
+
+                if (doesMatch)
+                {
+                    return data.gameObject;
                 }
             }
         }
@@ -318,7 +318,7 @@ public class Forge : BuildingBase {
         destroyProgressBarCanvas.enabled = false;
     }
 
-    private void ResetAndEnableReceiptCanvas()
+    private void ResetAndEnableRecipeCanvas()
     {
         for (int i = 0; i < resourceList.Count; i++) {
             MapManager.Instance.OnItemDestroyed(resourceList[i].gameObject);
@@ -327,7 +327,7 @@ public class Forge : BuildingBase {
             
         resourceList.Clear();
         ResetResourceImages();
-        receiptCanvas.enabled = true;
+        recipeCanvas.enabled = true;
     }
 
     #endregion

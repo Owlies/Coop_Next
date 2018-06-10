@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mono.Data.Sqlite;
 public enum EnemyTypeEnum {AVERAGE, DEFEND, ATTACK, SMALL_BOSS, BIG_BOSS}
-public class EnemyMetadataDBObject {
+public class EnemyMetadata {
 
 	// Use this for initialization
 	public int enemyId;
@@ -16,7 +16,7 @@ public class EnemyMetadataDBObject {
 	public float moveSpeed;
 	public float searchRange;
 
-	public EnemyMetadataDBObject(SqliteDataReader reader) {
+	public EnemyMetadata(SqliteDataReader reader) {
 		enemyId = reader.GetInt32(0);
 		waveNumber = reader.GetInt32(1);
 		attack = reader.GetInt32(2);

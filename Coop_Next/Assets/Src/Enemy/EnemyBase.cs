@@ -39,7 +39,7 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     private HpBarBehaviour hpBarBehaviour;
 
-    public void Initialize(int currentWave, EnemyMetadataDBObject config, GameObject targetGameObject) {
+    public void Initialize(int currentWave, EnemyMetadata config, GameObject targetGameObject) {
         targetGameOjbects = new List<GameObject>();
         targetGameOjbects.Add(targetGameObject);
 

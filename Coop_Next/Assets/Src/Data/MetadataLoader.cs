@@ -6,11 +6,24 @@ using UnityEngine.SceneManagement;
 
 public class MetadataLoader : Singleton<MetadataLoader> {   
 	private SQLiteHelper sqlHelper;
-    List<BuildingMetadataDBObject> buildingList = null;
-    List<WaveEnemyConfigMetadataDBObject> configList = null;
-    List<ItemMetadataDBObject> itemList = null;
-    List<EnemyMetadataDBObject> enemyList = null;
-    List<RecipeMetadataDBObject> recipeList = null;
+    List<BuildingMetadata> buildingList = null;
+    List<WaveEnemyConfigMetadata> configList = null;
+    List<ItemMetadata> itemList = null;
+    List<EnemyMetadata> enemyList = null;
+    List<RecipeMetadata> recipeList = null;
+
+    public RecipeMetadata GetRecipeMetadataByID(int id)
+    {
+        if (id == -1)
+            return null;
+        for(int i =0; i < recipeList.Count; i++)
+        {
+            if (id == recipeList[i].recipeId)
+                return recipeList[i];
+        }
+
+        return null;
+    }
 
     public void Initialize() {
         sqlHelper = new SQLiteHelper();
@@ -25,15 +38,15 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         GetRecipeMetadata();
     }
 	
-	public List<EnemyMetadataDBObject> GetEnemyMetadata() {
+	public List<EnemyMetadata> GetEnemyMetadata() {
         if (enemyList != null)
             return enemyList;
-        enemyList = new List<EnemyMetadataDBObject>();
+        enemyList = new List<EnemyMetadata>();
 
         SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM enemy_config");
         SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
         while (reader.Read()) {
-            EnemyMetadataDBObject row = new EnemyMetadataDBObject(reader);
+            EnemyMetadata row = new EnemyMetadata(reader);
             enemyList.Add(row);
         }
         sqlHelper.CloseResultReader(reader);
@@ -41,16 +54,16 @@ public class MetadataLoader : Singleton<MetadataLoader> {
 		return enemyList;
 	}
 
-    public List<WaveEnemyConfigMetadataDBObject> GetWaveEnemyConfigMeatadata() {
+    public List<WaveEnemyConfigMetadata> GetWaveEnemyConfigMeatadata() {
         if (configList != null)
             return configList;
-        configList = new List<WaveEnemyConfigMetadataDBObject>();
+        configList = new List<WaveEnemyConfigMetadata>();
 
         SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM wave_enemy_config");
         SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
 
         while (reader.Read()) {
-            WaveEnemyConfigMetadataDBObject row = new WaveEnemyConfigMetadataDBObject(reader);
+            WaveEnemyConfigMetadata row = new WaveEnemyConfigMetadata(reader);
             configList.Add(row);
         }
         sqlHelper.CloseResultReader(reader);
@@ -58,18 +71,18 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         return configList;
     }
 
-    public List<BuildingMetadataDBObject> GetBuildingMetadata()
+    public List<BuildingMetadata> GetBuildingMetadata()
     {
         if (buildingList != null)
             return buildingList;
-        buildingList = new List<BuildingMetadataDBObject>();
+        buildingList = new List<BuildingMetadata>();
 
         SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM building_metadata");
         SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
 
         while (reader.Read())
         {
-            BuildingMetadataDBObject row = new BuildingMetadataDBObject(reader);
+            BuildingMetadata row = new BuildingMetadata(reader);
             buildingList.Add(row);
         }
         sqlHelper.CloseResultReader(reader);
@@ -77,36 +90,36 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         return buildingList;
     }
 
-    public List<RecipeMetadataDBObject> GetItemMetadata()
+    public List<RecipeMetadata> GetRecipeMetadata()
     {
         if (recipeList != null)
             return recipeList;
-        recipeList = new List<RecipeMetadataDBObject>();
+        recipeList = new List<RecipeMetadata>();
 
         SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM recipe_metadata");
         SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
 
         while (reader.Read())
         {
-            RecipeMetadataDBObject row = new RecipeMetadataDBObject(reader);
+            RecipeMetadata row = new RecipeMetadata(reader);
             recipeList.Add(row);
         }
         sqlHelper.CloseResultReader(reader);
 
         return recipeList;
     }
-    public List<ItemMetadataDBObject> GetRecipeMetadata()
+    public List<ItemMetadata> GetItemMetadata()
     {
         if (itemList != null)
             return itemList;
-        itemList = new List<ItemMetadataDBObject>();
+        itemList = new List<ItemMetadata>();
 
         SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM item_metadata");
         SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
 
         while (reader.Read())
         {
-            ItemMetadataDBObject row = new ItemMetadataDBObject(reader);
+            ItemMetadata row = new ItemMetadata(reader);
             itemList.Add(row);
         }
         sqlHelper.CloseResultReader(reader);

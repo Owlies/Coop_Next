@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class MapManager : Singleton<MapManager> {
     private MapGridRender gridRender;
-    public ObjectConfig objectConfig;
+    public MetadataManager metadataManager;
     public LevelConfig levelConfig;
     public GameObject sceneRoot;
     private MapNode[,] mapNodes;
@@ -15,12 +15,13 @@ public class MapManager : Singleton<MapManager> {
 
     // <GameObject, isOnMap>
     private Dictionary<GameObject, bool> gameObjectOnMapDictionary = new Dictionary<GameObject, bool>();
-    private List<BuildingMetadataDBObject> buildingMetaDataList;
+    private List<BuildingMetadata> buildingMetaDataList;
 
     static public float MAP_SIZE_UNIT = 2.0f;
 
     public void Initialize()
     {
+        metadataManager = MetadataManager.Instance;
         LoadLevel();
         LoadBuildingMetaData();
         gridRender = new MapGridRender(MAP_SIZE_UNIT);
@@ -30,10 +31,10 @@ public class MapManager : Singleton<MapManager> {
         buildingMetaDataList = MetadataLoader.Instance.GetBuildingMetadata();
     }
 
-    public BuildingMetadataDBObject GetBuildingMetadataWithTechTreeId(string techTreeId) {
+    public BuildingMetadata GetBuildingMetadataWithTechTreeId(string techTreeId) {
         int curLevel = TechTreeManager.Instance.GetItemLevel(techTreeId);
 
-        foreach(BuildingMetadataDBObject metadata in buildingMetaDataList) {
+        foreach(BuildingMetadata metadata in buildingMetaDataList) {
             if (metadata.techTreeId.Equals(techTreeId) && metadata.level == curLevel) {
                 return metadata;
             }
@@ -53,12 +54,12 @@ public class MapManager : Singleton<MapManager> {
             for (int i = 0; i < levelConfig.objectInstances.Length; i++)
             {
                 ObjectInstance instance = levelConfig.objectInstances[i];
-                if (!objectConfig.objectsDictionary.ContainsKey(instance.objectKey))
+                if (!metadataManager.objectsDictionary.ContainsKey(instance.objectKey))
                 {
                     Debug.Log("No " + instance.objectKey + " in config!!!");
                     continue;
                 }
-                ObjectData objectData = objectConfig.objectsDictionary[instance.objectKey];
+                ObjectMetadata objectData = metadataManager.objectsDictionary[instance.objectKey];
                 if (objectData == null || objectData.gameObject == null)
                 {
                     Debug.Log("No " + instance.objectKey + "'s gameobject in config!!!");
@@ -236,7 +237,7 @@ public class MapManager : Singleton<MapManager> {
         gameObjectOnMapDictionary[item] = isOnMap;
     }
 
-    public bool CreateItemOnMap(ObjectData objData, Vector2Int mapIndex)
+    public bool CreateItemOnMap(ObjectMetadata objData, Vector2Int mapIndex)
     {
         GameObject obj = GameObject.Instantiate(objData.gameObject, sceneRoot.transform);
 

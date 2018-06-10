@@ -41,6 +41,7 @@ public class GameManager : Singleton<GameManager> {
          Debug.Log("InitializeServices");
 
         MetadataLoader.Instance.Initialize();
+        MetadataManager.Instance.Initialize();
         TechTreeManager.Instance.Initialize();
 
         MapManager.Instance.Initialize();
@@ -50,6 +51,7 @@ public class GameManager : Singleton<GameManager> {
         PlayerManager.Instance.Initialize(1);
 
         CraftingManager.Instance.Initialize();
+        CraftingUIManager.Instance.Initialize();
     }
 
 }

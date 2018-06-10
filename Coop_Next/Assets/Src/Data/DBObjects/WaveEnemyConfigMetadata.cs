@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mono.Data.Sqlite;
-public class WaveEnemyConfigMetadataDBObject {
+public class WaveEnemyConfigMetadata {
 	public int waveNumber;
 	public int averageEnemyQuantity;
 	public int defendEnemyQuantity;
 	public int attackEnemyQuantity;
 	public int smallBossQuantity;
 	public int bigBossQuantity;
-	public WaveEnemyConfigMetadataDBObject(SqliteDataReader reader) {
+	public WaveEnemyConfigMetadata(SqliteDataReader reader) {
 		waveNumber = reader.GetInt32(0);
 		averageEnemyQuantity = reader.GetInt32(1);
 		defendEnemyQuantity = reader.GetInt32(2);

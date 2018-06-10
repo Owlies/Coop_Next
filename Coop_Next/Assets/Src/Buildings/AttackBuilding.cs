@@ -28,7 +28,7 @@ public class AttackBuilding : BuildingBase {
     }
 
     private void InitializeWithBuildingConfig() {
-        BuildingMetadataDBObject metadata = MapManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+        BuildingMetadata metadata = MapManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
         attackDamage = metadata.attack;
         attackCoolDownSeconds = 1.0f / metadata.attackFrequency;
         attackRange = metadata.attackRange;

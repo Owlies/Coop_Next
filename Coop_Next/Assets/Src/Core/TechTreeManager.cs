@@ -12,8 +12,8 @@ public class TechTreeManager : Singleton<TechTreeManager> {
 
     private void InitializeWithBuildings() {
         techTreeLevelMap = new Dictionary<string, int>();
-        List<BuildingMetadataDBObject> buildingMetadataList = MetadataLoader.Instance.GetBuildingMetadata();
-        foreach (BuildingMetadataDBObject obj in buildingMetadataList) {
+        List<BuildingMetadata> buildingMetadataList = MetadataLoader.Instance.GetBuildingMetadata();
+        foreach (BuildingMetadata obj in buildingMetadataList) {
             if (techTreeLevelMap.ContainsKey(obj.techTreeId)) {
                 continue;
             }

@@ -6,14 +6,15 @@ using ProgressBar;
 
 public class CraftingUIManager : Singleton<CraftingUIManager> {
     public RectTransform craftingUIPanel;
-    public ObjectConfig objectConfig;
+    public MetadataManager metadataManager;
 
     private List<RectTransform> iconPanels;
     private List<string> displayingItemNames;
     private Dictionary<RectTransform, float> iconProgressMap;
 
     // Use this for initialization
-    void Start () {
+    public void Initialize() {
+        metadataManager = MetadataManager.Instance;
         iconPanels = new List<RectTransform>();
         displayingItemNames = new List<string>();
         iconProgressMap = new Dictionary<RectTransform, float>();
@@ -69,19 +70,19 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         Text craftName = iconPanel.GetComponentInChildren<Text>();
         craftName.text = item.name;
 
-        // Forth element is the receipt icon panel
-        UpdateCraftReceiptIcons(iconPanel.GetComponentsInChildren<RectTransform>()[4], item);
+        // Forth element is the recipe icon panel
+        UpdateCraftRecipeIcons(iconPanel.GetComponentsInChildren<RectTransform>()[4], item);
     }
 
-    private void UpdateCraftReceiptIcons(RectTransform receiptPanel, InteractiveItem item) {
-        ObjectData objectData = objectConfig.objectsDictionary[item.name];
-        Recipe selectedReceipt = objectData.receipts[Random.Range(0, objectData.receipts.Length)];
-        Image[] receiptIcons = receiptPanel.GetComponentsInChildren<Image>();
+    private void UpdateCraftRecipeIcons(RectTransform recipePanel, InteractiveItem item) {
+        ObjectMetadata objectData = metadataManager.objectsDictionary[item.name];
+        RecipeMetadata selectedRecipe = objectData.recipe;
+        Image[] recipeIcons = recipePanel.GetComponentsInChildren<Image>();
 
-        for (int i = 0; i < receiptIcons.Length; i++) {
-            Resource resource = objectConfig.GetResourceByType(selectedReceipt.resources[i]);
+        for (int i = 0; i < recipeIcons.Length; i++) {
+            Resource resource = metadataManager.GetResourceByType(selectedRecipe.resources[i]);
             if (resource != null)
-                receiptIcons[i].sprite = resource.iconImage;
+                recipeIcons[i].sprite = resource.iconImage;
         }
     }
 
