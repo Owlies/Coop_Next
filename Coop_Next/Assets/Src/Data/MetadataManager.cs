@@ -69,13 +69,15 @@ public class MetadataManager : Singleton<MetadataManager>
 
 public enum ObjectType
 {
+    None = 0,
     Building,
     Item,
 }
 
 public enum ObjectSubType
 {
-    AttackBuilding = 0,
+    None = 0,
+    AttackBuilding,
     DefendBuilding,
     SupportBuilding,
     FunctionalBuilding,

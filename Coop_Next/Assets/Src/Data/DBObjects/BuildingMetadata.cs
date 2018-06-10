@@ -23,8 +23,10 @@ public class BuildingMetadata : ObjectMetadata
         underAttackPriority = reader.GetInt32(8);
         prefabPath = reader.GetString(9).Replace("\n", string.Empty);
         description = reader.GetString(10).Replace("\n", string.Empty);
-        subType = (ObjectSubType)reader.GetInt32(11);
+        string typeName = reader.GetString(11).Replace("\n", string.Empty);
+        subType = GetSubType(typeName);
         recipeId = reader.GetInt32(12);
+
         size.x = reader.GetInt32(13);
         size.y = reader.GetInt32(14);
 

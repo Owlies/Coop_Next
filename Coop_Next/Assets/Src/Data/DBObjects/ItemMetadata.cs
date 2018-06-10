@@ -16,7 +16,8 @@ public class ItemMetadata : ObjectMetadata
         recipeId = reader.GetInt32(4);
         techTreeId = reader.GetString(5).Replace("\n", string.Empty);
         actionName = reader.GetString(6).Replace("\n", string.Empty);
-        subType = (ObjectSubType)reader.GetInt32(7);
+        string typeName = reader.GetString(7).Replace("\n", string.Empty);
+        subType = GetSubType(typeName);
         level = reader.GetInt32(8);
 
         gameObject = Resources.Load("Prefabs/" + prefabPath) as GameObject;

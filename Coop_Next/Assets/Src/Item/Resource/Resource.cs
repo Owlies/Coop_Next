@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProgressBar;
 
-public enum ResourceEnum {Rock, Wood, Ore, Coal, ArcaneOrb, NatureOrb, StrengthOrb}
+public enum ResourceEnum {None, Rock, Wood, Ore, Coal, ArcaneOrb, NatureOrb, StrengthOrb}
 
 public class Resource : Item {
     public ResourceEnum resourceEnum;
