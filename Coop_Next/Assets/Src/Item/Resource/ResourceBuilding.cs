@@ -8,9 +8,9 @@ public class ResourceBuilding : BuildingBase {
     private bool isBeenCollecting;
     private float startCollectingTime;
 
-    public new void Start()
+    public new void Awake()
     {
-        base.Start();
+        base.Awake();
         isBeenCollecting = false;
         startCollectingTime = 0.0f;
     }

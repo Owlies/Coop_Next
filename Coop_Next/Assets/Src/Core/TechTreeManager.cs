@@ -26,7 +26,7 @@ public class TechTreeManager : Singleton<TechTreeManager> {
 
     }
 
-    public bool UpgreadeItem(InteractiveItem item) {
+    public bool UpgreadeItem(InteractiveObject item) {
         if (!techTreeLevelMap.ContainsKey(item.techTreeId)) {
             return false;
         }
@@ -35,7 +35,7 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         return true;
     }
 
-    public bool UnlockItem(InteractiveItem item) {
+    public bool UnlockItem(InteractiveObject item) {
         if (techTreeLevelMap.ContainsKey(item.techTreeId)) {
             return false;
         }
@@ -44,7 +44,7 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         return true;
     }
 
-    public int GetItemLevel(InteractiveItem item) {
+    public int GetItemLevel(InteractiveObject item) {
         if (!techTreeLevelMap.ContainsKey(item.techTreeId)) {
             return 0;
         }

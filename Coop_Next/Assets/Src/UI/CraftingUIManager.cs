@@ -56,7 +56,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         ResetProgressBar(iconPanel);
 
         iconPanel.gameObject.SetActive(true);
-        InteractiveItem item = CraftingManager.Instance.currentAvailableCrafts[slotIndex];
+        InteractiveObject item = CraftingManager.Instance.currentAvailableCrafts[slotIndex];
         if (displayingItemNames.Count <= slotIndex) {
             displayingItemNames.Add(item.name);
         } else {
@@ -74,7 +74,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         UpdateCraftRecipeIcons(iconPanel.GetComponentsInChildren<RectTransform>()[4], item);
     }
 
-    private void UpdateCraftRecipeIcons(RectTransform recipePanel, InteractiveItem item) {
+    private void UpdateCraftRecipeIcons(RectTransform recipePanel, InteractiveObject item) {
         ObjectMetadata objectData = metadataManager.objectsDictionary[item.itemId];
         RecipeMetadata selectedRecipe = objectData.recipe;
         Image[] recipeIcons = recipePanel.GetComponentsInChildren<Image>();

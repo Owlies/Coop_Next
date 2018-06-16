@@ -5,28 +5,28 @@ using System;
 
 public class Orb : Resource
 {
-    public Action<InteractiveItem> applyOrbEffect;
+    public Action<InteractiveObject> applyOrbEffect;
 
-    static private void AddBasicHitPoint(InteractiveItem item)
+    static private void AddBasicHitPoint(InteractiveObject item)
     {
         if (item is BuildingBase)
             (item as BuildingBase).maxHitPoint *= 1.5f;
     }
 
-    static public void AddAttackDamage(InteractiveItem item)
+    static public void AddAttackDamage(InteractiveObject item)
     {
         AddBasicHitPoint(item);
         if (item is AttackBuilding)
             (item as AttackBuilding).attackDamage *= 1.5f;
     }
 
-    static public void AddHitPoint(InteractiveItem item)
+    static public void AddHitPoint(InteractiveObject item)
     {
         if (item is BuildingBase)
             (item as BuildingBase).maxHitPoint *= 3f;
     }
 
-    static public void ReduceCoolDown(InteractiveItem item)
+    static public void ReduceCoolDown(InteractiveObject item)
     {
         AddBasicHitPoint(item);
         if (item is BuildingBase)

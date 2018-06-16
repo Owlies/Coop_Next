@@ -20,7 +20,7 @@ public class MetadataManager : Singleton<MetadataManager>
             {
                 if (objectData.gameObject != null)
                 {
-                    var item = objectData.gameObject.GetComponent<InteractiveItem>();
+                    var item = objectData.gameObject.GetComponent<InteractiveObject>();
                     if (item is Resource)
                     {
                         Resource resource = item as Resource;

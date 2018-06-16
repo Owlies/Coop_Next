@@ -22,8 +22,8 @@ public class AttackBuilding : BuildingBase {
     private EAttackBuildingState attackState;
     private Vector3 firingPosition;
 
-    public new void Start() {
-        base.Start();
+    public new void Awake() {
+        base.Awake();
         InitializeWithBuildingConfig();
     }
 

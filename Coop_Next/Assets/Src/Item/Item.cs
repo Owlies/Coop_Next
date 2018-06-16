@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Item : InteractiveItem {
+public class Item : InteractiveObject {
     
     [HideInInspector]
     public ItemMetadata originData;

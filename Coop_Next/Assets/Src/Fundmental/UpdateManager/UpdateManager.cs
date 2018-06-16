@@ -115,12 +115,15 @@ public class UpdateManager : MonoBehaviour
 	{
 		int size = original.Length;
 		OverridableMonoBehaviour[] finalArray = new OverridableMonoBehaviour[size - 1];
+        int index = 0;
 		for (int i = 0; i < size; i++)
 		{
 			if (original[i] == itemToRemove) continue;
 
-			finalArray[i] = original[i];
-		}
+			finalArray[index] = original[i];
+            index++;
+
+        }
 		return finalArray;
 	}
 
@@ -132,7 +135,7 @@ public class UpdateManager : MonoBehaviour
 		{
 			if (regularArray[i] == null) continue;
 
-            if (regularArray[i].isActiveAndEnabled)
+            if (regularArray[i].isActiveAndEnabled && regularArray[i].readyToUpdate)
 			    regularArray[i].UpdateMe();
 		}
 	}
@@ -145,7 +148,8 @@ public class UpdateManager : MonoBehaviour
 		{
 			if (fixedArray[i] == null) continue;
 
-			fixedArray[i].FixedUpdateMe();
+            if (fixedArray[i].isActiveAndEnabled && fixedArray[i].readyToUpdate)
+                fixedArray[i].FixedUpdateMe();
 		}
 	}
 
@@ -157,7 +161,8 @@ public class UpdateManager : MonoBehaviour
 		{
 			if (lateArray[i] == null) continue;
 
-			lateArray[i].LateUpdateMe();
+            if (lateArray[i].isActiveAndEnabled && lateArray[i].readyToUpdate)
+                lateArray[i].LateUpdateMe();
 		}
 	}
 }

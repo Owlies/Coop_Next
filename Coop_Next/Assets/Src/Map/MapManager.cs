@@ -22,8 +22,8 @@ public class MapManager : Singleton<MapManager> {
     public void Initialize()
     {
         metadataManager = MetadataManager.Instance;
-        LoadLevel();
         LoadBuildingMetaData();
+        LoadLevel();
         gridRender = new MapGridRender(MAP_SIZE_UNIT);
     }
 
@@ -67,12 +67,11 @@ public class MapManager : Singleton<MapManager> {
                 }
                 GameObject obj = GameObject.Instantiate(objectData.gameObject, sceneRoot.transform);
 
-                //temp, just for test
-                //if (obj.GetComponent<Orb>())
-                //{
-                //    GameObject.DestroyImmediate(obj);
-                //    obj = OrbManager.CreateOrbGameObject(objectConfig.orbData[0]);
-                //}
+                Item item = obj.GetComponent<Item>();
+                if (item != null)
+                {
+                    ItemManager.InitItem(obj, (ItemMetadata)objectData);
+                }
 
                 obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.x / 2.0f, objectData.size.y / 2.0f));
                 if (instance.dir == ObjectDir.Vertical)
@@ -101,7 +100,7 @@ public class MapManager : Singleton<MapManager> {
         }
     }
 
-    public IEnumerable<T> GetCollectionOfItemsOnMap<T>() where T : InteractiveItem
+    public IEnumerable<T> GetCollectionOfItemsOnMap<T>() where T : InteractiveObject
     {
         foreach(KeyValuePair <GameObject, bool> entry in gameObjectOnMapDictionary)
         {
@@ -115,7 +114,7 @@ public class MapManager : Singleton<MapManager> {
         }
     }
 
-    public IEnumerable<T> GetCollectionOfItems<T>() where T : InteractiveItem {
+    public IEnumerable<T> GetCollectionOfItems<T>() where T : InteractiveObject {
         foreach (KeyValuePair<GameObject, bool> entry in gameObjectOnMapDictionary) {
             if (entry.Key == null) {
                 Debug.LogError("[GetCollectionOfItems] Empty objects found in gameObjectOnMapDictionary");
@@ -129,7 +128,7 @@ public class MapManager : Singleton<MapManager> {
 
     public int GetNumberOfItemsOnMapWithName(string itemName) {
         int count = 0;
-        foreach (InteractiveItem item in MapManager.Instance.GetCollectionOfItems<InteractiveItem>()) {
+        foreach (InteractiveObject item in MapManager.Instance.GetCollectionOfItems<InteractiveObject>()) {
             if (item.name.Equals(itemName)) {
                 count++;
             }
@@ -189,7 +188,7 @@ public class MapManager : Singleton<MapManager> {
         gameObjectOnMapDictionary.Remove(item);
     }
 
-    public bool PlaceItemOnMap(InteractiveItem item, Vector2Int mapIndex, ObjectDir dir = ObjectDir.Horizontal)
+    public bool PlaceItemOnMap(InteractiveObject item, Vector2Int mapIndex, ObjectDir dir = ObjectDir.Horizontal)
     {
         GameObject obj = item.gameObject;
         Vector2Int size = item.size;
@@ -241,7 +240,7 @@ public class MapManager : Singleton<MapManager> {
     {
         GameObject obj = GameObject.Instantiate(objData.gameObject, sceneRoot.transform);
 
-        InteractiveItem item = obj.GetComponent<InteractiveItem>();
+        InteractiveObject item = obj.GetComponent<InteractiveObject>();
         if (item == null)
             return false;
 
@@ -261,7 +260,7 @@ public class MapManager : Singleton<MapManager> {
             return mapNodes[mapIndex.x, mapIndex.y].isBlocked;
     }
 
-    public bool CanPlaceItemOnMap(InteractiveItem item)
+    public bool CanPlaceItemOnMap(InteractiveObject item)
     {
         ObjectDir dir = item.GetItemDirection();
         Vector2Int pos = GeItemMapPosition(item);
@@ -295,7 +294,7 @@ public class MapManager : Singleton<MapManager> {
         }
     }
 
-    public Vector2Int GeItemMapPosition(InteractiveItem item) {
+    public Vector2Int GeItemMapPosition(InteractiveObject item) {
         if (item == null) {
             return new Vector2Int(int.MinValue, int.MinValue);
         }

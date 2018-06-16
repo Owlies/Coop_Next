@@ -24,9 +24,9 @@ public class Forge : BuildingBase {
     private float curProgress = 0.0f;
     private GameObject forgedGameObject;
 
-    public new void Start()
+    public new void Awake()
     {
-        base.Start();
+        base.Awake();
         recipeCanvas = GetComponentsInChildren<Canvas>()[0];
         progressBarCanvas = GetComponentsInChildren<Canvas>()[1];
         destroyProgressBarCanvas = GetComponentsInChildren<Canvas>()[2];
@@ -45,12 +45,14 @@ public class Forge : BuildingBase {
 
         if (forgingProgressBar != null)
         {
+            forgingProgressBar.Initialize();
             forgingProgressBar.enabled = false;
             progressBarCanvas.enabled = false;
         }
 
         if (destroyProgressBar != null)
         {
+            destroyProgressBar.Initialize();
             destroyProgressBar.enabled = false;
             destroyProgressBarCanvas.enabled = false;
         }
@@ -185,7 +187,7 @@ public class Forge : BuildingBase {
         MapManager.Instance.OnItemCreated(forgedGameObject);
         forgedGameObject.SetActive(false);
 
-        InteractiveItem item = forgedGameObject.GetComponent<InteractiveItem>();
+        InteractiveObject item = forgedGameObject.GetComponent<InteractiveObject>();
         if (resourceList.Count == 4 && resourceList[3].isRareResource())
         {
             (resourceList[3] as Orb).applyOrbEffect(item);
@@ -234,7 +236,7 @@ public class Forge : BuildingBase {
         }
 
         forgedGameObject.SetActive(true);
-        InteractiveItem item = forgedGameObject.GetComponent<InteractiveItem>();
+        InteractiveObject item = forgedGameObject.GetComponent<InteractiveObject>();
         player.SetCarryingItem(item);
         forgedGameObject = null;
 

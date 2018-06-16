@@ -6,7 +6,7 @@ using System.Reflection;
 
 public class ItemManager : Singleton<ItemManager>
 {
-    static public void CreateOrbGameObject(GameObject obj,ItemMetadata itemData)
+    static public void InitItem(GameObject obj,ItemMetadata itemData)
     {
         Item item = obj.GetComponent<Item>();  
         if (item != null)

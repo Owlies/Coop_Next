@@ -8,32 +8,32 @@ public class CraftingManager : Singleton<CraftingManager> {
     public int availableSlotsCount = 2;
     public float slotRefreshSeconds = 2.0f;
 
-    public List<InteractiveItem> currentAvailableCrafts;
+    public List<InteractiveObject> currentAvailableCrafts;
 
-    private List<InteractiveItem> unlockedCrafts;
+    private List<InteractiveObject> unlockedCrafts;
     private Dictionary<int, double> slotIndexRefreshStartTimeMap;
 
-    private HashSet<InteractiveItem> tmpEligibleCrafts;
+    private HashSet<InteractiveObject> tmpEligibleCrafts;
 
     // Use this for initialization
     public void Initialize() {
-        tmpEligibleCrafts = new HashSet<InteractiveItem>();
+        tmpEligibleCrafts = new HashSet<InteractiveObject>();
         slotIndexRefreshStartTimeMap = new Dictionary<int, double>();
-        unlockedCrafts = new List<InteractiveItem>();
-        currentAvailableCrafts = new List<InteractiveItem>();
+        unlockedCrafts = new List<InteractiveObject>();
+        currentAvailableCrafts = new List<InteractiveObject>();
 
         for (int i = 0; i < levelConfig.initialUnlockedBuildings.Length; i++) {
-            unlockedCrafts.Add(levelConfig.initialUnlockedBuildings[i].GetComponent<InteractiveItem>());
+            unlockedCrafts.Add(levelConfig.initialUnlockedBuildings[i].GetComponent<InteractiveObject>());
         }
 
         for (int i = 0; i < fixedCrafts.Length; i++) {
-            InteractiveItem item = fixedCrafts[i].GetComponent<InteractiveItem>();
+            InteractiveObject item = fixedCrafts[i].GetComponent<InteractiveObject>();
             if (item == null) {
                 Debug.LogError("Mising InteractiveItem Component");
                 continue;
             }
 
-            AssignSlotWithCraft(i, fixedCrafts[i].GetComponent<InteractiveItem>());
+            AssignSlotWithCraft(i, fixedCrafts[i].GetComponent<InteractiveObject>());
         }
     }
 
@@ -64,14 +64,14 @@ public class CraftingManager : Singleton<CraftingManager> {
             return;
         }
 
-        InteractiveItem selectedCraft = SelectEligibleCraft();
+        InteractiveObject selectedCraft = SelectEligibleCraft();
         AssignSlotWithCraft(slotIndex, selectedCraft);
 
         slotIndexRefreshStartTimeMap[slotIndex] = Time.time;
         CraftingUIManager.Instance.UpdateCraftIcon(slotIndex);
     }
 
-    private void AssignSlotWithCraft(int slotIndex, InteractiveItem selectedCraft) {
+    private void AssignSlotWithCraft(int slotIndex, InteractiveObject selectedCraft) {
         if (selectedCraft == null) {
             return;
         }
@@ -84,9 +84,9 @@ public class CraftingManager : Singleton<CraftingManager> {
         currentAvailableCrafts[slotIndex] = selectedCraft;
     }
 
-    private InteractiveItem SelectEligibleCraft() {
+    private InteractiveObject SelectEligibleCraft() {
         tmpEligibleCrafts.Clear();
-        foreach (InteractiveItem craft in unlockedCrafts) {
+        foreach (InteractiveObject craft in unlockedCrafts) {
             int count = MapManager.Instance.GetNumberOfItemsOnMapWithName(craft.name);
             if (count >= craft.maxAllowed) {
                 continue;
@@ -96,7 +96,7 @@ public class CraftingManager : Singleton<CraftingManager> {
 
 
         foreach (GameObject craft in fixedCrafts) {
-            InteractiveItem item = craft.GetComponent<InteractiveItem>();
+            InteractiveObject item = craft.GetComponent<InteractiveObject>();
             if (item == null) {
                 Debug.LogError("Mising InteractiveItem Component");
                 continue;
@@ -109,7 +109,7 @@ public class CraftingManager : Singleton<CraftingManager> {
         }
 
         int selectedIndex = Random.Range(0, tmpEligibleCrafts.Count);
-        InteractiveItem[] tmpArray = new InteractiveItem[tmpEligibleCrafts.Count];
+        InteractiveObject[] tmpArray = new InteractiveObject[tmpEligibleCrafts.Count];
         tmpEligibleCrafts.CopyTo(tmpArray);
          
         return tmpArray[selectedIndex];
@@ -123,8 +123,8 @@ public class CraftingManager : Singleton<CraftingManager> {
         return slotIndexRefreshStartTimeMap[slotIndex];
     }
 
-    public bool IsCraftAvailable(InteractiveItem craft) {
-        foreach (InteractiveItem availableCraft in currentAvailableCrafts) {
+    public bool IsCraftAvailable(InteractiveObject craft) {
+        foreach (InteractiveObject availableCraft in currentAvailableCrafts) {
             if (craft == availableCraft) {
                 return true;
             }

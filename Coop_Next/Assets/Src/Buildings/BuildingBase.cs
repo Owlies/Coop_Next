@@ -12,7 +12,7 @@ public enum ERarity
     LEGENDARY
 }
 
-public class BuildingBase : InteractiveItem {
+public class BuildingBase : InteractiveObject {
     public enum EBuildingState
     {
         IDLE,
@@ -31,7 +31,8 @@ public class BuildingBase : InteractiveItem {
 
     public TimingCallbacks callbacks;
 
-    public void Start() {
+    public new void Awake() {
+        base.Awake();
         InitializeWithBuildingConfig();
 
         currentHitPoint = maxHitPoint;

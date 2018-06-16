@@ -19,8 +19,8 @@ public enum EPlayerActionState {
 
 public class Player:OverridableMonoBehaviour
 {
-    private InteractiveItem carryingItem;
-    private InteractiveItem interactingItem;
+    private InteractiveObject carryingItem;
+    private InteractiveObject interactingItem;
     private int playerId;
     private InputController inputController;
     private EPlayerActionState playerActionState;
@@ -205,7 +205,7 @@ public class Player:OverridableMonoBehaviour
             return false;
         }
 
-        if (inteactiveObject.GetComponent<InteractiveItem>() == null)
+        if (inteactiveObject.GetComponent<InteractiveObject>() == null)
         {
             return false;
         }
@@ -220,7 +220,7 @@ public class Player:OverridableMonoBehaviour
             return false;
         }
 
-        InteractiveItem item = inteactiveObject.GetComponent<InteractiveItem>();
+        InteractiveObject item = inteactiveObject.GetComponent<InteractiveObject>();
         if (item.LongPressAction(this)) {
             interactingItem = item;
             return true;
@@ -234,7 +234,7 @@ public class Player:OverridableMonoBehaviour
             return false;
         }
 
-        if (inteactiveObject != null && inteactiveObject.GetComponent<InteractiveItem>() == null) {
+        if (inteactiveObject != null && inteactiveObject.GetComponent<InteractiveObject>() == null) {
             return false;
         }
 
@@ -249,7 +249,7 @@ public class Player:OverridableMonoBehaviour
         }
 
         if ((carryingItem == null) || (inteactiveObject != null && inteactiveObject.GetComponent<BuildingBase>() != null)) {
-            InteractiveItem item = inteactiveObject.GetComponent<InteractiveItem>();
+            InteractiveObject item = inteactiveObject.GetComponent<InteractiveObject>();
             interactingItem = item;
             return item.ShortPressAction(this);
         }
@@ -280,7 +280,7 @@ public class Player:OverridableMonoBehaviour
         return playerId == 0;
     }
 
-    public InteractiveItem GetCarryingItem()
+    public InteractiveObject GetCarryingItem()
     {
         return carryingItem;
     }
@@ -294,21 +294,24 @@ public class Player:OverridableMonoBehaviour
         return playerActionState;
     }
 
-    public void SetCarryingItem(InteractiveItem item)
+    public void SetCarryingItem(InteractiveObject item)
     {
         carryingItem = item;
         if (carryingItem.GetComponentInChildren<BoxCollider>() != null)
         {
             carryingItem.GetComponentInChildren<BoxCollider>().enabled = false;
-            carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 1.0f, carryingItem.transform.rotation);
-            if (carryingItem.tag == "Building")
-            {
-                playerActionState = EPlayerActionState.CARRYING_BUILDING;
-            }
-            else if (carryingItem.tag == "Item")
-            {
-                playerActionState = EPlayerActionState.CARRYING_RESOURCE;
-            }
+        }
+
+        carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 1.0f, carryingItem.transform.rotation);
+        if (carryingItem is BuildingBase)
+        {
+            playerActionState = EPlayerActionState.CARRYING_BUILDING;
+            carryingItem.readyToUpdate = false;
+        }
+        else if (carryingItem is Item)
+        {
+            playerActionState = EPlayerActionState.CARRYING_RESOURCE;
+            carryingItem.readyToUpdate = true;
         }
 
         if (carryingItem.GetComponentInChildren<Rigidbody>() != null)
@@ -334,6 +337,11 @@ public class Player:OverridableMonoBehaviour
         {
             carryingItem.GetComponentInChildren<Rigidbody>().detectCollisions = true;
         }
+
+        if (carryingItem is BuildingBase)
+            carryingItem.readyToUpdate = true;
+        else if (carryingItem is Item)
+            carryingItem.readyToUpdate = false;
 
         float newScaleX = carryingItem.transform.localScale.x / AppConstant.Instance.moveBuildingScaleChange;
         float newScaleY = carryingItem.transform.localScale.y / AppConstant.Instance.moveBuildingScaleChange;

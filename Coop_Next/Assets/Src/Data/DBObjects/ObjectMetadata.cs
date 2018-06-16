@@ -15,11 +15,11 @@ public class ObjectMetadata {
 
     public GameObject gameObject;
 
-    public InteractiveItem item
+    public InteractiveObject item
     {
         get
         {
-            return gameObject.GetComponent<InteractiveItem>();
+            return gameObject.GetComponent<InteractiveObject>();
         }
     }
 
