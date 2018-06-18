@@ -11,6 +11,7 @@ public class MetadataLoader : Singleton<MetadataLoader> {
     List<ItemMetadata> itemList = null;
     List<EnemyMetadata> enemyList = null;
     List<RecipeMetadata> recipeList = null;
+    List<LootMetadata> lootList = null;
 
     public RecipeMetadata GetRecipeMetadataById(int id)
     {
@@ -36,6 +37,7 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         GetBuildingMetadata();
         GetItemMetadata();
         GetRecipeMetadata();
+        GetLootMetadata();
     }
 	
 	public List<EnemyMetadata> GetEnemyMetadata() {
@@ -108,6 +110,7 @@ public class MetadataLoader : Singleton<MetadataLoader> {
 
         return recipeList;
     }
+
     public List<ItemMetadata> GetItemMetadata()
     {
         if (itemList != null)
@@ -125,5 +128,24 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         sqlHelper.CloseResultReader(reader);
 
         return itemList;
+    }
+
+    public List<LootMetadata> GetLootMetadata()
+    {
+        if (lootList != null)
+            return lootList;
+        lootList = new List<LootMetadata>();
+
+        SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM loot_config");
+        SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
+
+        while (reader.Read())
+        {
+            LootMetadata row = new LootMetadata(reader);
+            lootList.Add(row);
+        }
+        sqlHelper.CloseResultReader(reader);
+
+        return lootList;
     }
 }
