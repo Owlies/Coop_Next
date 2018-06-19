@@ -15,6 +15,7 @@ public class EnemyMetadata {
 	public float attackRange;
 	public float moveSpeed;
 	public float searchRange;
+    public int lootId;
 
 	public EnemyMetadata(SqliteDataReader reader) {
 		enemyId = reader.GetInt32(0);
@@ -26,6 +27,7 @@ public class EnemyMetadata {
 		attackRange = reader.GetFloat(6);
 		moveSpeed = reader.GetFloat(7);
 		searchRange = reader.GetFloat(8);
+        lootId = reader.GetInt32(9);
 	}
 
 	private EnemyTypeEnum convertToEnemyTypeEnum(string enemyTypeString) {
