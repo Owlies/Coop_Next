@@ -9,32 +9,7 @@ public class MetadataManager : Singleton<MetadataManager>
 {
     public Dictionary<int, ObjectMetadata> objectsDictionary;
     public Dictionary<ObjectType, Dictionary<ObjectSubType, List<ObjectMetadata>>> objectCollection;
-
-    public Resource GetResourceByType(ResourceEnum e)
-    {
-        if (objectCollection.ContainsKey(ObjectType.Item) &&
-            objectCollection[ObjectType.Item].ContainsKey(ObjectSubType.ResourceItem))
-        {
-            List<ObjectMetadata> list = objectCollection[ObjectType.Item][ObjectSubType.ResourceItem];
-            foreach (var objectData in list)
-            {
-                if (objectData.gameObject != null)
-                {
-                    var item = objectData.gameObject.GetComponent<InteractiveObject>();
-                    if (item is Resource)
-                    {
-                        Resource resource = item as Resource;
-                        if (resource.resourceEnum == e)
-                            return resource;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-
+    
     public void Initialize()
     {
         objectCollection = new Dictionary<ObjectType, Dictionary<ObjectSubType, List<ObjectMetadata>>>();
@@ -64,6 +39,45 @@ public class MetadataManager : Singleton<MetadataManager>
             objectsDictionary.Add(item.objectId, item);
             objectCollection[ObjectType.Item][item.subType].Add(item);
         }
+    }
+
+    public Resource GetResourceByType(ResourceEnum e)
+    {
+        if (objectCollection.ContainsKey(ObjectType.Item) &&
+            objectCollection[ObjectType.Item].ContainsKey(ObjectSubType.ResourceItem))
+        {
+            List<ObjectMetadata> list = objectCollection[ObjectType.Item][ObjectSubType.ResourceItem];
+            foreach (var objectData in list)
+            {
+                if (objectData.gameObject != null)
+                {
+                    var item = objectData.gameObject.GetComponent<InteractiveObject>();
+                    if (item is Resource)
+                    {
+                        Resource resource = item as Resource;
+                        if (resource.resourceEnum == e)
+                            return resource;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    public BuildingMetadata GetBuildingMetadataWithTechTreeId(string techTreeId)
+    {
+        int curLevel = TechTreeManager.Instance.GetItemLevel(techTreeId);
+
+        foreach (BuildingMetadata metadata in MetadataLoader.Instance.GetBuildingMetadata())
+        {
+            if (metadata.techTreeId.Equals(techTreeId) && metadata.level == curLevel)
+            {
+                return metadata;
+            }
+        }
+
+        return null;
     }
 }
 

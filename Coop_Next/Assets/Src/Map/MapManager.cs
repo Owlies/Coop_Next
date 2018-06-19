@@ -15,32 +15,14 @@ public class MapManager : Singleton<MapManager> {
 
     // <GameObject, isOnMap>
     private Dictionary<GameObject, bool> gameObjectOnMapDictionary = new Dictionary<GameObject, bool>();
-    private List<BuildingMetadata> buildingMetaDataList;
 
     static public float MAP_SIZE_UNIT = 2.0f;
 
     public void Initialize()
     {
         metadataManager = MetadataManager.Instance;
-        LoadBuildingMetaData();
         LoadLevel();
         gridRender = new MapGridRender(MAP_SIZE_UNIT);
-    }
-
-    private void LoadBuildingMetaData() {
-        buildingMetaDataList = MetadataLoader.Instance.GetBuildingMetadata();
-    }
-
-    public BuildingMetadata GetBuildingMetadataWithTechTreeId(string techTreeId) {
-        int curLevel = TechTreeManager.Instance.GetItemLevel(techTreeId);
-
-        foreach(BuildingMetadata metadata in buildingMetaDataList) {
-            if (metadata.techTreeId.Equals(techTreeId) && metadata.level == curLevel) {
-                return metadata;
-            }
-        }
-
-        return null;
     }
 
     private void LoadLevel()

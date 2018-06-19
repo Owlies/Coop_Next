@@ -43,7 +43,7 @@ public class BuildingBase : InteractiveObject {
     }
 
     private void InitializeWithBuildingConfig() {
-        BuildingMetadata metadata = MapManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+        BuildingMetadata metadata = MetadataManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
         if (metadata == null) {
             return;
         }
