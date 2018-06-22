@@ -6,9 +6,11 @@ using UnityEngine.UI;
 public class OnMapUIBillboard : OverridableMonoBehaviour {
     Text title;
     Text content;
+    Canvas canvas;
 
 	// Use this for initialization
 	void Start () {
+        canvas = GetComponentInChildren<Canvas>();
         title = GetComponentsInChildren<Text>()[0];
         content = GetComponentsInChildren<Text>()[1];
     }
@@ -24,5 +26,9 @@ public class OnMapUIBillboard : OverridableMonoBehaviour {
 
     public void UpdateContent(string contentString) {
         content.text = contentString;
+    }
+
+    public void Hide(bool hide) {
+        canvas.gameObject.SetActive(!hide);
     }
 }
