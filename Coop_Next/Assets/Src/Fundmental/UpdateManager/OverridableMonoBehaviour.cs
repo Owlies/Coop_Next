@@ -2,6 +2,7 @@
 
 public class OverridableMonoBehaviour : MonoBehaviour
 {
+    [HideInInspector]
     public bool readyToUpdate = true;
 	protected virtual void Awake()
 	{

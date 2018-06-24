@@ -5,7 +5,7 @@ using UnityEngine;
 public class LootManager : Singleton<LootManager>
 {
     public GameObject lootPrefab = null;
-    public GameObject lootRoot = null;
+    private GameObject lootRoot = null;
 
     public void DropLoot(int lootId, Vector3 pos)
     {
