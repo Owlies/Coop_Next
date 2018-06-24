@@ -20,9 +20,9 @@ public class UpdateManager : MonoBehaviour
 	private int regularUpdateArrayCount = 0;
 	private int fixedUpdateArrayCount = 0;
 	private int lateUpdateArrayCount = 0;
-	private OverridableMonoBehaviour[] regularArray = new OverridableMonoBehaviour[0];
-	private OverridableMonoBehaviour[] fixedArray = new OverridableMonoBehaviour[0];
-	private OverridableMonoBehaviour[] lateArray = new OverridableMonoBehaviour[0];
+	private OverridableMonoBehaviour[] regularArray = new OverridableMonoBehaviour[1024];
+	private OverridableMonoBehaviour[] fixedArray = new OverridableMonoBehaviour[1024];
+	private OverridableMonoBehaviour[] lateArray = new OverridableMonoBehaviour[1024];
 
 	public UpdateManager()
 	{
@@ -50,33 +50,35 @@ public class UpdateManager : MonoBehaviour
 	{
 		if (behaviour.GetType().GetMethod("UpdateMe").DeclaringType != typeof(OverridableMonoBehaviour))
 		{
-			regularArray = ExtendAndAddItemToArray(regularArray, behaviour);
+			regularArray = ExtendAndAddItemToArray(regularArray, behaviour, regularUpdateArrayCount);
 			regularUpdateArrayCount++;
 		}
 
 		if (behaviour.GetType().GetMethod("FixedUpdateMe").DeclaringType != typeof(OverridableMonoBehaviour))
 		{
-			fixedArray = ExtendAndAddItemToArray(fixedArray, behaviour);
+			fixedArray = ExtendAndAddItemToArray(fixedArray, behaviour, fixedUpdateArrayCount);
 			fixedUpdateArrayCount++;
 		}
 
 		if (behaviour.GetType().GetMethod("LateUpdateMe").DeclaringType == typeof(OverridableMonoBehaviour))
 			return;
 
-		lateArray = ExtendAndAddItemToArray(lateArray, behaviour);
+		lateArray = ExtendAndAddItemToArray(lateArray, behaviour, lateUpdateArrayCount);
 		lateUpdateArrayCount++;
 	}
 
-	public OverridableMonoBehaviour[] ExtendAndAddItemToArray(OverridableMonoBehaviour[] original, OverridableMonoBehaviour itemToAdd)
+	public OverridableMonoBehaviour[] ExtendAndAddItemToArray(OverridableMonoBehaviour[] original, OverridableMonoBehaviour itemToAdd, int originalCount)
 	{
 		int size = original.Length;
-		OverridableMonoBehaviour[] finalArray = new OverridableMonoBehaviour[size + 1];
-		for (int i = 0; i < size; i++)
-		{
-			finalArray[i] = original[i];
-		}
-		finalArray[finalArray.Length - 1] = itemToAdd;
-		return finalArray;
+        if (size == originalCount)
+        {
+            OverridableMonoBehaviour[] finalArray = new OverridableMonoBehaviour[size * 2];
+            for (int i = 0; i < size; i++)
+                finalArray[i] = original[i];
+            original = finalArray;
+        }
+		original[originalCount] = itemToAdd;
+		return original;
 	}
 
 	private void RemoveSpecificItemFromArray(OverridableMonoBehaviour behaviour)
@@ -114,17 +116,12 @@ public class UpdateManager : MonoBehaviour
 	public OverridableMonoBehaviour[] ShrinkAndRemoveItemToArray(OverridableMonoBehaviour[] original, OverridableMonoBehaviour itemToRemove)
 	{
 		int size = original.Length;
-		OverridableMonoBehaviour[] finalArray = new OverridableMonoBehaviour[size - 1];
-        int index = 0;
 		for (int i = 0; i < size; i++)
 		{
-			if (original[i] == itemToRemove) continue;
-
-			finalArray[index] = original[i];
-            index++;
-
+            if (original[i] == itemToRemove)
+                original[i] = original[original.Length - 1];
         }
-		return finalArray;
+		return original;
 	}
 
 	private void Update()
