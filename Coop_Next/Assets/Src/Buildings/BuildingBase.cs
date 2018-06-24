@@ -29,8 +29,6 @@ public class BuildingBase : InteractiveObject {
 
     private HpBarBehaviour hpBarBehaviour;
 
-    public TimingCallbacks callbacks;
-
     public new void Awake() {
         base.Awake();
         InitializeWithBuildingConfig();

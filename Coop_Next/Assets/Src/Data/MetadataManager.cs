@@ -79,6 +79,35 @@ public class MetadataManager : Singleton<MetadataManager>
 
         return null;
     }
+
+    public int GetRandomLoot(int lootId)
+    {
+        if (lootId == 0)
+            return 0;
+        else
+        {
+            float currentValue = 0;
+            float random = UnityEngine.Random.value;
+            LootMetadata lootMetadata = MetadataLoader.Instance.GetLootMetadataById(lootId);
+            if (lootMetadata == null || lootMetadata.lootRates.Count == 0)
+            {
+                Debug.LogError("LootId " + lootId + " is not in db or empty!!!");
+                return 0;
+            }
+            for(int i = 0; i < lootMetadata.lootRates.Count; i++)
+            {
+                if (currentValue + lootMetadata.lootRates[i].rate > random)
+                    return lootMetadata.lootRates[i].itemId;
+                else
+                {
+                    currentValue += lootMetadata.lootRates[i].rate;
+                    if (currentValue > 1)
+                        Debug.LogError("The total rate of lootId " + lootId + " is over 1");
+                }
+            }
+            return 0;
+        }
+    }
 }
 
 public enum ObjectType

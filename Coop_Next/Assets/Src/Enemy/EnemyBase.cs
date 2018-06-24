@@ -250,6 +250,8 @@ public class EnemyBase : OverridableMonoBehaviour {
 
     public void TakeDamage(float damage)
     {
+        if (IsDead())
+            return;
         currentHitPoint -= damage;
         
         if (hpBarBehaviour != null) {

@@ -9,6 +9,8 @@ public class InteractiveObject : OverridableMonoBehaviour {
     public string techTreeId = "";
     public BuffCollection buffs = new BuffCollection();
 
+    public TimingCallbacks callbacks = new TimingCallbacks();
+
     public Vector2Int size = new Vector2Int(1, 1);
 
     public virtual bool LongPressAction(Player actor) { return false;}
@@ -43,6 +45,9 @@ public class InteractiveObject : OverridableMonoBehaviour {
             return false;
         }
 
+        if (callbacks.OnPickedUpFromMap != null)
+            callbacks.OnPickedUpFromMap();
+
         return true;
     }
 
@@ -60,6 +65,9 @@ public class InteractiveObject : OverridableMonoBehaviour {
         
         actor.UnsetCarryingItem();
         actor.SetPlayerActionState(EPlayerActionState.IDLE);
+
+        if (callbacks.OnPlacedOnMap != null)
+            callbacks.OnPlacedOnMap();
 
         return true;
     }

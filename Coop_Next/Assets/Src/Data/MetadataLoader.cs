@@ -13,19 +13,6 @@ public class MetadataLoader : Singleton<MetadataLoader> {
     List<RecipeMetadata> recipeList = null;
     List<LootMetadata> lootList = null;
 
-    public RecipeMetadata GetRecipeMetadataById(int id)
-    {
-        if (id == -1)
-            return null;
-        for(int i =0; i < recipeList.Count; i++)
-        {
-            if (id == recipeList[i].recipeId)
-                return recipeList[i];
-        }
-
-        return null;
-    }
-
     public void Initialize() {
         sqlHelper = new SQLiteHelper();
 		sqlHelper.InitializeDBConnection();
@@ -148,4 +135,40 @@ public class MetadataLoader : Singleton<MetadataLoader> {
 
         return lootList;
     }
+
+    public RecipeMetadata GetRecipeMetadataById(int id)
+    {
+        if (id == -1)
+            return null;
+        for (int i = 0; i < recipeList.Count; i++)
+        {
+            if (id == recipeList[i].recipeId)
+                return recipeList[i];
+        }
+
+        return null;
+    }
+
+    public LootMetadata GetLootMetadataById(int lootId)
+    {
+        for(int i =0; i < lootList.Count; i++)
+        {
+            if (lootList[i].lootId == lootId)
+                return lootList[i];
+        }
+
+        return null;
+    }
+    
+    public ItemMetadata GetItemMetadataById(int itemId)
+    {
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].objectId == itemId)
+                return itemList[i];
+        }
+
+        return null;
+    }
+
 }
