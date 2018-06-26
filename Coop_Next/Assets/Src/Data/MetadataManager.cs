@@ -29,6 +29,10 @@ public class MetadataManager : Singleton<MetadataManager>
         {
             BuildingMetadata building = buildingList[i];
             objectsDictionary.Add(building.objectId, building);
+            if (objectCollection.ContainsKey(ObjectType.Building) == false ||
+                objectCollection[ObjectType.Building].ContainsKey(building.subType) == false) {
+                Debug.Log("Failed loading BuildingMetadata: " + building.objectName);
+            }
             objectCollection[ObjectType.Building][building.subType].Add(building);
         }
 
