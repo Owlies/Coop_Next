@@ -302,7 +302,7 @@ public class Player:OverridableMonoBehaviour
             carryingItem.GetComponentInChildren<BoxCollider>().enabled = false;
         }
 
-        carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 1.0f, carryingItem.transform.rotation);
+        //carryingItem.transform.SetPositionAndRotation(carryingItem.transform.position + this.transform.forward * 1.0f, carryingItem.transform.rotation);
         if (carryingItem is BuildingBase)
         {
             playerActionState = EPlayerActionState.CARRYING_BUILDING;
