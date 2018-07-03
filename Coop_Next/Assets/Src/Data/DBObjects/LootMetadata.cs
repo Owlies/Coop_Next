@@ -12,6 +12,7 @@ public class LootRate
 public class LootMetadata {
 
     public int lootId;
+    public string behaviour;
     public List<LootRate> lootRates;
 
     public LootMetadata(SqliteDataReader reader)
@@ -19,7 +20,8 @@ public class LootMetadata {
         lootRates = new List<LootRate>();
 
         lootId = reader.GetInt32(0);
-        string data = reader.GetString(1).Replace("\n", string.Empty);
+        behaviour = reader.GetString(1);
+        string data = reader.GetString(2).Replace("\n", string.Empty);
         string[] splits = data.Split('|');
         for(int i =0; i < splits.Length; i++)
         {

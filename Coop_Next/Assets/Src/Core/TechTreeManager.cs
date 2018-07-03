@@ -36,11 +36,15 @@ public class TechTreeManager : Singleton<TechTreeManager> {
     }
 
     public bool UnlockItem(InteractiveObject item) {
-        if (techTreeLevelMap.ContainsKey(item.techTreeId)) {
+        return UnlockTechWithId(item.techTreeId);
+    }
+
+    public bool UnlockTechWithId(string techTreeId) {
+        if (techTreeLevelMap.ContainsKey(techTreeId)) {
             return false;
         }
 
-        techTreeLevelMap[item.techTreeId] = 1;
+        techTreeLevelMap[techTreeId] = 1;
         return true;
     }
 

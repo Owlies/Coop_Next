@@ -141,7 +141,10 @@ public class EnemyManager : Singleton<EnemyManager> {
     }
 
     public void OnEnemyKilled(EnemyBase enemy) {
-        LootManager.Instance.DropLoot(enemy.lootId, enemy.transform.position);
+        foreach (int lootId in enemy.lootIds) {
+            LootManager.Instance.DropLoot(lootId, enemy.transform.position);
+        }
+        
         allEnemies.Remove(enemy);
         aliveEnemyQuantity--;
         if (aliveEnemyQuantity == 0) {

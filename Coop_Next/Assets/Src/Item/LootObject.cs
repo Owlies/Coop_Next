@@ -5,7 +5,8 @@ using UnityEngine;
 public class LootObject : InteractiveObject
 {
     [HideInInspector]
-    public ItemMetadata lootItemData;
+    public ObjectMetadata lootItemData;
+    public string lootBehaviour;
 
     private new void Awake()
     {
@@ -18,13 +19,33 @@ public class LootObject : InteractiveObject
             return base.ShortPressAction(actor);
         }
 
+        if (LootEnum.DROP_BEHAVIOUR.Equals(lootBehaviour)) {
+            return HandleDropBehaviour(actor);
+        }
+
+        if (LootEnum.UNLOCK_BEHAVIOUR.Equals(lootBehaviour)) {
+            return HandleUnlockBehaviour();
+        }
+
+        return false;
+    }
+
+    private bool HandleDropBehaviour(Player actor) {
         GameObject obj = GameObject.Instantiate(lootItemData.gameObject);
 
-        if (obj != null)
+        if (obj != null) {
             actor.SetCarryingItem(obj.GetComponent<InteractiveObject>());
+        }
 
         GameObject.Destroy(gameObject);
 
         return true;
+    }
+
+    private bool HandleUnlockBehaviour() {
+        bool success = TechTreeManager.Instance.UnlockTechWithId(lootItemData.techTreeId);
+        GameObject.Destroy(gameObject);
+
+        return success;
     }
 }

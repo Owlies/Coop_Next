@@ -22,7 +22,7 @@ public class EnemyBase : OverridableMonoBehaviour {
     public float maxHitPoint = 100.0f;
     public float AttackCoolDownSeconds = 5.0f;
     public float SearchRange = 15.0f;
-    public int lootId = 0;
+    public int[] lootIds;
 
     private float currentHitPoint;
     private List<GameObject> targetGameOjbects;
@@ -51,7 +51,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         AttackCoolDownSeconds = 1.0f / config.attackFrequency;
         MoveSpeed = config.moveSpeed;
         SearchRange = config.searchRange;
-        lootId = config.lootId;
+        lootIds = config.lootIds;
 
         enemyState = EEnemyState.IDLE;
         enemyAttackState = EEnemyAttackState.IDLE;

@@ -68,6 +68,14 @@ public class MetadataManager : Singleton<MetadataManager>
 
         return null;
     }
+
+    public ObjectMetadata GetObjectMetadataWithObjectId(int objectId) {
+        if (!objectsDictionary.ContainsKey(objectId)) {
+            return null;
+        }
+
+        return objectsDictionary[objectId];
+    }
     
     public BuildingMetadata GetBuildingMetadataWithTechTreeId(string techTreeId)
     {
@@ -84,18 +92,18 @@ public class MetadataManager : Singleton<MetadataManager>
         return null;
     }
 
-    public int GetRandomLoot(int lootId)
+    public int GetRandomLoot(LootMetadata lootMetadata)
     {
-        if (lootId == 0)
+        if (lootMetadata == null)
             return 0;
         else
         {
             float currentValue = 0;
             float random = UnityEngine.Random.value;
-            LootMetadata lootMetadata = MetadataLoader.Instance.GetLootMetadataById(lootId);
+            
             if (lootMetadata == null || lootMetadata.lootRates.Count == 0)
             {
-                Debug.LogError("LootId " + lootId + " is not in db or empty!!!");
+                Debug.LogError("LootId " + lootMetadata.lootId + " is not in db or empty!!!");
                 return 0;
             }
             for(int i = 0; i < lootMetadata.lootRates.Count; i++)
@@ -106,7 +114,7 @@ public class MetadataManager : Singleton<MetadataManager>
                 {
                     currentValue += lootMetadata.lootRates[i].rate;
                     if (currentValue > 1)
-                        Debug.LogError("The total rate of lootId " + lootId + " is over 1");
+                        Debug.LogError("The total rate of lootId " + lootMetadata.lootId + " is over 1");
                 }
             }
             return 0;

@@ -9,7 +9,8 @@ public class LootManager : Singleton<LootManager>
 
     public void DropLoot(int lootId, Vector3 pos)
     {
-        int itemId = MetadataManager.Instance.GetRandomLoot(lootId);
+        LootMetadata lootMetadata = MetadataLoader.Instance.GetLootMetadataById(lootId);
+        int itemId = MetadataManager.Instance.GetRandomLoot(lootMetadata);
 
         if (itemId != 0)
         {
@@ -31,15 +32,17 @@ public class LootManager : Singleton<LootManager>
                 loot.transform.position = position;
 
                 var lootObject = loot.GetComponent<LootObject>();
-                if (lootObject == null)
+                if (lootObject == null) {
                     Debug.LogError("No LootObject on lootObject");
-                else
-                {
-                    ItemMetadata item = MetadataLoader.Instance.GetItemMetadataById(itemId);
-                    if (item == null)
+                    return;
+                } else {
+                    ObjectMetadata item = MetadataManager.Instance.GetObjectMetadataWithObjectId(itemId);
+                    if (item == null) {
                         Debug.LogError("loot item " + itemId + " is not in db!");
-                    else
+                    } else {
                         lootObject.lootItemData = item;
+                        lootObject.lootBehaviour = lootMetadata.behaviour;
+                    }
                 }
             }
         }
