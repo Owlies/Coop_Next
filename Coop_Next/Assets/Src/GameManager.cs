@@ -42,6 +42,10 @@ public class GameManager : Singleton<GameManager> {
 
         MetadataLoader.Instance.Initialize();
         MetadataManager.Instance.Initialize();
+
+        CraftingManager.Instance.Initialize();
+        CraftingUIManager.Instance.Initialize();
+
         TechTreeManager.Instance.Initialize();
 
         MapManager.Instance.Initialize();
@@ -49,9 +53,6 @@ public class GameManager : Singleton<GameManager> {
 
         // TODO(Huayu): Hook up with real player number
         PlayerManager.Instance.Initialize(1);
-
-        CraftingManager.Instance.Initialize();
-        CraftingUIManager.Instance.Initialize();
     }
 
 }

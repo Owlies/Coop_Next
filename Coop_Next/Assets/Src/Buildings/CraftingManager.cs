@@ -132,4 +132,24 @@ public class CraftingManager : Singleton<CraftingManager> {
 
         return false;
     }
+
+    public void UnlockCraft(InteractiveObject craft) {
+        unlockedCrafts.Add(craft);
+    }
+
+    public void UpgradeCraft(InteractiveObject craft) {
+        List < InteractiveObject > newList = new List<InteractiveObject>();
+        foreach (InteractiveObject obj in unlockedCrafts) {
+            if (obj.techTreeId == craft.techTreeId) {
+                continue;
+            }
+            newList.Add(craft);
+        }
+
+        unlockedCrafts = newList;
+    }
+
+    public List<InteractiveObject> GetUnlockedCrafts() {
+        return unlockedCrafts;
+    }
 }

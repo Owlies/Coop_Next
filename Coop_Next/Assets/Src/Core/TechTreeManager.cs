@@ -7,18 +7,27 @@ public class TechTreeManager : Singleton<TechTreeManager> {
     private Dictionary<string, int> techTreeLevelMap;
 
     public void Initialize() {
+        techTreeLevelMap = new Dictionary<string, int>();
+
         InitializeWithBuildings();
     }
 
-    private void InitializeWithBuildings() {
-        techTreeLevelMap = new Dictionary<string, int>();
-        List<BuildingMetadata> buildingMetadataList = MetadataLoader.Instance.GetBuildingMetadata();
-        foreach (BuildingMetadata obj in buildingMetadataList) {
-            if (techTreeLevelMap.ContainsKey(obj.techTreeId)) {
-                continue;
-            }
+    //private void InitializeWithBuildings() {
+    //    techTreeLevelMap = new Dictionary<string, int>();
+    //    List<BuildingMetadata> buildingMetadataList = MetadataLoader.Instance.GetBuildingMetadata();
+    //    foreach (BuildingMetadata obj in buildingMetadataList) {
+    //        if (techTreeLevelMap.ContainsKey(obj.techTreeId)) {
+    //            continue;
+    //        }
 
-            techTreeLevelMap.Add(obj.techTreeId, 1);
+    //        techTreeLevelMap.Add(obj.techTreeId, 1);
+    //    }
+    //}
+
+    private void InitializeWithBuildings() {
+        List<InteractiveObject> unlockedCrafts = CraftingManager.Instance.GetUnlockedCrafts();
+        foreach (InteractiveObject craft in unlockedCrafts) {
+            techTreeLevelMap.Add(craft.techTreeId, 1);
         }
     }
 
@@ -32,19 +41,17 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         }
 
         techTreeLevelMap[item.techTreeId] = techTreeLevelMap[item.techTreeId] + 1;
+        CraftingManager.Instance.UpgradeCraft(item);
         return true;
     }
 
     public bool UnlockItem(InteractiveObject item) {
-        return UnlockTechWithId(item.techTreeId);
-    }
-
-    public bool UnlockTechWithId(string techTreeId) {
-        if (techTreeLevelMap.ContainsKey(techTreeId)) {
+        if (techTreeLevelMap.ContainsKey(item.techTreeId)) {
             return false;
         }
 
-        techTreeLevelMap[techTreeId] = 1;
+        techTreeLevelMap[item.techTreeId] = 1;
+        CraftingManager.Instance.UnlockCraft(item);
         return true;
     }
 

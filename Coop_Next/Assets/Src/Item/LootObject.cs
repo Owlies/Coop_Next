@@ -43,7 +43,7 @@ public class LootObject : InteractiveObject
     }
 
     private bool HandleUnlockBehaviour() {
-        bool success = TechTreeManager.Instance.UnlockTechWithId(lootItemData.techTreeId);
+        bool success = TechTreeManager.Instance.UnlockItem(lootItemData.gameObject.GetComponent<InteractiveObject>());
         GameObject.Destroy(gameObject);
 
         return success;
