@@ -26,6 +26,32 @@ public class InteractiveObject : OverridableMonoBehaviour {
         }
     }
 
+    public void AddBuff(Buff buff)
+    {
+        buffs.AddBuff(this, buff);
+    }
+
+    public void RemoveBuff(Buff buff)
+    {
+        buffs.RemoveBuff(this, buff);
+    }
+
+    public void UpdateBuff()
+    {
+        buffs.Tick(this);
+    }
+
+    public virtual void ClearModifler()
+    {
+    }
+
+    public override void UpdateMe()
+    {
+        base.UpdateMe();
+        ClearModifler();
+        UpdateBuff();
+    }
+
     #region ShortPressAction
     private bool CanPlaceItemOnMap(Player actor)
     {

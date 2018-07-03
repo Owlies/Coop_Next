@@ -10,8 +10,28 @@ public class AttackBuilding : BuildingBase {
     }
 
     public float attackDamage = 20.0f;
+    public float attackDamageModifier = 0.0f;
+    public float GetAttackDamage()
+    {
+        UpdateBuff();
+        return attackDamage + attackDamageModifier;
+    }
+
     public float attackRange = 5.0f;
+    public float attackRangeModifier = 0.0f;
+    public float GetAttackRange()
+    {
+        UpdateBuff();
+        return attackRange + attackRangeModifier;
+    }
+
     public float attackCoolDownSeconds = 1.0f;
+    public float attackCoolDownSecondsModifier = 0.0f;
+    public float GetAttackCoolDownSeconds()
+    {
+        UpdateBuff();
+        return attackCoolDownSeconds + attackCoolDownSecondsModifier;
+    }
 
     public GameObject bulletPrefab;
     // units / seconds, attackRange/bulletSpeed > attackCoolDownSeconds
@@ -33,6 +53,15 @@ public class AttackBuilding : BuildingBase {
         attackCoolDownSeconds = 1.0f / metadata.attackFrequency;
         attackRange = metadata.attackRange;
     }
+
+    public override void ClearModifler()
+    {
+        base.ClearModifler();
+        attackDamageModifier = 0;
+        attackRangeModifier = 0;
+        attackCoolDownSecondsModifier = 0;
+    }
+
     public override void UpdateMe()
     {
         base.UpdateMe();
@@ -101,7 +130,7 @@ public class AttackBuilding : BuildingBase {
         }
         firingPosition = new Vector3(transform.position.x, transform.position.y + (float)(GetComponent<BoxCollider>().size.y * 0.8), transform.position.z);
         GameObject bullet = GameObject.Instantiate(bulletPrefab, firingPosition, Quaternion.LookRotation(attackingEnemy.gameObject.transform.position));
-        bullet.GetComponent<Bullet>().Initialize(attackingEnemy.gameObject, bulletSpeed, attackDamage);
+        bullet.GetComponent<Bullet>().Initialize(attackingEnemy.gameObject, bulletSpeed, GetAttackDamage());
         Destroy(bullet, 30.0f);
         
         attackState = EAttackBuildingState.COOLING_DOWN;

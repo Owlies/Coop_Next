@@ -21,6 +21,8 @@ public class BuildingBase : InteractiveObject {
 
     public float maxHitPoint = 100.0f;
     public float coolDownFactor = 1.0f;
+    public float coolDownFactorModifier = 0.0f;
+
     public int underAttackingPriority = 1;
 
     private float currentHitPoint;
@@ -49,6 +51,12 @@ public class BuildingBase : InteractiveObject {
         underAttackingPriority = metadata.underAttackPriority;
         name = metadata.objectName;
         itemId = metadata.objectId;
+    }
+
+    public override void ClearModifler()
+    {
+        base.ClearModifler();
+        coolDownFactorModifier = 0;
     }
 
     public override void UpdateMe()

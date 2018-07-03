@@ -40,4 +40,14 @@ public class Util : Singleton<Util> {
 
         return null;
     }
+
+    static public float Get2DDistanceSquared(GameObject a, GameObject b)
+    {
+        Vector3 posA = a.transform.position;
+        Vector3 posB = b.transform.position;
+        Vector3 result = posB - posA;
+        result.y = 0;
+
+        return result.sqrMagnitude;
+    }
 }

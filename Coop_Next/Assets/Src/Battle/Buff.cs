@@ -2,37 +2,84 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Buff {
+public class Buff
+{
     public bool canRepeated = false;
     public bool needRemoved = false;
-    public virtual void Activate() { }
-    public virtual void Tick() { }
-    public virtual void DeActivate() { }
+    float deactiveTime = 0.5f;
+    float currentTime = 0.0f;
+    public virtual void Activate(InteractiveObject obj) { }
+    public virtual void Tick(InteractiveObject obj)
+    {
+        if (deactiveTime > 0 && currentTime >= deactiveTime)
+        {
+            needRemoved = true;
+        }
+        currentTime += Time.deltaTime;
+    }
+    public virtual void DeActivate(InteractiveObject obj) { }
+    public virtual void Reset()
+    {
+        needRemoved = false;
+        currentTime = 0;
+    }
 }
 
 public class BuffCollection
 {
     public List<Buff> buffs = new List<Buff>();
 
-    public void AddBuff(Buff buff)
+    public Buff GetBuffWithSameType(Buff buff)
     {
-        if (buff.canRepeated || !buffs.Contains(buff))
+        for(int i = 0; i < buffs.Count; i++)
+        {
+            if (buff.GetType() == buffs[i].GetType())
+                return buffs[i];
+        }
+        return null;
+    }
+
+    public void AddBuff(InteractiveObject obj, Buff buff)
+    {
+        var buffWithSameType = GetBuffWithSameType(buff);
+        if (buff.canRepeated || buffWithSameType == null)
         {
             buffs.Add(buff);
-            buff.Activate();
+            buff.Activate(obj);
+        }
+        else
+        {
+            buffWithSameType.Reset();
         }
     }
 
-    public void Tick()
+    public void Tick(InteractiveObject obj)
     {
-        buffs.RemoveAll(r => r.needRemoved);
         foreach (var buff in buffs)
-            buff.Tick();
+            buff.Tick(obj);
+        buffs.RemoveAll(r => r.needRemoved);
     }
 
-    public void Remove(Buff buff)
+    public void RemoveBuff(InteractiveObject obj, Buff buff)
     {
         if (buffs.Contains(buff))
+        {
+            buff.DeActivate(obj);
             buffs.Remove(buff);
+        }
+    }
+}
+
+public class AtackDamageBuff : Buff
+{
+    float attackValue = 1.0f;
+    public override void Tick(InteractiveObject obj)
+    {
+        base.Tick(obj);
+        if (obj is AttackBuilding)
+        {
+            AttackBuilding building = obj as AttackBuilding;
+            building.attackDamageModifier += building.attackDamage * attackValue;
+        }
     }
 }
