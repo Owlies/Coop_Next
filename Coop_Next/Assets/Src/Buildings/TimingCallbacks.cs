@@ -11,6 +11,8 @@ public class TimingCallbacks
     public Action OnPickedUpFromMap = null;
     public Action OnCreated = null;
     public Action OnDestroyed = null;
+    public Action OnBeingNearestToPlayer = null;
+    public Action OnNotBeingNearestToPlayer = null;
 
     public TimingCallbacks()
     {

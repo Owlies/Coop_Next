@@ -40,8 +40,7 @@ public class LootManager : Singleton<LootManager>
                     if (item == null) {
                         Debug.LogError("loot item " + itemId + " is not in db!");
                     } else {
-                        lootObject.lootItemData = item;
-                        lootObject.lootBehaviour = lootMetadata.behaviour;
+                        lootObject.Init(lootMetadata.behaviour, item);
                     }
                 }
             }

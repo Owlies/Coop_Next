@@ -27,6 +27,7 @@ public class Player:OverridableMonoBehaviour
     private Transform carryingPivot = null;
     private GameObject detectingComponent = null;
     private HashSet<GameObject> nearbyInteractiveGameObjects;
+    private GameObject nearestInteractiveGameObject = null;
 
     #region initialize
     public void Initialize(InputController iController, int pId, Transform carryingPivot, GameObject detectingComponent) {
@@ -74,6 +75,7 @@ public class Player:OverridableMonoBehaviour
     {
         base.UpdateMe();
 
+        UpdateNearestInteractiveObject();
         ShowBuildingPlacementIndicator();
         SetCarryingItemDirection();
     }
@@ -88,6 +90,27 @@ public class Player:OverridableMonoBehaviour
         }
     }
     
+    public void UpdateNearestInteractiveObject()
+    {
+        var currentNearestObj = GetNearestInteractiveGameObject();
+        if (nearestInteractiveGameObject != currentNearestObj)
+        {
+            if (nearestInteractiveGameObject != null)
+            {
+                InteractiveObject nearestInteractiveObj = nearestInteractiveGameObject.GetComponent<InteractiveObject>();
+                if (nearestInteractiveObj != null && nearestInteractiveObj.callbacks.OnNotBeingNearestToPlayer != null)
+                    nearestInteractiveObj.callbacks.OnNotBeingNearestToPlayer();
+            }
+            if (currentNearestObj != null)
+            {
+                InteractiveObject currentInteractiveObj = currentNearestObj.GetComponent<InteractiveObject>();
+                if (currentInteractiveObj != null && currentInteractiveObj.callbacks.OnBeingNearestToPlayer != null)
+                    currentInteractiveObj.callbacks.OnBeingNearestToPlayer();
+            }
+            nearestInteractiveGameObject = currentNearestObj;
+        }
+    }
+
     public void ShowBuildingPlacementIndicator()
     {
         if (carryingItem != null)

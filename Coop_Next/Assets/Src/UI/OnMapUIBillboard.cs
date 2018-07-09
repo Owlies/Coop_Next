@@ -8,14 +8,11 @@ public class OnMapUIBillboard : OverridableMonoBehaviour {
     Text content;
     Canvas canvas;
 
-	// Use this for initialization
-	void Start () {
+    public void Initialize(string titleString, string contentString)
+    {
         canvas = GetComponentInChildren<Canvas>();
         title = GetComponentsInChildren<Text>()[0];
         content = GetComponentsInChildren<Text>()[1];
-    }
-
-    public void Initialize(string titleString, string contentString) {
         UpdateTitle(titleString);
         UpdateContent(contentString);
     }
