@@ -27,7 +27,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         }
 
         // Enable fixed crafting slots with disabled progress bar
-        for (int i = 0; i < CraftingManager.Instance.fixedCrafts.Length; i++) {
+        for (int i = 0; i < CraftingManager.Instance.fixedCrafts.Count; i++) {
             iconPanels[i].gameObject.SetActive(true);
             iconPanels[i].GetComponentInChildren<ProgressBarBehaviour>().gameObject.SetActive(false);
             UpdateCraftIcon(i);
@@ -88,7 +88,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
 
     /*      Progress Bar Updates    */
     private void UpdateCraftProgressBars() {
-        for (int i = CraftingManager.Instance.fixedCrafts.Length; i < CraftingManager.Instance.availableSlotsCount; i++) {
+        for (int i = CraftingManager.Instance.fixedCrafts.Count; i < CraftingManager.Instance.availableSlotsCount; i++) {
             UpdateCraftIconProgressBar(i, iconPanels[i]);
         }
     }

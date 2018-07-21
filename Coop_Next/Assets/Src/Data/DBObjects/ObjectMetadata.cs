@@ -15,6 +15,16 @@ public class ObjectMetadata {
 
     public GameObject gameObject;
 
+    public void InitInteractiveObj()
+    {
+        var interactiveObj = item;
+        if (interactiveObj != null)
+        {
+            interactiveObj.objectMetadata = this;
+            interactiveObj.Init();
+        }
+    }
+
     public InteractiveObject item
     {
         get

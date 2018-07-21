@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractiveObject : OverridableMonoBehaviour {
-    public int itemId;
+    public ObjectMetadata objectMetadata;
+    public int itemId
+    {
+        get { return objectMetadata.objectId; }
+    }
     public int maxAllowed = 99;
     public ERarity rarity = ERarity.COMMON;
-    public string techTreeId = "";
+    public string techTreeId
+    {
+        get { return objectMetadata.techTreeId; }
+    }
     public BuffCollection buffs = new BuffCollection();
 
     public TimingCallbacks callbacks = new TimingCallbacks();
@@ -24,6 +31,11 @@ public class InteractiveObject : OverridableMonoBehaviour {
         } else {
             return ObjectDir.Vertical;
         }
+    }
+
+    public virtual void Init()
+    {
+
     }
 
     public void AddBuff(Buff buff)

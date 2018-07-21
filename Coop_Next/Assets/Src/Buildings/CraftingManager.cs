@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class CraftingManager : Singleton<CraftingManager> {
     public LevelConfig levelConfig;
-    public GameObject[] fixedCrafts;
+
+    public string[] fixedCraftTechTreeId;
+    [HideInInspector]
+    public List<GameObject> fixedCrafts;
     public int availableSlotsCount = 2;
     public float slotRefreshSeconds = 2.0f;
 
@@ -22,13 +25,24 @@ public class CraftingManager : Singleton<CraftingManager> {
         unlockedCrafts = new List<InteractiveObject>();
         currentAvailableCrafts = new List<InteractiveObject>();
 
-        for (int i = 0; i < levelConfig.initialUnlockedBuildings.Length; i++) {
+        for (int i = 0; i < levelConfig.initialUnlockedBuildings.Count; i++) {
             unlockedCrafts.Add(levelConfig.initialUnlockedBuildings[i].GetComponent<InteractiveObject>());
         }
 
-        for (int i = 0; i < fixedCrafts.Length; i++) {
+        TechTreeManager.Instance.Initialize();
+
+        fixedCrafts = new List<GameObject>();
+        for (int i = 0; i < fixedCraftTechTreeId.Length; ++i)
+        {
+            var buildingMetadata = MetadataManager.Instance.GetBuildingMetadataWithTechTreeId(fixedCraftTechTreeId[i]);
+            fixedCrafts.Add(buildingMetadata.gameObject);
+        }
+
+        for (int i = 0; i < fixedCrafts.Count; i++)
+        {
             InteractiveObject item = fixedCrafts[i].GetComponent<InteractiveObject>();
-            if (item == null) {
+            if (item == null)
+            {
                 Debug.LogError("Mising InteractiveItem Component");
                 continue;
             }
@@ -43,7 +57,7 @@ public class CraftingManager : Singleton<CraftingManager> {
     }
 
     private void TryRefreshAvailableCrafts() {
-        for (int i = fixedCrafts.Length; i < availableSlotsCount; i++) {
+        for (int i = fixedCrafts.Count; i < availableSlotsCount; i++) {
             RefreshCraftSlot(i);
         }
     }

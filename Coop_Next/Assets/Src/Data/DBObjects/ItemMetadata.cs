@@ -19,8 +19,9 @@ public class ItemMetadata : ObjectMetadata
         string typeName = reader.GetString(7).Replace("\n", string.Empty);
         subType = GetSubType(typeName);
         level = reader.GetInt32(8);
-
-        gameObject = Resources.Load("Prefabs/" + prefabPath) as GameObject;
+        gameObject = GameObject.Instantiate(Resources.Load("Prefabs/" + prefabPath) as GameObject);
         size = new Vector2Int(1, 1);
+
+        InitInteractiveObj();
     }
 }

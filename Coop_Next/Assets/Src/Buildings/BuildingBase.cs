@@ -31,26 +31,25 @@ public class BuildingBase : InteractiveObject {
 
     private HpBarBehaviour hpBarBehaviour;
 
-    public new void Awake() {
-        base.Awake();
+    public new void Init() {
+        base.Init();
         InitializeWithBuildingConfig();
-
-        currentHitPoint = maxHitPoint;
-        buildingState = EBuildingState.IDLE;
-        startTakingDamageTime = 0.0f;
 
         hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
     }
 
-    private void InitializeWithBuildingConfig() {
-        BuildingMetadata metadata = MetadataManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+    protected virtual void InitializeWithBuildingConfig() {
+        BuildingMetadata metadata = objectMetadata as BuildingMetadata;
         if (metadata == null) {
             return;
         }
         maxHitPoint = metadata.hp;
         underAttackingPriority = metadata.underAttackPriority;
         name = metadata.objectName;
-        itemId = metadata.objectId;
+
+        currentHitPoint = maxHitPoint;
+        buildingState = EBuildingState.IDLE;
+        startTakingDamageTime = 0.0f;
     }
 
     public override void ClearModifler()

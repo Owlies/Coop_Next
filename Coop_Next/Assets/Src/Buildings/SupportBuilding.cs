@@ -4,23 +4,20 @@ using UnityEngine;
 
 public class SupportBuilding : BuildingBase
 {
-    public float attackRange = 5.0f;
-    public float attackRangeModifier = 0.0f;
+    private float attackRange = 5.0f;
+    private float attackRangeModifier = 0.0f;
     public float GetAttackRange()
     {
         UpdateBuff();
         return attackRange + attackRangeModifier;
     }
 
-    public new void Awake()
+    private new void InitializeWithBuildingConfig()
     {
-        base.Awake();
-        InitializeWithBuildingConfig();
-    }
-
-    private void InitializeWithBuildingConfig()
-    {
-        BuildingMetadata metadata = MetadataManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+        base.InitializeWithBuildingConfig();
+        BuildingMetadata metadata = objectMetadata as BuildingMetadata;
+        if (metadata == null)
+            return;
         attackRange = metadata.attackRange;
     }
 

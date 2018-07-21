@@ -42,13 +42,11 @@ public class AttackBuilding : BuildingBase {
     private EAttackBuildingState attackState;
     private Vector3 firingPosition;
 
-    public new void Awake() {
-        base.Awake();
-        InitializeWithBuildingConfig();
-    }
-
-    private void InitializeWithBuildingConfig() {
-        BuildingMetadata metadata = MetadataManager.Instance.GetBuildingMetadataWithTechTreeId(techTreeId);
+    private new void InitializeWithBuildingConfig() {
+        base.InitializeWithBuildingConfig();
+        BuildingMetadata metadata = objectMetadata as BuildingMetadata;
+        if (metadata == null)
+            return;
         attackDamage = metadata.attack;
         attackCoolDownSeconds = 1.0f / metadata.attackFrequency;
         attackRange = metadata.attackRange;

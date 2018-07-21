@@ -46,7 +46,7 @@ public class GameManager : Singleton<GameManager> {
         CraftingManager.Instance.Initialize();
         CraftingUIManager.Instance.Initialize();
 
-        TechTreeManager.Instance.Initialize();
+        //TechTreeManager.Instance.Initialize();
 
         MapManager.Instance.Initialize();
         EnemyManager.Instance.Initialize();

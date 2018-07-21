@@ -13,7 +13,31 @@ public class LevelConfig : ScriptableObject {
     public GameObject[] enemyPrefabs;
 
     [SerializeField]
-    public GameObject[] initialUnlockedBuildings;
+    public int[] initialUnlockedBuildingIds;
+
+    [HideInInspector]
+    private List<GameObject> m_initialUnlockedBuildings = null;
+    public List<GameObject> initialUnlockedBuildings
+    {
+        get
+        {
+            if (m_initialUnlockedBuildings == null)
+            {
+                m_initialUnlockedBuildings = new List<GameObject>();
+                for (int i = 0; i < initialUnlockedBuildingIds.Length; ++i)
+                {
+                    m_initialUnlockedBuildings.Add(MetadataManager.Instance.objectsDictionary[initialUnlockedBuildingIds[i]].gameObject);
+                }
+            }
+
+            return m_initialUnlockedBuildings;
+        }
+    }
+
+    private void OnEnable()
+    {
+        m_initialUnlockedBuildings = null;
+    }
 }
 
 public enum ObjectDir
