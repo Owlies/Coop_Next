@@ -62,7 +62,7 @@ public class LootObject : InteractiveObject
     }
 
     private bool HandleDropBehaviour(Player actor) {
-        GameObject obj = GameObject.Instantiate(lootItemData.gameObject);
+        GameObject obj = lootItemData.GetGameObjectFromPool();
 
         if (obj != null) {
             actor.SetCarryingItem(obj.GetComponent<InteractiveObject>());
@@ -74,7 +74,7 @@ public class LootObject : InteractiveObject
     }
 
     private bool HandleUnlockBehaviour() {
-        bool success = TechTreeManager.Instance.UnlockItem(lootItemData.gameObject.GetComponent<InteractiveObject>());
+        bool success = TechTreeManager.Instance.UnlockItem(lootItemData.GetPrefab().GetComponent<InteractiveObject>());
         GameObject.Destroy(gameObject);
 
         return success;

@@ -31,7 +31,7 @@ public class BuildingBase : InteractiveObject {
 
     private HpBarBehaviour hpBarBehaviour;
 
-    public new void Init() {
+    public override void Init() {
         base.Init();
         InitializeWithBuildingConfig();
 

@@ -182,8 +182,8 @@ public class Forge : BuildingBase {
 
     private void ForgingComplete() {
         recipeCanvas.enabled = false;
-        GameObject forgedPrefab = FindMatchingRecipeObject();
-        forgedGameObject = GameObject.Instantiate<GameObject>(forgedPrefab, transform);
+        ObjectMetadata forgedPrefabMetadata = FindMatchingRecipeObject();
+        forgedGameObject = forgedPrefabMetadata.GetGameObjectFromPool(transform);
         MapManager.Instance.OnItemCreated(forgedGameObject);
         forgedGameObject.SetActive(false);
 
@@ -248,7 +248,7 @@ public class Forge : BuildingBase {
 
 
     #region HelperFunctions
-    private GameObject FindMatchingRecipeObject()
+    private ObjectMetadata FindMatchingRecipeObject()
     {
         foreach (var obj in metadataManager.objectsDictionary)
         {
@@ -279,7 +279,7 @@ public class Forge : BuildingBase {
 
                 if (doesMatch)
                 {
-                    return data.gameObject;
+                    return data;
                 }
             }
         }

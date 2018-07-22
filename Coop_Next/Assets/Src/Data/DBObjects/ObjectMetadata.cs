@@ -13,7 +13,24 @@ public class ObjectMetadata {
     public ObjectSubType subType;
     public int level;
 
-    public GameObject gameObject;
+    protected GameObject gameObject;
+
+    public GameObject GetPrefab()
+    {
+        return gameObject;
+    }
+
+    public GameObject GetGameObjectFromPool(Transform parent = null)//pool later
+    {
+        GameObject obj = GameObject.Instantiate<GameObject>(gameObject, parent) as GameObject;
+        obj.SetActive(true);
+
+        InteractiveObject interactiveObj = obj.GetComponent<InteractiveObject>();
+        if (interactiveObj != null)
+            interactiveObj.Init();
+
+        return obj;
+    }
 
     public void InitInteractiveObj()
     {

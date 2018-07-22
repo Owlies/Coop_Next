@@ -53,9 +53,9 @@ public class MetadataManager : Singleton<MetadataManager>
             List<ObjectMetadata> list = objectCollection[ObjectType.Item][ObjectSubType.ResourceItem];
             foreach (var objectData in list)
             {
-                if (objectData.gameObject != null)
+                if (objectData.GetPrefab() != null)
                 {
-                    var item = objectData.gameObject.GetComponent<InteractiveObject>();
+                    var item = objectData.GetPrefab().GetComponent<InteractiveObject>();
                     if (item is Resource)
                     {
                         Resource resource = item as Resource;

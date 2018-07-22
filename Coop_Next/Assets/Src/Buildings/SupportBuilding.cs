@@ -12,7 +12,7 @@ public class SupportBuilding : BuildingBase
         return attackRange + attackRangeModifier;
     }
 
-    private new void InitializeWithBuildingConfig()
+    protected override void InitializeWithBuildingConfig()
     {
         base.InitializeWithBuildingConfig();
         BuildingMetadata metadata = objectMetadata as BuildingMetadata;

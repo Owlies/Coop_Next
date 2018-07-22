@@ -42,7 +42,7 @@ public class AttackBuilding : BuildingBase {
     private EAttackBuildingState attackState;
     private Vector3 firingPosition;
 
-    private new void InitializeWithBuildingConfig() {
+    protected override void InitializeWithBuildingConfig() {
         base.InitializeWithBuildingConfig();
         BuildingMetadata metadata = objectMetadata as BuildingMetadata;
         if (metadata == null)

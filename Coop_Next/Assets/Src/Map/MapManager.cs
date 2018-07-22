@@ -42,12 +42,12 @@ public class MapManager : Singleton<MapManager> {
                     continue;
                 }
                 ObjectMetadata objectData = metadataManager.objectsDictionary[instance.objectId];
-                if (objectData == null || objectData.gameObject == null)
+                if (objectData == null || objectData.GetPrefab() == null)
                 {
                     Debug.Log("No " + instance.objectId + "'s gameobject in config!!!");
                     continue;
                 }
-                GameObject obj = GameObject.Instantiate(objectData.gameObject, sceneRoot.transform);
+                GameObject obj = objectData.GetGameObjectFromPool(sceneRoot.transform);
 
                 Item item = obj.GetComponent<Item>();
                 if (item != null)
@@ -220,7 +220,7 @@ public class MapManager : Singleton<MapManager> {
 
     public bool CreateItemOnMap(ObjectMetadata objData, Vector2Int mapIndex)
     {
-        GameObject obj = GameObject.Instantiate(objData.gameObject, sceneRoot.transform);
+        GameObject obj = objData.GetGameObjectFromPool(sceneRoot.transform);
 
         InteractiveObject item = obj.GetComponent<InteractiveObject>();
         if (item == null)

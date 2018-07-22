@@ -35,7 +35,7 @@ public class CraftingManager : Singleton<CraftingManager> {
         for (int i = 0; i < fixedCraftTechTreeId.Length; ++i)
         {
             var buildingMetadata = MetadataManager.Instance.GetBuildingMetadataWithTechTreeId(fixedCraftTechTreeId[i]);
-            fixedCrafts.Add(buildingMetadata.gameObject);
+            fixedCrafts.Add(buildingMetadata.GetPrefab());
         }
 
         for (int i = 0; i < fixedCrafts.Count; i++)

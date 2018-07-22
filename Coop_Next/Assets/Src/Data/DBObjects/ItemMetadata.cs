@@ -20,6 +20,7 @@ public class ItemMetadata : ObjectMetadata
         subType = GetSubType(typeName);
         level = reader.GetInt32(8);
         gameObject = GameObject.Instantiate(Resources.Load("Prefabs/" + prefabPath) as GameObject);
+        gameObject.SetActive(false);
         size = new Vector2Int(1, 1);
 
         InitInteractiveObj();

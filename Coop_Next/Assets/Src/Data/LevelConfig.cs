@@ -26,7 +26,7 @@ public class LevelConfig : ScriptableObject {
                 m_initialUnlockedBuildings = new List<GameObject>();
                 for (int i = 0; i < initialUnlockedBuildingIds.Length; ++i)
                 {
-                    m_initialUnlockedBuildings.Add(MetadataManager.Instance.objectsDictionary[initialUnlockedBuildingIds[i]].gameObject);
+                    m_initialUnlockedBuildings.Add(MetadataManager.Instance.objectsDictionary[initialUnlockedBuildingIds[i]].GetPrefab());
                 }
             }
 
