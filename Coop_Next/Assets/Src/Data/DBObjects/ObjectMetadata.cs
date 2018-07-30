@@ -72,6 +72,8 @@ public class ObjectMetadata {
             return ObjectSubType.EquipmentItem;
         if (subTypeName.Equals("ResourceItem"))
             return ObjectSubType.ResourceItem;
+        if (subTypeName.Equals("Trap"))
+            return ObjectSubType.Trap;
 
         return ObjectSubType.None;
     }

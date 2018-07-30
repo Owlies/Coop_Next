@@ -17,14 +17,17 @@ namespace ProgressBar
         /// <summary>
         /// Class used for storing the Min and Max width values that the Filler will vary between.
         /// </summary>
-        private FillerProperty m_FillerInfo;
+        [SerializeField]
+        private FillerProperty m_FillerInfo = null;
 
         public FillerProperty FillerInfo
         {
             get
             {
                 if (m_FillerInfo == null)
+                {
                     m_FillerInfo = new FillerProperty(0, m_FillRect.rect.width);
+                }
                 return m_FillerInfo;
             }
         }

@@ -135,6 +135,7 @@ public enum ObjectSubType
     AttackBuilding,
     DefendBuilding,
     SupportBuilding,
+    Trap,
     FunctionalBuilding,
     EquipmentItem,
     ResourceItem,

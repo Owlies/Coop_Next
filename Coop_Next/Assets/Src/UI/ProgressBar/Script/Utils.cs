@@ -28,6 +28,7 @@ namespace ProgressBar.Utils
     /// <summary>
     /// Min and Max Filler's width
     /// </summary>
+    [Serializable]
     public class FillerProperty
     {
         public FillerProperty(float Min, float Max)
