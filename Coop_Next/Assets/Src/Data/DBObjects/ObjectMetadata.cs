@@ -27,7 +27,10 @@ public class ObjectMetadata {
 
         InteractiveObject interactiveObj = obj.GetComponent<InteractiveObject>();
         if (interactiveObj != null)
+        {
+            interactiveObj.objectMetadata = this;
             interactiveObj.Init();
+        }
 
         return obj;
     }

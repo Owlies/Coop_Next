@@ -221,7 +221,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         BuildingBase highestAttackPriorityBuilding = null;
         float minDistance = int.MaxValue;
         foreach (var item in MapManager.Instance.GetCollectionOfItemsOnMap<BuildingBase>()) {
-            if (item.gameObject.tag != "Building" || Vector3.Distance(item.transform.position, transform.position) > SearchRange) {
+            if (item.gameObject.tag != "Building" || item.objectMetadata.subType == ObjectSubType.Trap || Vector3.Distance(item.transform.position, transform.position) > SearchRange) {
                 continue;
             }
 
