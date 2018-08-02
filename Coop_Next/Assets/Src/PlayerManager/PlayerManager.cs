@@ -13,11 +13,11 @@ public class PlayerManager : Singleton<PlayerManager> {
             playerObject.AddComponent<Player>();
             Player pController = playerObject.GetComponent<Player>();
             Transform carryingPivot = playerObject.transform.Find("CarryingPivot");
-            GameObject detectiongComponent = playerObject.transform.Find("TriggerDetection").gameObject;
+            //GameObject detectiongComponent = playerObject.transform.Find("TriggerDetection").gameObject;
 #if UNITY_EDITOR || UNITY_STANDALONE
             playerObject.AddComponent<PCInputController>();
             playerObject.GetComponent<PCInputController>().RegisterListeners(pController.PlayerMove, pController.CancelPlayerMovement, pController.PlayerAction);
-            pController.Initialize(playerObject.GetComponent<PCInputController>(), playerId, carryingPivot, detectiongComponent);
+            pController.Initialize(playerObject.GetComponent<PCInputController>(), playerId, carryingPivot);
 #elif UNITY_IOS || UNITY_ANDROID
             
 #endif

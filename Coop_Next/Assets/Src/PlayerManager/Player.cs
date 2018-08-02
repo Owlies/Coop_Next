@@ -25,12 +25,11 @@ public class Player:OverridableMonoBehaviour
     private InputController inputController;
     private EPlayerActionState playerActionState;
     private Transform carryingPivot = null;
-    private GameObject detectingComponent = null;
     private HashSet<GameObject> nearbyInteractiveGameObjects;
     private GameObject nearestInteractiveGameObject = null;
 
     #region initialize
-    public void Initialize(InputController iController, int pId, Transform carryingPivot, GameObject detectingComponent) {
+    public void Initialize(InputController iController, int pId, Transform carryingPivot) {
         base.Awake();
 
         inputController = iController;
@@ -38,7 +37,6 @@ public class Player:OverridableMonoBehaviour
         carryingItem = null;
         playerActionState = EPlayerActionState.IDLE;
         this.carryingPivot = carryingPivot;
-        this.detectingComponent = detectingComponent;
 
         PlayerInputConfig inputConfig = new PlayerInputConfig();
         if (!AppConstant.Instance.isMultiPlayer)
@@ -62,10 +60,7 @@ public class Player:OverridableMonoBehaviour
         }
 
         inputController.inputConfig = inputConfig;
-
-        if (detectingComponent == null) {
-            Debug.LogError("Cant'f find TriggerDetection Component for player!");
-        }
+        
         nearbyInteractiveGameObjects = new HashSet<GameObject>();
     }
     #endregion

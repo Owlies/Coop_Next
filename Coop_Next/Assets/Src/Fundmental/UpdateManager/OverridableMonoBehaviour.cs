@@ -9,7 +9,7 @@ public class OverridableMonoBehaviour : MonoBehaviour
 		UpdateManager.AddItem(this);
 	}
 
-    protected void OnDestroy()
+    protected virtual void OnDestroy()
     {
         UpdateManager.RemoveSpecificItem(this);
     }

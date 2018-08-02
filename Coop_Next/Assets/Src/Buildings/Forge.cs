@@ -295,11 +295,12 @@ public class Forge : BuildingBase {
         }
     }
 
-    private void OnDestroy()
-    {
+    protected override void OnDestroy()
+    { 
         for (int i = 0; i < resourceList.Count; i++)
             GameObject.DestroyImmediate(resourceList[i].gameObject);
         resourceList.Clear();
+        base.OnDestroy();
     }
 
     private void ResetForgingProgressBar()
