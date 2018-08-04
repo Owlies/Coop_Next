@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractiveObject : OverridableMonoBehaviour {
+
+    public Vector2Int posOnMap = new Vector2Int(-1, -1);
+
     public ObjectMetadata objectMetadata;
     public int itemId
     {
