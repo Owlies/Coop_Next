@@ -143,7 +143,7 @@ public class ResourceBuilding : BuildingBase {
         return TryCancelCollectingResource(actor);
     }
 
-    public override bool ShortPressAction(Player actor)
+    public override bool InteractAction(Player actor)
     {
         return TryStartCollectingResource(actor);
     }

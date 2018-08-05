@@ -28,23 +28,25 @@ public class Catapult : AttackBuilding
         return false;
     }
 
-    //protected override bool TryAttackEnemy()
-    //{
-    //    if (!CanAttackEnemy())
-    //    {
-    //        attackingEnemy = null;
-    //        return false;
-    //    }
-    //    firingPosition = new Vector3(transform.position.x, transform.position.y + (float)(GetComponent<BoxCollider>().size.y * 0.8), transform.position.z);
-    //    GameObject bullet = Instantiate(bulletPrefab, firingPosition, Quaternion.LookRotation(attackingEnemy.gameObject.transform.position));
-    //    bullet.GetComponent<Bullet>().Initialize(attackingEnemy.gameObject, bulletSpeed, GetAttackDamage());
-    //    Destroy(bullet, 10.0f);
+    protected override bool TryAttackEnemy()
+    {
+        if (!CanAttackEnemy())
+        {
+            attackingEnemy = null;
+            return false;
+        }
+        firingPosition = new Vector3(transform.position.x, transform.position.y + (float)(GetComponent<BoxCollider>().size.y * 0.8), transform.position.z);
+        GameObject bullet = Instantiate(bulletPrefab, firingPosition, Quaternion.LookRotation(attackingEnemy.gameObject.transform.position));
+        bullet.GetComponent<Bullet>().Initialize(attackingEnemy.gameObject, bulletSpeed, GetAttackDamage());
+        Destroy(bullet, 10.0f);
 
-    //    attackState = EAttackBuildingState.COOLING_DOWN;
-    //    attackCoolDownStartTime = Time.time;
+        attackState = EAttackBuildingState.COOLING_DOWN;
+        attackCoolDownStartTime = Time.time;
 
-    //    return true;
-    //}
+        filledRock = false;
+
+        return true;
+    }
 
     protected override bool CanAttackEnemy()
     {
