@@ -30,6 +30,8 @@ public class BuildingMetadata : ObjectMetadata
         size.x = reader.GetInt32(13);
         size.y = reader.GetInt32(14);
 
+        fixDir = reader.GetInt32(15) == 1;
+
         gameObject = GameObject.Instantiate(Resources.Load("Prefabs/" + prefabPath) as GameObject);
         gameObject.SetActive(false);
 

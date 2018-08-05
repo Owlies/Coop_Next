@@ -269,7 +269,7 @@ public class Player:OverridableMonoBehaviour
         if ((carryingItem == null) || (inteactiveObject != null && inteactiveObject.GetComponent<BuildingBase>() != null)) {
             InteractiveObject item = inteactiveObject.GetComponent<InteractiveObject>();
             interactingItem = item;
-            return item.ShortPressAction(this);
+            return item.InteractAction(this);
         }
 
         return carryingItem.ShortPressAction(this);

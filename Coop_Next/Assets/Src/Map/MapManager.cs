@@ -217,7 +217,7 @@ public class MapManager : Singleton<MapManager> {
             for (int j = 0; j < size.y; j++)
             {
                 Vector2Int index = mapIndex + new Vector2Int(i, j);
-                if (dir == ObjectDir.Vertical)
+                if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
                     index = mapIndex + new Vector2Int(j, i);
                 if (IsMapIndexOutOfBound(index) || !mapNodes[index.x, index.y].IsEmpty())
                 {
@@ -232,7 +232,7 @@ public class MapManager : Singleton<MapManager> {
                 for (int j = 0; j < size.y; j++)
                 {
                     Vector2Int index = mapIndex + new Vector2Int(i, j);
-                    if (dir == ObjectDir.Vertical)
+                    if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
                         index = mapIndex + new Vector2Int(j, i);
                     mapNodes[index.x, index.y].AddItemToNode(obj);
                 }
@@ -241,8 +241,11 @@ public class MapManager : Singleton<MapManager> {
             obj.transform.parent = sceneRoot.transform;
             obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
 
-            if (dir == ObjectDir.Vertical)
+            if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
                 obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));
+
+            if (item.objectMetadata.fixDir)
+                obj.transform.localRotation = Quaternion.identity;
 
             item.posOnMap = mapIndex;
         }

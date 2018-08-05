@@ -12,6 +12,7 @@ public class ObjectMetadata {
     public Vector2Int size;
     public ObjectSubType subType;
     public int level;
+    public bool fixDir = true;
 
     protected GameObject gameObject;
 

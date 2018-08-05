@@ -102,10 +102,11 @@ public class InteractiveObject : OverridableMonoBehaviour {
         Vector2Int itemPos = MapManager.Instance.GeItemMapPosition(this);
         ObjectDir itemDirection = GetItemDirection();
 
-        MapManager.Instance.PlaceItemOnMap(this, itemPos, itemDirection);
-        
         actor.UnsetCarryingItem();
         actor.SetPlayerActionState(EPlayerActionState.IDLE);
+
+        MapManager.Instance.PlaceItemOnMap(this, itemPos, itemDirection);
+        
 
         if (callbacks.OnPlacedOnMap != null)
             callbacks.OnPlacedOnMap();
@@ -116,6 +117,11 @@ public class InteractiveObject : OverridableMonoBehaviour {
     public virtual bool ShortPressAction(Player actor)
     {
         return TryPlaceItemOnMap(actor);
+    } 
+
+    public virtual bool InteractAction(Player actor)
+    {
+        return false;
     }
     #endregion
 }
