@@ -12,6 +12,7 @@ public class MetadataLoader : Singleton<MetadataLoader> {
     List<EnemyMetadata> enemyList = null;
     List<RecipeMetadata> recipeList = null;
     List<LootMetadata> lootList = null;
+    List<ResourceMetadata> resourceList = null;
 
     public void Initialize() {
         sqlHelper = new SQLiteHelper();
@@ -20,6 +21,7 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         //load all the metaData into game.
         //todo : do it separately and may do it when loading.
         GetEnemyMetadata();
+        GetResourceMetadata();
         GetWaveEnemyConfigMeatadata();
         GetBuildingMetadata();
         GetItemMetadata();
@@ -42,6 +44,24 @@ public class MetadataLoader : Singleton<MetadataLoader> {
 
 		return enemyList;
 	}
+
+    public List<ResourceMetadata> GetResourceMetadata() {
+        if (resourceList != null) {
+            return resourceList;
+        }
+
+        resourceList = new List<ResourceMetadata>();
+        SqliteCommand cmd = sqlHelper.CreateTextCommand("SELECT * FROM resource_metadata");
+        SqliteDataReader reader = sqlHelper.ExecuteCommand(cmd);
+
+        while (reader.Read()) {
+            ResourceMetadata row = new ResourceMetadata(reader);
+            resourceList.Add(row);
+        }
+        sqlHelper.CloseResultReader(reader);
+
+        return resourceList;
+    }
 
     public List<WaveEnemyConfigMetadata> GetWaveEnemyConfigMeatadata() {
         if (configList != null)
@@ -171,4 +191,22 @@ public class MetadataLoader : Singleton<MetadataLoader> {
         return null;
     }
 
+    public ResourceEnum GetResourceEnumWithName(string name) {
+        if (name.Equals("Wood"))
+            return ResourceEnum.Wood;
+        if (name.Equals("Rock"))
+            return ResourceEnum.Rock;
+        if (name.Equals("Ore"))
+            return ResourceEnum.Ore;
+        if (name.Equals("Coal"))
+            return ResourceEnum.Coal;
+        if (name.Equals("ArcaneOrb"))
+            return ResourceEnum.ArcaneOrb;
+        if (name.Equals("NatureOrb"))
+            return ResourceEnum.NatureOrb;
+        if (name.Equals("StrengthOrb"))
+            return ResourceEnum.StrengthOrb;
+
+        return ResourceEnum.None;
+    }
 }

@@ -12,53 +12,25 @@ public class ObjectMetadata {
     public Vector2Int size;
     public ObjectSubType subType;
     public int level;
+    public int maxAllowed = 99;
+    public Sprite icon;
 
-    protected GameObject gameObject;
-
-    public GameObject GetPrefab()
-    {
-        return gameObject;
-    }
+    protected GameObject gameObjectPrefab;
 
     public GameObject GetGameObjectFromPool(Transform parent = null)//pool later
     {
-        GameObject obj = GameObject.Instantiate<GameObject>(gameObject, parent) as GameObject;
-        obj.SetActive(true);
+        return InitializeNewGameObject(parent);
+    }
 
+    private GameObject InitializeNewGameObject(Transform parent = null) {
+        GameObject obj = GameObject.Instantiate<GameObject>(gameObjectPrefab, parent) as GameObject;
         InteractiveObject interactiveObj = obj.GetComponent<InteractiveObject>();
-        if (interactiveObj != null)
-        {
+        if (interactiveObj != null) {
             interactiveObj.objectMetadata = this;
             interactiveObj.Init();
         }
 
         return obj;
-    }
-
-    public void InitInteractiveObj()
-    {
-        var interactiveObj = item;
-        if (interactiveObj != null)
-        {
-            interactiveObj.objectMetadata = this;
-            interactiveObj.Init();
-        }
-    }
-
-    public InteractiveObject item
-    {
-        get
-        {
-            return gameObject.GetComponent<InteractiveObject>();
-        }
-    }
-
-    public RecipeMetadata recipe
-    {
-        get
-        {
-            return MetadataLoader.Instance.GetRecipeMetadataById(recipeId);
-        }
     }
 
     public ObjectSubType GetSubType(string subTypeName)

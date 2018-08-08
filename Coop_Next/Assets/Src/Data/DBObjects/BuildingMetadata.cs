@@ -22,17 +22,23 @@ public class BuildingMetadata : ObjectMetadata
 		attackRange = reader.GetInt32(7);
         underAttackPriority = reader.GetInt32(8);
         prefabPath = reader.GetString(9).Replace("\n", string.Empty);
-        description = reader.GetString(10).Replace("\n", string.Empty);
-        string typeName = reader.GetString(11).Replace("\n", string.Empty);
+        string iconName = reader.GetString(10).Replace("\n", string.Empty);
+        description = reader.GetString(11).Replace("\n", string.Empty);
+        string typeName = reader.GetString(12).Replace("\n", string.Empty);
         subType = GetSubType(typeName);
-        recipeId = reader.GetInt32(12);
+        recipeId = reader.GetInt32(13);
 
-        size.x = reader.GetInt32(13);
-        size.y = reader.GetInt32(14);
+        size.x = reader.GetInt32(14);
+        size.y = reader.GetInt32(15);
 
-        gameObject = GameObject.Instantiate(Resources.Load("Prefabs/" + prefabPath) as GameObject);
-        gameObject.SetActive(false);
+        maxAllowed = reader.GetInt32(16);
 
-        InitInteractiveObj();
+        //gameObject = GameObject.Instantiate(Resources.Load("Prefabs/" + prefabPath) as GameObject);
+        //gameObject.SetActive(false);
+
+        gameObjectPrefab = Resources.Load<GameObject>("Prefabs/" + prefabPath);
+        if (iconName.Length > 0) {
+            icon = Resources.Load<Sprite>("Images/UIIcons/BuildingIcons/" + iconName);
+        }
     }
 }

@@ -7,47 +7,40 @@ public class CraftingManager : Singleton<CraftingManager> {
 
     public string[] fixedCraftTechTreeId;
     [HideInInspector]
-    public List<GameObject> fixedCrafts;
+    public List<ObjectMetadata> fixedCrafts;
     public int availableSlotsCount = 2;
     public float slotRefreshSeconds = 2.0f;
 
-    public List<InteractiveObject> currentAvailableCrafts;
+    public List<ObjectMetadata> currentAvailableCrafts;
 
-    private List<InteractiveObject> unlockedCrafts;
+    private List<ObjectMetadata> unlockedCrafts;
     private Dictionary<int, double> slotIndexRefreshStartTimeMap;
 
-    private HashSet<InteractiveObject> tmpEligibleCrafts;
+    private HashSet<ObjectMetadata> tmpEligibleCrafts;
 
     // Use this for initialization
     public void Initialize() {
-        tmpEligibleCrafts = new HashSet<InteractiveObject>();
+        tmpEligibleCrafts = new HashSet<ObjectMetadata>();
         slotIndexRefreshStartTimeMap = new Dictionary<int, double>();
-        unlockedCrafts = new List<InteractiveObject>();
-        currentAvailableCrafts = new List<InteractiveObject>();
+        unlockedCrafts = new List<ObjectMetadata>();
+        currentAvailableCrafts = new List<ObjectMetadata>();
 
         for (int i = 0; i < levelConfig.initialUnlockedBuildings.Count; i++) {
-            unlockedCrafts.Add(levelConfig.initialUnlockedBuildings[i].GetComponent<InteractiveObject>());
+            unlockedCrafts.Add(levelConfig.initialUnlockedBuildings[i]);
         }
 
         TechTreeManager.Instance.Initialize();
 
-        fixedCrafts = new List<GameObject>();
+        fixedCrafts = new List<ObjectMetadata>();
         for (int i = 0; i < fixedCraftTechTreeId.Length; ++i)
         {
             var buildingMetadata = MetadataManager.Instance.GetBuildingMetadataWithTechTreeId(fixedCraftTechTreeId[i]);
-            fixedCrafts.Add(buildingMetadata.GetPrefab());
+            fixedCrafts.Add(buildingMetadata);
         }
 
         for (int i = 0; i < fixedCrafts.Count; i++)
         {
-            InteractiveObject item = fixedCrafts[i].GetComponent<InteractiveObject>();
-            if (item == null)
-            {
-                Debug.LogError("Mising InteractiveItem Component");
-                continue;
-            }
-
-            AssignSlotWithCraft(i, fixedCrafts[i].GetComponent<InteractiveObject>());
+            AssignSlotWithCraft(i, fixedCrafts[i]);
         }
     }
 
@@ -78,14 +71,14 @@ public class CraftingManager : Singleton<CraftingManager> {
             return;
         }
 
-        InteractiveObject selectedCraft = SelectEligibleCraft();
+        ObjectMetadata selectedCraft = SelectEligibleCraft();
         AssignSlotWithCraft(slotIndex, selectedCraft);
 
         slotIndexRefreshStartTimeMap[slotIndex] = Time.time;
         CraftingUIManager.Instance.UpdateCraftIcon(slotIndex);
     }
 
-    private void AssignSlotWithCraft(int slotIndex, InteractiveObject selectedCraft) {
+    private void AssignSlotWithCraft(int slotIndex, ObjectMetadata selectedCraft) {
         if (selectedCraft == null) {
             return;
         }
@@ -98,10 +91,10 @@ public class CraftingManager : Singleton<CraftingManager> {
         currentAvailableCrafts[slotIndex] = selectedCraft;
     }
 
-    private InteractiveObject SelectEligibleCraft() {
+    private ObjectMetadata SelectEligibleCraft() {
         tmpEligibleCrafts.Clear();
-        foreach (InteractiveObject craft in unlockedCrafts) {
-            int count = MapManager.Instance.GetNumberOfItemsOnMapWithName(craft.name);
+        foreach (ObjectMetadata craft in unlockedCrafts) {
+            int count = MapManager.Instance.GetNumberOfItemsOnMapWithName(craft.objectName);
             if (count >= craft.maxAllowed) {
                 continue;
             }
@@ -109,13 +102,8 @@ public class CraftingManager : Singleton<CraftingManager> {
         }
 
 
-        foreach (GameObject craft in fixedCrafts) {
-            InteractiveObject item = craft.GetComponent<InteractiveObject>();
-            if (item == null) {
-                Debug.LogError("Mising InteractiveItem Component");
-                continue;
-            }
-            tmpEligibleCrafts.Remove(item);
+        foreach (ObjectMetadata craft in fixedCrafts) {
+            tmpEligibleCrafts.Remove(craft);
         }
 
         if (tmpEligibleCrafts.Count == 0) {
@@ -123,7 +111,7 @@ public class CraftingManager : Singleton<CraftingManager> {
         }
 
         int selectedIndex = Random.Range(0, tmpEligibleCrafts.Count);
-        InteractiveObject[] tmpArray = new InteractiveObject[tmpEligibleCrafts.Count];
+        ObjectMetadata[] tmpArray = new ObjectMetadata[tmpEligibleCrafts.Count];
         tmpEligibleCrafts.CopyTo(tmpArray);
          
         return tmpArray[selectedIndex];
@@ -137,8 +125,8 @@ public class CraftingManager : Singleton<CraftingManager> {
         return slotIndexRefreshStartTimeMap[slotIndex];
     }
 
-    public bool IsCraftAvailable(InteractiveObject craft) {
-        foreach (InteractiveObject availableCraft in currentAvailableCrafts) {
+    public bool IsCraftAvailable(ObjectMetadata craft) {
+        foreach (ObjectMetadata availableCraft in currentAvailableCrafts) {
             if (craft == availableCraft) {
                 return true;
             }
@@ -147,13 +135,13 @@ public class CraftingManager : Singleton<CraftingManager> {
         return false;
     }
 
-    public void UnlockCraft(InteractiveObject craft) {
+    public void UnlockCraft(ObjectMetadata craft) {
         unlockedCrafts.Add(craft);
     }
 
-    public void UpgradeCraft(InteractiveObject craft) {
-        List < InteractiveObject > newList = new List<InteractiveObject>();
-        foreach (InteractiveObject obj in unlockedCrafts) {
+    public void UpgradeCraft(ObjectMetadata craft) {
+        List <ObjectMetadata> newList = new List<ObjectMetadata>();
+        foreach (ObjectMetadata obj in unlockedCrafts) {
             if (obj.techTreeId == craft.techTreeId) {
                 continue;
             }
@@ -163,7 +151,7 @@ public class CraftingManager : Singleton<CraftingManager> {
         unlockedCrafts = newList;
     }
 
-    public List<InteractiveObject> GetUnlockedCrafts() {
+    public List<ObjectMetadata> GetUnlockedCrafts() {
         return unlockedCrafts;
     }
 }

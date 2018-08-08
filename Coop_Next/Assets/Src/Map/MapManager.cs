@@ -42,7 +42,7 @@ public class MapManager : Singleton<MapManager> {
                     continue;
                 }
                 ObjectMetadata objectData = metadataManager.objectsDictionary[instance.objectId];
-                if (objectData == null || objectData.GetPrefab() == null)
+                if (objectData == null)
                 {
                     Debug.Log("No " + instance.objectId + "'s gameobject in config!!!");
                     continue;

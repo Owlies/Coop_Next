@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProgressBar;
 
-
-
 public class Forge : BuildingBase {
     private enum ForgeState { IDLE, FORGING, DESTROYING, READY_TO_COLLECT }
 
@@ -24,9 +22,7 @@ public class Forge : BuildingBase {
     private float curProgress = 0.0f;
     private GameObject forgedGameObject;
 
-    public new void Awake()
-    {
-        base.Awake();
+    private void Start() {
         recipeCanvas = GetComponentsInChildren<Canvas>()[0];
         progressBarCanvas = GetComponentsInChildren<Canvas>()[1];
         destroyProgressBarCanvas = GetComponentsInChildren<Canvas>()[2];
@@ -43,21 +39,23 @@ public class Forge : BuildingBase {
         // [5 - ] Progress bar images
         resourceImages = GetComponentsInChildren<Image>();
 
-        if (forgingProgressBar != null)
-        {
-            forgingProgressBar.Initialize();
+        if (forgingProgressBar != null) {
             forgingProgressBar.enabled = false;
             progressBarCanvas.enabled = false;
         }
 
-        if (destroyProgressBar != null)
-        {
-            destroyProgressBar.Initialize();
+        if (destroyProgressBar != null) {
             destroyProgressBar.enabled = false;
             destroyProgressBarCanvas.enabled = false;
         }
 
         metadataManager = MetadataManager.Instance;
+    }
+
+    public new void Awake()
+    {
+        base.Awake();
+
     }
 
     public override void UpdateMe()
@@ -253,14 +251,14 @@ public class Forge : BuildingBase {
         foreach (var obj in metadataManager.objectsDictionary)
         {
             ObjectMetadata data = obj.Value;
-            if (!CraftingManager.Instance.IsCraftAvailable(data.item)) {
+            if (!CraftingManager.Instance.IsCraftAvailable(data)) {
                 continue;
             }
 
-            if (data.recipe!= null)
-            {
-                RecipeMetadata recipe = data.recipe;
+            RecipeMetadata recipe = MetadataLoader.Instance.GetRecipeMetadataById(data.recipeId);
 
+            if (recipe!= null)
+            {
                 bool doesMatch = true;
                 for (int i = 0; i < recipe.resources.Count; i++)
                 {

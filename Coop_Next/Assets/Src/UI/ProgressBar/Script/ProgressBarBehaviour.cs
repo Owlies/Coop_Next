@@ -2,13 +2,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProgressBar
-{
+namespace ProgressBar {
     /// <summary>
     /// This Script is directed at linearly progressing designs.
     /// </summary>
-    public class ProgressBarBehaviour : MonoBehaviour, IIncrementable, IDecrementable
-    {
+    public class ProgressBarBehaviour : MonoBehaviour, IIncrementable, IDecrementable {
         /// <summary>
         /// Rect from the panel that will act as Filler.
         /// </summary>
@@ -17,17 +15,12 @@ namespace ProgressBar
         /// <summary>
         /// Class used for storing the Min and Max width values that the Filler will vary between.
         /// </summary>
-        [SerializeField]
-        private FillerProperty m_FillerInfo = null;
+        private FillerProperty m_FillerInfo;
 
-        public FillerProperty FillerInfo
-        {
-            get
-            {
+        public FillerProperty FillerInfo {
+            get {
                 if (m_FillerInfo == null)
-                {
                     m_FillerInfo = new FillerProperty(0, m_FillRect.rect.width);
-                }
                 return m_FillerInfo;
             }
         }
@@ -41,14 +34,11 @@ namespace ProgressBar
         /// Value is the variable you want to call to set or get the current Filler value as a percentage.
         /// It must always be set as a value between 0 and 100.
         /// </summary>
-        public float Value
-        {
-            get
-            {
+        public float Value {
+            get {
                 return Mathf.Round(m_Value.AsFloat / m_FillerInfo.MaxWidth * 100);
             }
-            set
-            {
+            set {
                 SetFillerSizeAsPercentage(value);
             }
         }
@@ -72,7 +62,7 @@ namespace ProgressBar
         /// <summary>
         /// In pixels per seconds, the speed at which the Filler will be animated.
         /// </summary>
-        [Range(1,1000)]
+        [Range(1, 1000)]
         public int ProgressSpeed;
 
         /// <summary>
@@ -93,17 +83,15 @@ namespace ProgressBar
         /// </summary>
         [SerializeField]
         private OnCompleteEvent OnCompleteMethods;
-        
+
         /// <summary>
         /// By default the Filler is centered horizontally in its container panel.
         /// This value is needed for the SetInsetAndSizeFromParentEdge method.
         /// </summary>
         private float m_XOffset = float.NaN;
 
-        public float XOffset
-        {
-            get
-            {
+        public float XOffset {
+            get {
                 if (float.IsNaN(m_XOffset))
                     m_XOffset = (transform.GetComponent<RectTransform>().rect.width - m_FillRect.rect.width) / 2;
 
@@ -111,39 +99,29 @@ namespace ProgressBar
             }
         }
 
-        public void Initialize()
-        {
+        void OnEnable() {
             //We set the Filler size to zero at the start.
             SetFillerSize(0);
             //We initialize m_Value
             m_Value = new ProgressValue(0, FillerInfo.MaxWidth);
         }
 
-        void OnEnable()
-        {
-            Initialize();
-        }
-
-        void Update()
-        {
+        void Update() {
             //If theses two values aren't equals this means m_Value has been updated and the animation needs to start.
-            if (TransitoryValue != m_Value.AsFloat)
-            {
+            if (TransitoryValue != m_Value.AsFloat) {
                 //The difference between the two values.
                 float Dvalue = m_Value.AsFloat - TransitoryValue;
 
                 //If the difference is positive:
                 //  TransitoryValue needs to be incremented.
-                if (Dvalue > 0)
-                {
+                if (Dvalue > 0) {
                     TransitoryValue += ProgressSpeed * Time.deltaTime;
                     if (TransitoryValue > m_Value.AsFloat)
                         TransitoryValue = m_Value.AsFloat;
                 }
                 //If the difference is negative:
                 //  TransitoryValue needs to be decremented.
-                else if (Dvalue < 0)
-                {
+                else if (Dvalue < 0) {
                     TransitoryValue -= ProgressSpeed * Time.deltaTime;
                     if (TransitoryValue < m_Value.AsFloat)
                         TransitoryValue = m_Value.AsFloat;
@@ -173,8 +151,7 @@ namespace ProgressBar
         /// This method is used to set the Filler's width
         /// </summary>
         /// <param name="Width">the new Filler's width</param>
-        public void SetFillerSize(float Width)
-        {
+        public void SetFillerSize(float Width) {
             if (m_AttachedText)
                 m_AttachedText.text = Mathf.Round(Width / FillerInfo.MaxWidth * 100).ToString() + " %";
 
@@ -185,10 +162,9 @@ namespace ProgressBar
         /// This method is used to set the Filler's width with a percentage.
         /// </summary>
         /// <param name="Percent">this method needs a percentage as parameter</param>
-        public void SetFillerSizeAsPercentage(float Percent)
-        {
+        public void SetFillerSizeAsPercentage(float Percent) {
             m_Value.Set(FillerInfo.MaxWidth * Percent / 100);
-            
+
             if (Value < 0) Value = 0;
             else if (Value > 100) Value = 100;
         }
@@ -196,17 +172,15 @@ namespace ProgressBar
         /// <summary>
         /// Will be triggered if TriggerOnComplete is True
         /// </summary>
-        public void OnComplete()
-        {
+        public void OnComplete() {
             OnCompleteMethods.Invoke();
         }
-        
+
         /// <summary>
         /// Increment value by X percents
         /// </summary>
         /// <param name="inc">percents</param>
-        public void IncrementValue(float inc)
-        {
+        public void IncrementValue(float inc) {
             Value += inc;
 
             if (Value > 100) Value = 100;
@@ -216,8 +190,7 @@ namespace ProgressBar
         /// Decrement value by X percents
         /// </summary>
         /// <param name="inc">percents</param>
-        public void DecrementValue(float dec)
-        {
+        public void DecrementValue(float dec) {
             Value -= dec;
 
             if (Value < 0) Value = 0;

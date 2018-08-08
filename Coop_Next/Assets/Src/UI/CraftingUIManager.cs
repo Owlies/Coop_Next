@@ -23,6 +23,7 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
             iconPanels.Add((RectTransform)(obj));
             obj.gameObject.SetActive(false);
             obj.GetComponentInChildren<ProgressBarBehaviour>().ProgressSpeed = 1000;
+            obj.GetComponentInChildren<ProgressBarBehaviour>().Value = 0.0f;
             iconProgressMap[(RectTransform)(obj)] = 0.0f;
         }
 
@@ -56,31 +57,31 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         ResetProgressBar(iconPanel);
 
         iconPanel.gameObject.SetActive(true);
-        InteractiveObject item = CraftingManager.Instance.currentAvailableCrafts[slotIndex];
+        ObjectMetadata item = CraftingManager.Instance.currentAvailableCrafts[slotIndex];
         if (displayingItemNames.Count <= slotIndex) {
-            displayingItemNames.Add(item.name);
+            displayingItemNames.Add(item.objectName);
         } else {
-            displayingItemNames[slotIndex] = item.name;
+            displayingItemNames[slotIndex] = item.objectName;
         }
 
         // Second image is CraftIcon
         Image craftIcon = iconPanel.GetComponentsInChildren<Image>()[1];
-        craftIcon.sprite = item.iconImage;
+        craftIcon.sprite = item.icon;
 
         Text craftName = iconPanel.GetComponentInChildren<Text>();
-        craftName.text = item.name;
+        craftName.text = item.objectName;
 
         // Forth element is the recipe icon panel
         UpdateCraftRecipeIcons(iconPanel.GetComponentsInChildren<RectTransform>()[4], item);
     }
 
-    private void UpdateCraftRecipeIcons(RectTransform recipePanel, InteractiveObject item) {
-        ObjectMetadata objectData = metadataManager.objectsDictionary[item.itemId];
-        RecipeMetadata selectedRecipe = objectData.recipe;
+    private void UpdateCraftRecipeIcons(RectTransform recipePanel, ObjectMetadata item) {
+        ObjectMetadata objectData = metadataManager.GetObjectMetadataWithObjectId(item.objectId);
+        RecipeMetadata selectedRecipe = MetadataLoader.Instance.GetRecipeMetadataById(item.recipeId);
         Image[] recipeIcons = recipePanel.GetComponentsInChildren<Image>();
 
         for (int i = 0; i < recipeIcons.Length; i++) {
-            Resource resource = metadataManager.GetResourceByType(selectedRecipe.resources[i]);
+            Resource resource = metadataManager.GetResourceMetadataByType(selectedRecipe.resources[i]);
             if (resource != null)
                 recipeIcons[i].sprite = resource.iconImage;
         }

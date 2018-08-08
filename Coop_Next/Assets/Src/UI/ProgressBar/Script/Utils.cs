@@ -1,21 +1,18 @@
 ﻿using System;
 using UnityEngine.Events;
 
-namespace ProgressBar.Utils
-{
+namespace ProgressBar.Utils {
     /// <summary>
     /// Interface implementing an Incrementing Method.
     /// </summary>
-    public interface IIncrementable
-    {
+    public interface IIncrementable {
         void IncrementValue(float inc);
     }
 
     /// <summary>
     /// Interface implementing a Decrementing Method.
     /// </summary>
-    public interface IDecrementable
-    {
+    public interface IDecrementable {
         void DecrementValue(float dec);
     }
 
@@ -28,11 +25,8 @@ namespace ProgressBar.Utils
     /// <summary>
     /// Min and Max Filler's width
     /// </summary>
-    [Serializable]
-    public class FillerProperty
-    {
-        public FillerProperty(float Min, float Max)
-        {
+    public class FillerProperty {
+        public FillerProperty(float Min, float Max) {
             MinWidth = Min;
             MaxWidth = Max;
         }
@@ -45,10 +39,8 @@ namespace ProgressBar.Utils
     /// Used with linear ProgressBars.
     /// Stocks the Current and Max Filler's width
     /// </summary>
-    public class ProgressValue
-    {
-        public ProgressValue(float value, float MaxValue)
-        {
+    public class ProgressValue {
+        public ProgressValue(float value, float MaxValue) {
             m_Value = value;
             m_MaxValue = MaxValue;
         }
@@ -65,8 +57,7 @@ namespace ProgressBar.Utils
         /// <summary>
         /// Set m_Value
         /// </summary>
-        public void Set (float newValue)
-        {
+        public void Set(float newValue) {
             m_Value = newValue;
         }
 
@@ -91,4 +82,4 @@ namespace ProgressBar.Utils
         /// </summary>
         public float PercentAsInt { get { return (int)(PercentAsFloat); } }
     }
- }
+}

@@ -25,8 +25,8 @@ public class TechTreeManager : Singleton<TechTreeManager> {
     //}
 
     private void InitializeWithBuildings() {
-        List<InteractiveObject> unlockedCrafts = CraftingManager.Instance.GetUnlockedCrafts();
-        foreach (InteractiveObject craft in unlockedCrafts) {
+        List<ObjectMetadata> unlockedCrafts = CraftingManager.Instance.GetUnlockedCrafts();
+        foreach (ObjectMetadata craft in unlockedCrafts) {
             techTreeLevelMap.Add(craft.techTreeId, 1);
         }
     }
@@ -35,7 +35,7 @@ public class TechTreeManager : Singleton<TechTreeManager> {
 
     }
 
-    public bool UpgreadeItem(InteractiveObject item) {
+    public bool UpgreadeItem(ObjectMetadata item) {
         if (!techTreeLevelMap.ContainsKey(item.techTreeId)) {
             return false;
         }
@@ -45,7 +45,7 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         return true;
     }
 
-    public bool UnlockItem(InteractiveObject item) {
+    public bool UnlockItem(ObjectMetadata item) {
         if (techTreeLevelMap.ContainsKey(item.techTreeId)) {
             return false;
         }

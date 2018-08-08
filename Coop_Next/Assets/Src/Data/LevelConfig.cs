@@ -16,17 +16,17 @@ public class LevelConfig : ScriptableObject {
     public int[] initialUnlockedBuildingIds;
 
     [HideInInspector]
-    private List<GameObject> m_initialUnlockedBuildings = null;
-    public List<GameObject> initialUnlockedBuildings
+    private List<ObjectMetadata> m_initialUnlockedBuildings = null;
+    public List<ObjectMetadata> initialUnlockedBuildings
     {
         get
         {
             if (m_initialUnlockedBuildings == null)
             {
-                m_initialUnlockedBuildings = new List<GameObject>();
+                m_initialUnlockedBuildings = new List<ObjectMetadata>();
                 for (int i = 0; i < initialUnlockedBuildingIds.Length; ++i)
                 {
-                    m_initialUnlockedBuildings.Add(MetadataManager.Instance.objectsDictionary[initialUnlockedBuildingIds[i]].GetPrefab());
+                    m_initialUnlockedBuildings.Add(MetadataManager.Instance.GetObjectMetadataWithObjectId(initialUnlockedBuildingIds[i]));
                 }
             }
 
