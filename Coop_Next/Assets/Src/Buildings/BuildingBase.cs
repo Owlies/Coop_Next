@@ -21,6 +21,7 @@ public class BuildingBase : InteractiveObject {
 
     public float maxHitPoint = 100.0f;
     public float coolDownFactor = 1.0f;
+    [HideInInspector]
     public float coolDownFactorModifier = 0.0f;
 
     public int underAttackingPriority = 1;
@@ -115,6 +116,11 @@ public class BuildingBase : InteractiveObject {
             MapManager.Instance.OnItemDestroyed(this.gameObject);
             Destroy(this.gameObject);
         }
+    }
+
+    public void AddHealth(float value)
+    {
+        currentHitPoint = Mathf.Min(maxHitPoint, currentHitPoint + value);
     }
 
     private void TryRecoverStateFromTakingDamage() {

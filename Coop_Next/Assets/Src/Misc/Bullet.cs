@@ -7,20 +7,27 @@ public class Bullet : OverridableMonoBehaviour {
 	private float bulletSpeed = 10.0f;
 	private float damage;
 	private GameObject target;
-	private Vector3 targetPosition;
-	
-	public void Initialize(GameObject target, float speed, float damage) {
+    private Vector3 targetPosition;
+    private Vector3 targetOffset;
+
+    public void Initialize(GameObject target, float speed, float damage) {
 		this.target = target;
-		this.targetPosition = target.GetComponent<Collider>().bounds.center;
-		this.bulletSpeed = speed;
+        this.targetOffset = target.GetComponent<Collider>().bounds.center - target.transform.position;
+        this.targetPosition = target.GetComponent<Collider>().bounds.center;
+        this.bulletSpeed = speed;
 		this.damage = damage;
 	}
 
 	public override void FixedUpdateMe() {
 		float step = Time.deltaTime * bulletSpeed;
-		transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
+        if (target != null)
+            targetPosition = target.transform.position + targetOffset;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
 		transform.LookAt(targetPosition);
-	}
+
+        if ((transform.position - targetPosition).sqrMagnitude < Constants.EPS)
+            Destroy(this.gameObject);
+    }
 
 	/// <summary>
 	/// OnTriggerEnter is called when the Collider other enters the trigger.

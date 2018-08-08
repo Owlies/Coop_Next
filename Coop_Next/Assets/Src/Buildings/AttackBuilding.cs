@@ -37,10 +37,10 @@ public class AttackBuilding : BuildingBase {
     // units / seconds, attackRange/bulletSpeed > attackCoolDownSeconds
     public float bulletSpeed = 10.0f;
 
-    private EnemyBase attackingEnemy;
-    private float attackCoolDownStartTime;
-    private EAttackBuildingState attackState;
-    private Vector3 firingPosition;
+    protected EnemyBase attackingEnemy;
+    protected float attackCoolDownStartTime;
+    protected EAttackBuildingState attackState;
+    protected Vector3 firingPosition;
 
     protected override void InitializeWithBuildingConfig() {
         base.InitializeWithBuildingConfig();
@@ -97,7 +97,7 @@ public class AttackBuilding : BuildingBase {
         return null;
     }
 
-    private bool CanAttackEnemy() {
+    protected virtual bool CanAttackEnemy() {
         if (attackingEnemy == null)
         {
             return false;
@@ -121,15 +121,15 @@ public class AttackBuilding : BuildingBase {
         return true;
     }
 
-    private bool TryAttackEnemy() {
+    protected virtual bool TryAttackEnemy() {
         if (!CanAttackEnemy()) {
             attackingEnemy = null;
             return false;
         }
         firingPosition = new Vector3(transform.position.x, transform.position.y + (float)(GetComponent<BoxCollider>().size.y * 0.8), transform.position.z);
-        GameObject bullet = GameObject.Instantiate(bulletPrefab, firingPosition, Quaternion.LookRotation(attackingEnemy.gameObject.transform.position));
+        GameObject bullet = Instantiate(bulletPrefab, firingPosition, Quaternion.LookRotation(attackingEnemy.gameObject.transform.position));
         bullet.GetComponent<Bullet>().Initialize(attackingEnemy.gameObject, bulletSpeed, GetAttackDamage());
-        Destroy(bullet, 30.0f);
+        Destroy(bullet, 10.0f);
         
         attackState = EAttackBuildingState.COOLING_DOWN;
         attackCoolDownStartTime = Time.time;

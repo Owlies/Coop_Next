@@ -82,6 +82,40 @@ public class MapManager : Singleton<MapManager> {
         }
     }
 
+    public IEnumerable<T> GetCollectionOfItemsWithinRange<T>(float range, Vector2Int mapIdx) where T : InteractiveObject
+    {
+        List<T> tmpObjs = new List<T>();
+        int offset = (int)(range / MAP_SIZE_UNIT);
+        Vector2Int min = mapIdx - new Vector2Int(offset, offset);
+        if (min.x < 0)
+            min.x = 0;
+        if (min.y < 0)
+            min.y = 0;
+        Vector2Int max = mapIdx + new Vector2Int(offset, offset);
+        if (max.x > mapSize.x)
+            max.x = mapSize.x;
+        if (max.y > mapSize.y)
+            max.y = mapSize.y;
+        for (int i = min.x; i < max.x; ++i)
+        {
+            for(int j = min.y; j < max.y; ++j)
+            {
+                GameObject obj = mapNodes[i, j].gameObject;
+                if (obj != null)
+                {
+                    var interactiveObj = obj.GetComponent<T>();
+                    if (interactiveObj != null && !tmpObjs.Contains(interactiveObj))
+                    {
+                        tmpObjs.Add(interactiveObj);
+                        yield return interactiveObj;
+                    }
+                }
+
+            }
+        }
+
+    }
+
     public IEnumerable<T> GetCollectionOfItemsOnMap<T>() where T : InteractiveObject
     {
         foreach(KeyValuePair <GameObject, bool> entry in gameObjectOnMapDictionary)
@@ -156,6 +190,9 @@ public class MapManager : Singleton<MapManager> {
                     }
                     
                     mapNodes[i, j].Clear();
+                    var interactiveObj = obj.GetComponent<InteractiveObject>();
+                    if (interactiveObj != null)
+                        interactiveObj.posOnMap = new Vector2Int(-1,-1);
                 }
             }
         }
@@ -180,7 +217,7 @@ public class MapManager : Singleton<MapManager> {
             for (int j = 0; j < size.y; j++)
             {
                 Vector2Int index = mapIndex + new Vector2Int(i, j);
-                if (dir == ObjectDir.Vertical)
+                if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
                     index = mapIndex + new Vector2Int(j, i);
                 if (IsMapIndexOutOfBound(index) || !mapNodes[index.x, index.y].IsEmpty())
                 {
@@ -195,7 +232,7 @@ public class MapManager : Singleton<MapManager> {
                 for (int j = 0; j < size.y; j++)
                 {
                     Vector2Int index = mapIndex + new Vector2Int(i, j);
-                    if (dir == ObjectDir.Vertical)
+                    if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
                         index = mapIndex + new Vector2Int(j, i);
                     mapNodes[index.x, index.y].AddItemToNode(obj);
                 }
@@ -204,8 +241,13 @@ public class MapManager : Singleton<MapManager> {
             obj.transform.parent = sceneRoot.transform;
             obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
 
-            if (dir == ObjectDir.Vertical)
+            if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
                 obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));
+
+            if (item.objectMetadata.fixDir)
+                obj.transform.localRotation = Quaternion.identity;
+
+            item.posOnMap = mapIndex;
         }
         return accessible;
     }

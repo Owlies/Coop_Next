@@ -12,8 +12,11 @@ public class ObjectMetadata {
     public Vector2Int size;
     public ObjectSubType subType;
     public int level;
+
     public int maxAllowed = 99;
     public Sprite icon;
+
+    public bool fixDir = true;
 
     protected GameObject gameObjectPrefab;
 
