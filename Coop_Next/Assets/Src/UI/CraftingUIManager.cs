@@ -81,9 +81,9 @@ public class CraftingUIManager : Singleton<CraftingUIManager> {
         Image[] recipeIcons = recipePanel.GetComponentsInChildren<Image>();
 
         for (int i = 0; i < recipeIcons.Length; i++) {
-            Resource resource = metadataManager.GetResourceMetadataByType(selectedRecipe.resources[i]);
+            ResourceMetadata resource = metadataManager.GetResourceMetadataByType(selectedRecipe.resources[i]);
             if (resource != null)
-                recipeIcons[i].sprite = resource.iconImage;
+                recipeIcons[i].sprite = resource.icon;
         }
     }
 

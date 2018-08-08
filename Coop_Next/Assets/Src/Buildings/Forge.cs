@@ -333,7 +333,7 @@ public class Forge : BuildingBase {
 
     #endregion
 
-    public override bool ShortPressAction(Player actor)
+    public override bool InteractAction(Player actor)
     {
         if (AddResourceToForge(actor)) {
             return true;

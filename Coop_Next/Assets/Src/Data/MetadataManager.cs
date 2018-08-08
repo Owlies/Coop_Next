@@ -8,6 +8,7 @@ using Mono.Data.Sqlite;
 public class MetadataManager : Singleton<MetadataManager>
 {
     public Dictionary<int, ObjectMetadata> objectsDictionary;
+    public Dictionary<ResourceEnum, ResourceMetadata> resourceDictionary;
     //private Dictionary<ObjectType, Dictionary<ObjectSubType, List<ObjectMetadata>>> objectCollection;
     
     public void Initialize()
@@ -44,6 +45,7 @@ public class MetadataManager : Singleton<MetadataManager>
         //}
 
         InitializeObjectDictionary();
+        InitializeResourceDictionary();
     }
 
     private void InitializeObjectDictionary() {
@@ -61,10 +63,22 @@ public class MetadataManager : Singleton<MetadataManager>
         }
     }
 
-    //TODO(Fix)
-    public Resource GetResourceMetadataByType(ResourceEnum e)
+    private void InitializeResourceDictionary() {
+        resourceDictionary = new Dictionary<ResourceEnum, ResourceMetadata>();
+
+        List<ResourceMetadata> resourceList = MetadataLoader.Instance.GetResourceMetadata();
+        for (int i = 0; i < resourceList.Count; i++) {
+            resourceDictionary[resourceList[i].resourceEnum] = resourceList[i];
+        }
+    }
+
+    public ResourceMetadata GetResourceMetadataByType(ResourceEnum e)
     {
-        return null;
+        if (!resourceDictionary.ContainsKey(e)) {
+            return null;
+        }
+
+        return resourceDictionary[e];
     }
 
     public ObjectMetadata GetObjectMetadataWithObjectId(int objectId) {
