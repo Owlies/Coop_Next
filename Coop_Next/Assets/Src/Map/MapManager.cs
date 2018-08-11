@@ -217,7 +217,7 @@ public class MapManager : Singleton<MapManager> {
             for (int j = 0; j < size.y; j++)
             {
                 Vector2Int index = mapIndex + new Vector2Int(i, j);
-                if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
+                if (dir == ObjectDir.Vertical && (item.objectMetadata == null ||!item.objectMetadata.fixDir))
                     index = mapIndex + new Vector2Int(j, i);
                 if (IsMapIndexOutOfBound(index) || !mapNodes[index.x, index.y].IsEmpty())
                 {
