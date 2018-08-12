@@ -28,8 +28,12 @@ public class InteractiveObject : OverridableMonoBehaviour {
 
     public Sprite iconImage;
 
+
+
     public ObjectDir GetItemDirection() {
-        if (transform.rotation.eulerAngles.y.Equals(0.0f) || transform.rotation.eulerAngles.y.Equals(180.0f)) {
+        if (objectMetadata == null || objectMetadata.fixDir)
+            return ObjectDir.Horizontal;
+        if (Util.IsFloatEqual(transform.rotation.eulerAngles.y,0.0f) || Util.IsFloatEqual(transform.rotation.eulerAngles.y, 180.0f)) {
             return ObjectDir.Horizontal;
         } else {
             return ObjectDir.Vertical;

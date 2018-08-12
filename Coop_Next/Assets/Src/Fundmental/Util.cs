@@ -50,4 +50,12 @@ public class Util : Singleton<Util> {
 
         return result.sqrMagnitude;
     }
+
+    static public bool IsFloatEqual(float a,float b)
+    {
+        if (a >= b - 0.0001f && a <= b + 0.0001f)
+            return true;
+        else
+            return false;
+    }
 }

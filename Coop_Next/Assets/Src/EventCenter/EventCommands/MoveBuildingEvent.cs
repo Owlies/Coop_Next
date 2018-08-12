@@ -15,8 +15,8 @@ public class MoveBuildingEvent : EventCommandBase
 
     public override bool Execute()
     {
-        this.receiver.transform.parent = this.actor.transform;
-        this.receiver.transform.localPosition = Vector3.forward * moveingBuildingAnchorMultplier;
+        //this.receiver.transform.parent = this.actor.transform;
+        //this.receiver.transform.localPosition = Vector3.forward * moveingBuildingAnchorMultplier;
 
 
         MapManager.Instance.RemoveItemFromMap(this.receiver);
