@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MapManager : Singleton<MapManager> {
-    private MapGridRender gridRender;
     public MetadataManager metadataManager;
     public LevelConfig levelConfig;
     public GameObject sceneRoot;
@@ -22,7 +21,7 @@ public class MapManager : Singleton<MapManager> {
     {
         metadataManager = MetadataManager.Instance;
         LoadLevel();
-        gridRender = new MapGridRender(MAP_SIZE_UNIT);
+        //gridRender = new PlaneRenderer(MAP_SIZE_UNIT, "Materials/GridRenderer");
     }
 
     private void LoadLevel()
@@ -313,7 +312,7 @@ public class MapManager : Singleton<MapManager> {
                 Color color = Color.green;
                 if (IsBlocked(index))
                     color = Color.red;
-                gridRender.Draw(MapIndexToWorldPos(index), color);
+                PlaneRenderer.Draw(MapIndexToWorldPos(index + new Vector2(1 / 2.0f, 1 / 2.0f)), MAP_SIZE_UNIT, color,Resources.Load("Materials/GridRenderer") as Material);
             }
         }
     }

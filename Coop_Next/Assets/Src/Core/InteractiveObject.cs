@@ -27,9 +27,7 @@ public class InteractiveObject : OverridableMonoBehaviour {
     public virtual bool PressReleaseAction(Player actor) { return false; }
 
     public Sprite iconImage;
-
-
-
+    
     public ObjectDir GetItemDirection() {
         if (objectMetadata == null || objectMetadata.fixDir)
             return ObjectDir.Horizontal;
@@ -38,6 +36,13 @@ public class InteractiveObject : OverridableMonoBehaviour {
         } else {
             return ObjectDir.Vertical;
         }
+    }
+
+    protected new void Awake()
+    {
+        base.Awake();
+        callbacks.OnBeingNearestToPlayer = OnBeingNearestToPlayer;
+        callbacks.OnNotBeingNearestToPlayer = OnNotBeingNearestToPlayer;
     }
 
     public virtual void Init()
@@ -128,4 +133,13 @@ public class InteractiveObject : OverridableMonoBehaviour {
         return false;
     }
     #endregion
+
+
+    protected virtual void OnBeingNearestToPlayer()
+    {
+    }
+
+    protected virtual void OnNotBeingNearestToPlayer()
+    {
+    }
 }

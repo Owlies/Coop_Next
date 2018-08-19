@@ -5,17 +5,7 @@ using UnityEngine;
 public class LootObject : InteractiveObject
 {
     private ObjectMetadata lootItemData;
-
-    //[HideInInspector]
-    //public ObjectMetadata lootItemData
-    //{
-    //    get { return m_lootItemData; }
-    //    set
-    //    {
-    //        m_lootItemData = value;
-    //        descBillboard.Initialize(m_lootItemData.objectName, m_lootItemData.description);
-    //    }
-    //}
+    
     public string lootBehaviour;
     public OnMapUIBillboard descBillboard;
 
@@ -39,8 +29,6 @@ public class LootObject : InteractiveObject
         base.Awake();
         descBillboard = GetComponentInChildren<OnMapUIBillboard>();
         descBillboard.gameObject.SetActive(false);
-        callbacks.OnBeingNearestToPlayer = OnBeingNearestToPlayer;
-        callbacks.OnNotBeingNearestToPlayer = OnNotBeingNearestToPlayer;
     }
 
     public override bool ShortPressAction(Player actor)
@@ -80,12 +68,12 @@ public class LootObject : InteractiveObject
         return success;
     }
 
-    private void OnBeingNearestToPlayer()
+    protected override void OnBeingNearestToPlayer()
     {
         descBillboard.gameObject.SetActive(true);
     }
 
-    private void OnNotBeingNearestToPlayer()
+    protected override void OnNotBeingNearestToPlayer()
     {
         descBillboard.gameObject.SetActive(false);
     }

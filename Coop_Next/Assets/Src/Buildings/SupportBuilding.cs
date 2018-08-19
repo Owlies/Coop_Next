@@ -87,4 +87,37 @@ public class SupportBuilding : BuildingBase
             actionState = ESupportBuildingState.IDLE;
         }
     }
+
+    GameObject indicatorGameObject = null;
+    Material[] indicatorMaterial = null;
+    protected override void OnBeingNearestToPlayer()
+    {
+        if (indicatorGameObject == null)
+            indicatorGameObject = PlaneRenderer.GetPlaneGameObject();
+        else
+            indicatorGameObject.SetActive(true);
+
+        MeshRenderer renderer = indicatorGameObject.GetComponent<MeshRenderer>();
+        if (indicatorMaterial == null)
+        {
+            indicatorMaterial = new Material[1];
+            indicatorMaterial[0] = Resources.Load<Material>("Materials/CircleIndicatorGreen");
+        }
+        renderer.materials = indicatorMaterial;
+        indicatorGameObject.transform.position = transform.position;
+        indicatorGameObject.transform.localScale = new Vector3(GetRange() * 2, 1, GetRange() * 2);
+    }
+
+    protected override void OnNotBeingNearestToPlayer()
+    {
+        if (indicatorGameObject != null)
+            indicatorGameObject.SetActive(false);
+    }
+
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        GameObject.Destroy(indicatorGameObject);
+    }
 }
