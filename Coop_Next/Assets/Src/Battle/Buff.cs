@@ -82,4 +82,9 @@ public class AtackDamageBuff : Buff
             building.attackDamageModifier += building.attackDamage * attackValue;
         }
     }
+
+    public AtackDamageBuff(float value)
+    {
+        attackValue = value;
+    }
 }

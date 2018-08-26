@@ -39,6 +39,11 @@ public class BuildingBase : InteractiveObject {
         hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
     }
 
+    public float GetHitPointPercentage()
+    {
+        return maxHitPoint == 0 ? 0 : currentHitPoint / maxHitPoint;
+    }
+
     protected virtual void InitializeWithBuildingConfig() {
         BuildingMetadata metadata = objectMetadata as BuildingMetadata;
         if (metadata == null) {
@@ -118,9 +123,13 @@ public class BuildingBase : InteractiveObject {
         }
     }
 
-    public void AddHealth(float value)
+    public void AddHitPoint(float value)
     {
         currentHitPoint = Mathf.Min(maxHitPoint, currentHitPoint + value);
+        if (hpBarBehaviour != null)
+        {
+            hpBarBehaviour.UpdateHpBar(currentHitPoint, maxHitPoint);
+        }
     }
 
     private void TryRecoverStateFromTakingDamage() {
