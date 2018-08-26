@@ -9,7 +9,7 @@ public class BuildingMetadata : ObjectMetadata
 	public int attack;
 	public float attackFrequency;
 	public int attackRange;
-	public int underAttackPriority;
+    public string custom_value;
 
 	public BuildingMetadata(SqliteDataReader reader) {
 		objectId = reader.GetInt32(0);
@@ -20,7 +20,7 @@ public class BuildingMetadata : ObjectMetadata
 		attack = reader.GetInt32(5);
         attackFrequency = reader.GetFloat(6);
 		attackRange = reader.GetInt32(7);
-        underAttackPriority = reader.GetInt32(8);
+        custom_value = reader.GetString(8).Replace("\n", string.Empty);
         prefabPath = reader.GetString(9).Replace("\n", string.Empty);
         string iconName = reader.GetString(10).Replace("\n", string.Empty);
         description = reader.GetString(11).Replace("\n", string.Empty);

@@ -24,8 +24,6 @@ public class BuildingBase : InteractiveObject {
     [HideInInspector]
     public float coolDownFactorModifier = 0.0f;
 
-    public int underAttackingPriority = 1;
-
     private float currentHitPoint;
     protected EBuildingState buildingState;
     private float startTakingDamageTime;
@@ -50,7 +48,6 @@ public class BuildingBase : InteractiveObject {
             return;
         }
         maxHitPoint = metadata.hp;
-        underAttackingPriority = metadata.underAttackPriority;
         name = metadata.objectName;
 
         currentHitPoint = maxHitPoint;
