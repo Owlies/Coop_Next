@@ -31,11 +31,11 @@ public class LootObject : InteractiveObject
         descBillboard.gameObject.SetActive(false);
     }
 
-    public override bool ShortPressAction(Player actor)
+    public override bool InteractAction(Player actor)
     {
         if (actor.GetCarryingItem() != null)
         {
-            return base.ShortPressAction(actor);
+            return base.InteractAction(actor);
         }
 
         if (LootEnum.DROP_BEHAVIOUR.Equals(lootBehaviour)) {
