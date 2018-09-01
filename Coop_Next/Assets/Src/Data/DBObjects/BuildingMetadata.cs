@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mono.Data.Sqlite;
+using SimpleJSON;
 
 public class BuildingMetadata : ObjectMetadata
 {
@@ -9,7 +10,7 @@ public class BuildingMetadata : ObjectMetadata
 	public int attack;
 	public float attackFrequency;
 	public int attackRange;
-    public string custom_value;
+    public JSONNode custom_value;
 
 	public BuildingMetadata(SqliteDataReader reader) {
 		objectId = reader.GetInt32(0);
@@ -20,7 +21,10 @@ public class BuildingMetadata : ObjectMetadata
 		attack = reader.GetInt32(5);
         attackFrequency = reader.GetFloat(6);
 		attackRange = reader.GetInt32(7);
-        custom_value = reader.GetString(8).Replace("\n", string.Empty);
+        var customJSonValue = reader.GetString(8).Replace("\n", string.Empty);
+        custom_value = JSON.Parse(customJSonValue);
+        if (customJSonValue.Length != 0 && custom_value == null)
+            Debug.Log("Object " + objectName + " custom value is in wrong format. Plz check!");
         prefabPath = reader.GetString(9).Replace("\n", string.Empty);
         string iconName = reader.GetString(10).Replace("\n", string.Empty);
         description = reader.GetString(11).Replace("\n", string.Empty);
@@ -33,9 +37,6 @@ public class BuildingMetadata : ObjectMetadata
 
         maxAllowed = reader.GetInt32(16);
         fixDir = reader.GetInt32(17) == 1;
-
-        //gameObject = GameObject.Instantiate(Resources.Load("Prefabs/" + prefabPath) as GameObject);
-        //gameObject.SetActive(false);
 
         gameObjectPrefab = Resources.Load<GameObject>("Prefabs/" + prefabPath);
         if (iconName.Length > 0) {
