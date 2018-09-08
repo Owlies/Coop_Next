@@ -19,12 +19,22 @@ public class HealingTower : SupportBuilding
         if (!CanHealOther())
             return false;
 
+        float hpRate = 1.1f;
+        BuildingBase lowestHealthBuilding = null;
         foreach (var building in MapManager.Instance.GetCollectionOfItems<BuildingBase>())
         {
             if (Util.Get2DDistanceSquared(building.gameObject, this.gameObject) <= range)
             {
-                building.AddHealth(strength);
+                if (hpRate > building.GetHitPointPercentage())
+                {
+                    hpRate = building.GetHitPointPercentage();
+                    lowestHealthBuilding = building;
+                }
             }
+        }
+        if (lowestHealthBuilding != null)
+        {
+            lowestHealthBuilding.AddHitPoint(strength);
         }
 
         return true;

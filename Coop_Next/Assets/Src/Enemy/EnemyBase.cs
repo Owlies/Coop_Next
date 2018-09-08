@@ -227,17 +227,10 @@ public class EnemyBase : OverridableMonoBehaviour {
 
             float dis = Vector3.Distance(transform.position, item.transform.position);
 
-            if (highestAttackPriorityBuilding == null || highestAttackPriorityBuilding.underAttackingPriority < item.underAttackingPriority) {
+            if (minDistance > dis)
+            {
                 highestAttackPriorityBuilding = item;
                 minDistance = dis;
-                continue;
-            }
-
-            if (highestAttackPriorityBuilding.underAttackingPriority == item.underAttackingPriority) { 
-                if (minDistance > dis) {
-                    highestAttackPriorityBuilding = item;
-                    minDistance = dis;
-                }
             }
         }
 

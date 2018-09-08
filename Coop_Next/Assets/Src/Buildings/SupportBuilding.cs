@@ -68,7 +68,7 @@ public class SupportBuilding : BuildingBase
         {
             if (Util.Get2DDistanceSquared(building.gameObject, this.gameObject) <= range)
             {
-                building.AddBuff(new AtackDamageBuff());
+                building.AddBuff(new AtackDamageBuff(GetStrength()));
             }
         }
 

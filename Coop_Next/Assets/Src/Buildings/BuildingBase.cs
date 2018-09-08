@@ -24,8 +24,6 @@ public class BuildingBase : InteractiveObject {
     [HideInInspector]
     public float coolDownFactorModifier = 0.0f;
 
-    public int underAttackingPriority = 1;
-
     private float currentHitPoint;
     protected EBuildingState buildingState;
     private float startTakingDamageTime;
@@ -39,13 +37,17 @@ public class BuildingBase : InteractiveObject {
         hpBarBehaviour = GetComponentInChildren<HpBarBehaviour>();
     }
 
+    public float GetHitPointPercentage()
+    {
+        return maxHitPoint == 0 ? 0 : currentHitPoint / maxHitPoint;
+    }
+
     protected virtual void InitializeWithBuildingConfig() {
         BuildingMetadata metadata = objectMetadata as BuildingMetadata;
         if (metadata == null) {
             return;
         }
         maxHitPoint = metadata.hp;
-        underAttackingPriority = metadata.underAttackPriority;
         name = metadata.objectName;
 
         currentHitPoint = maxHitPoint;
@@ -118,9 +120,13 @@ public class BuildingBase : InteractiveObject {
         }
     }
 
-    public void AddHealth(float value)
+    public void AddHitPoint(float value)
     {
         currentHitPoint = Mathf.Min(maxHitPoint, currentHitPoint + value);
+        if (hpBarBehaviour != null)
+        {
+            hpBarBehaviour.UpdateHpBar(currentHitPoint, maxHitPoint);
+        }
     }
 
     private void TryRecoverStateFromTakingDamage() {
