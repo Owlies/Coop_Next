@@ -12,7 +12,7 @@ public class PlaneRenderer {
             m_planePrefab = new GameObject("plane");
             var meshFilter = m_planePrefab.AddComponent<MeshFilter>();
             meshFilter.mesh = planeMesh;
-            var meshRenderer = m_planePrefab.AddComponent<MeshRenderer>();
+            m_planePrefab.AddComponent<MeshRenderer>();
             m_planePrefab.SetActive(false);
         }
         var instant = GameObject.Instantiate(m_planePrefab);

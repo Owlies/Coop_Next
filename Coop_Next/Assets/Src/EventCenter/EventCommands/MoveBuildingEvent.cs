@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MoveBuildingEvent : EventCommandBase
 {
-    private float moveingBuildingAnchorMultplier = 2.0f;
+    //private float moveingBuildingAnchorMultplier = 2.0f;
     public MoveBuildingEvent(GameObject actor) : base(actor)
     {
     }

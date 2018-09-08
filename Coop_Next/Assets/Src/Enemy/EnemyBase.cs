@@ -30,7 +30,7 @@ public class EnemyBase : OverridableMonoBehaviour {
     private EEnemyAttackState enemyAttackState;
     private BuildingBase attackingTarget;
     private float attackCoolDownStartTime;
-    private EnemyTypeEnum type;
+    //private EnemyTypeEnum type;
     
 
     private Animator animator;
@@ -47,7 +47,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         maxHitPoint = config.hp;
         AttackDamage = config.attack;
         AttackRange = config.attackRange;
-        type = config.enemyType;
+        //type = config.enemyType;
         AttackCoolDownSeconds = 1.0f / config.attackFrequency;
         MoveSpeed = config.moveSpeed;
         SearchRange = config.searchRange;
