@@ -50,6 +50,7 @@ public class AttackBuilding : BuildingBase {
         attackDamage = metadata.attack;
         attackCoolDownSeconds = 1.0f / metadata.attackFrequency;
         attackRange = metadata.attackRange;
+        bulletSpeed = metadata.GetFloatCustomValue("bulletSpeed");
     }
 
     public override void ClearModifler()
@@ -73,7 +74,7 @@ public class AttackBuilding : BuildingBase {
 
     }
 
-    private void TryFindEnemyToAttack()
+    protected virtual void TryFindEnemyToAttack()
     {
         if (attackingEnemy != null) {
             return;

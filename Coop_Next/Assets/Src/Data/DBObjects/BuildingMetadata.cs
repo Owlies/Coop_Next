@@ -10,7 +10,7 @@ public class BuildingMetadata : ObjectMetadata
 	public float attack;
 	public float attackFrequency;
 	public int attackRange;
-    public JSONNode custom_value;
+    private JSONNode custom_value;
 
 	public BuildingMetadata(SqliteDataReader reader) {
 		objectId = reader.GetInt32(0);
@@ -42,5 +42,26 @@ public class BuildingMetadata : ObjectMetadata
         if (iconName.Length > 0) {
             icon = Resources.Load<Sprite>("Images/UIIcons/BuildingIcons/" + iconName);
         }
+    }
+
+    public string GetStringCustomValue(string key)
+    {
+        if (custom_value == null)
+            return "";
+        return custom_value[key];
+    }
+
+    public float GetFloatCustomValue(string key)
+    {
+        if (custom_value == null)
+            return 0;
+        return float.Parse(custom_value[key]);
+    }
+
+    public int GetIntCustomValue(string key)
+    {
+        if (custom_value == null)
+            return 0;
+        return int.Parse(custom_value[key]);
     }
 }
