@@ -4,23 +4,26 @@ using UnityEngine;
 
 public class FlameThrower : AttackBuilding {
 
-    static private List<EnemyBase> attackingEnemys = new List<EnemyBase>();
+    public BoxCollider flameCollider;
+    private float flameWidth;
+
+    protected override void InitializeWithBuildingConfig()
+    {
+        base.InitializeWithBuildingConfig();
+        BuildingMetadata metadata = objectMetadata as BuildingMetadata;
+        flameWidth = metadata.GetFloatCustomValue("flameWidth");
+        flameCollider.center = new Vector3(0, 3, attackRange / 4.0f);
+        flameCollider.size = new Vector3(flameWidth / 2.0f, 8, attackRange / 2.0f);
+    }
+
+    public List<EnemyBase> attackingEnemys = new List<EnemyBase>();
     protected override bool TryAttackEnemy()
     {
         if (!CanAttackEnemy())
         {
-            attackingEnemy = null;
             return false;
         }
 
-        attackingEnemys.Clear();
-        foreach (EnemyBase enemy in EnemyManager.Instance.GetAllAliveEnemies())
-        {
-            if (Vector3.Distance(enemy.transform.position, this.transform.position) <= attackRange)
-            {
-                attackingEnemys.Add(enemy);
-            }
-        }
         for(int i =0; i < attackingEnemys.Count; ++i)
             attackingEnemys[i].TakeDamage(attackDamage);
 
@@ -36,6 +39,9 @@ public class FlameThrower : AttackBuilding {
         {
             return false;
         }
+
+        if (attackingEnemys.Count == 0)
+            return false;
 
         return true;
     }

@@ -24,7 +24,7 @@ public class BuildingMetadata : ObjectMetadata
         var customJSonValue = reader.GetString(8).Replace("\n", string.Empty);
         custom_value = JSON.Parse(customJSonValue);
         if (customJSonValue.Length != 0 && custom_value == null)
-            Debug.Log("Object " + objectName + " custom value is in wrong format. Plz check!");
+            Debug.LogError("Object " + objectName + " custom value is in wrong format. Plz check!");
         prefabPath = reader.GetString(9).Replace("\n", string.Empty);
         string iconName = reader.GetString(10).Replace("\n", string.Empty);
         description = reader.GetString(11).Replace("\n", string.Empty);
@@ -55,13 +55,18 @@ public class BuildingMetadata : ObjectMetadata
     {
         if (custom_value == null)
             return 0;
-        return float.Parse(custom_value[key]);
+        float result = 0;
+        float.TryParse(custom_value[key], out result);
+        return result;
     }
 
     public int GetIntCustomValue(string key)
     {
         if (custom_value == null)
             return 0;
-        return int.Parse(custom_value[key]);
+        int result = 0;
+        int.TryParse(custom_value[key], out result);
+        return result;
+        //return int.Parse(custom_value[key]);
     }
 }
