@@ -85,19 +85,19 @@ public class UpdateManager : MonoBehaviour
 	{
 		if (CheckIfArrayContainsItem(regularArray, behaviour))
 		{
-			regularArray = ShrinkAndRemoveItemToArray(regularArray, behaviour);
+			regularArray = ShrinkAndRemoveItemToArray(regularArray, regularUpdateArrayCount, behaviour);
 			regularUpdateArrayCount--;
 		}
 
 		if (CheckIfArrayContainsItem(fixedArray, behaviour))
 		{
-			fixedArray = ShrinkAndRemoveItemToArray(fixedArray, behaviour);
+			fixedArray = ShrinkAndRemoveItemToArray(fixedArray, fixedUpdateArrayCount, behaviour);
 			fixedUpdateArrayCount--;
 		}
 
 		if (!CheckIfArrayContainsItem(lateArray, behaviour)) return;
 
-		lateArray = ShrinkAndRemoveItemToArray(lateArray, behaviour);
+		lateArray = ShrinkAndRemoveItemToArray(lateArray, lateUpdateArrayCount, behaviour);
 		lateUpdateArrayCount--;
 	}
 
@@ -113,13 +113,13 @@ public class UpdateManager : MonoBehaviour
 		return false;
 	}
 
-	public OverridableMonoBehaviour[] ShrinkAndRemoveItemToArray(OverridableMonoBehaviour[] original, OverridableMonoBehaviour itemToRemove)
+	public OverridableMonoBehaviour[] ShrinkAndRemoveItemToArray(OverridableMonoBehaviour[] original, int originalCount, OverridableMonoBehaviour itemToRemove)
 	{
 		int size = original.Length;
 		for (int i = 0; i < size; i++)
 		{
             if (original[i] == itemToRemove)
-                original[i] = original[original.Length - 1];
+                original[i] = original[originalCount - 1];
         }
 		return original;
 	}
