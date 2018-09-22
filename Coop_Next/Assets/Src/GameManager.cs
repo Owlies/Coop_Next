@@ -23,7 +23,7 @@ public class GameManager : Singleton<GameManager> {
 
     void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) {
         // Don't initialize server for main scene
-        if (scene.name.Equals("main")) {
+        if (scene.name.Equals("main") || scene.name.Equals("Start")) {
             return;
         }
 
@@ -34,7 +34,7 @@ public class GameManager : Singleton<GameManager> {
     void Start ()
     {
         DontDestroyOnLoad(gameObject);
-        SceneManager.LoadScene("Level1", LoadSceneMode.Additive);
+        SceneManager.LoadScene("Start", LoadSceneMode.Additive);
     }
 
     void InitializeServices() {
