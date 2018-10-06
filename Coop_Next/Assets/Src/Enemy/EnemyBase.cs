@@ -255,6 +255,7 @@ public class EnemyBase : OverridableMonoBehaviour {
         if (currentHitPoint <= Constants.EPS)
         {
             animator.SetBool(ANIMATION_IS_DEAD, true);
+            hpBarBehaviour.gameObject.SetActive(false);
             MapManager.Instance.RemoveItemFromMap(this.gameObject);
             EnemyManager.Instance.OnEnemyKilled(this);
         }

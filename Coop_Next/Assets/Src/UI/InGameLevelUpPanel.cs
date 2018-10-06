@@ -41,6 +41,6 @@ public class InGameLevelUpPanel : MonoBehaviour {
 
     public void ConfirmSelection()
     {
-
+        UpdateManager.isActive = !UpdateManager.isActive;
     }
 }

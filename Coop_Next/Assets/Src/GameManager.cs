@@ -40,6 +40,8 @@ public class GameManager : Singleton<GameManager> {
     void InitializeServices() {
          Debug.Log("InitializeServices");
 
+        UIManager.Instance.Initialize();
+
         MetadataLoader.Instance.Initialize();
         MetadataManager.Instance.Initialize();
 

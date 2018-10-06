@@ -7,6 +7,7 @@ public struct PlayerInputConfig
     public string horizontalAxis;
     public string verticalAxis;
     public string actionButton;
+    public string menuButton;
 };
 
 public enum EPlayerActionState {

@@ -17,6 +17,8 @@ public class UpdateManager : MonoBehaviour
 {
 	private static UpdateManager instance;
 
+    public static bool isActive = true;
+
 	private int regularUpdateArrayCount = 0;
 	private int fixedUpdateArrayCount = 0;
 	private int lateUpdateArrayCount = 0;
@@ -126,6 +128,8 @@ public class UpdateManager : MonoBehaviour
 
 	private void Update()
 	{
+        if (!isActive) return;
+
 		if (regularUpdateArrayCount == 0) return;
 
 		for (int i = 0; i < regularUpdateArrayCount; i++)
@@ -138,8 +142,10 @@ public class UpdateManager : MonoBehaviour
 	}
 
 	private void FixedUpdate()
-	{
-		if (fixedUpdateArrayCount == 0) return;
+    {
+        if (!isActive) return;
+
+        if (fixedUpdateArrayCount == 0) return;
 
 		for (int i = 0; i < fixedUpdateArrayCount; i++)
 		{
@@ -151,8 +157,10 @@ public class UpdateManager : MonoBehaviour
 	}
 
 	private void LateUpdate()
-	{
-		if (lateUpdateArrayCount == 0) return;
+    {
+        if (!isActive) return;
+
+        if (lateUpdateArrayCount == 0) return;
 
 		for (int i = 0; i < lateUpdateArrayCount; i++)
 		{
