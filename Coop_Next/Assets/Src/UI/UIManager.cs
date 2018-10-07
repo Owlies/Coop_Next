@@ -12,9 +12,11 @@ public class UIManager : Singleton<UIManager>
     GameObject UIRoot = null;
     UIInputConfig inputConfig;
 
+    string prefix = "prefabs/UI/";
+
     string[] preloadUI =
     {
-        "prefabs/UI/InGameLevelUpPanel"
+        "InGameLevelUpPanel"
     };
 
     Dictionary<string, GameObject> UIPanels = new Dictionary<string, GameObject>();
@@ -27,7 +29,7 @@ public class UIManager : Singleton<UIManager>
 
         for (int i = 0; i < preloadUI.Length; i++)
         {
-            GameObject panel = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(preloadUI[i]));
+            GameObject panel = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(prefix + preloadUI[i]));
             panel.SetActive(false);
             panel.transform.parent = UIRoot.transform;
             panel.GetComponent<RectTransform>().localPosition = Vector3.zero;
@@ -35,35 +37,42 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
-    public void ActiveUIPanel(string name)
+    public void ActiveUIPanel(string name, bool stopGame)
     {
         if (UIPanels.ContainsKey(name) && UIPanels[name] != null)
         {
             bool isActive = UIPanels[name].activeSelf;
             UIPanels[name].SetActive(!isActive);
         }
+        if (stopGame)
+            UpdateManager.isActive = false;
+
     }
 
-    public void HideUIPanel(string name)
+    public void HideUIPanel(string name, bool restoreGame)
     {
         if (UIPanels.ContainsKey(name) && UIPanels[name] != null)
         {
             UIPanels[name].SetActive(false);
         }
+        if (restoreGame)
+            UpdateManager.isActive = true;
     }
 
     public void Destory()
     {
 
     }
-
+    
     public void Update()
     {
-        if (Input.GetButtonDown(inputConfig.menuButton) ||
-    Input.GetButtonDown(inputConfig.menuButton))
-        {
-            UpdateManager.isActive = !UpdateManager.isActive;
-            ActiveUIPanel("prefabs/UI/InGameLevelUpPanel");
-        }
+    //    if (Input.GetButtonDown(inputConfig.menuButton) ||
+    //Input.GetButtonDown(inputConfig.menuButton))
+    //    {
+    //        if (!UIPanels["InGameLevelUpPanel"].activeSelf)
+    //            ActiveUIPanel("InGameLevelUpPanel", true);
+    //        else
+    //            HideUIPanel("InGameLevelUpPanel", true);
+    //    }
     }
 }

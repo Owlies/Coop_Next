@@ -12,6 +12,11 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         InitializeWithBuildings();
     }
 
+    public Dictionary<string, int> GetTechTreeLevelMap()
+    {
+        return techTreeLevelMap;
+    }
+
     //private void InitializeWithBuildings() {
     //    techTreeLevelMap = new Dictionary<string, int>();
     //    List<BuildingMetadata> buildingMetadataList = MetadataLoader.Instance.GetBuildingMetadata();

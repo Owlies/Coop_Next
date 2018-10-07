@@ -9,6 +9,7 @@ public class EnemyManager : Singleton<EnemyManager> {
 
     private int currentWave;
     private int aliveEnemyQuantity;
+    private bool needLevelUp = false;
     private float waveIntervalTimer = 0.0f;
     private GameObject targetGameObject;
     private List<EnemyBase> allEnemies;
@@ -61,6 +62,11 @@ public class EnemyManager : Singleton<EnemyManager> {
             StartNextWave();
         }
         else if (aliveEnemyQuantity == 0){
+            if (needLevelUp)
+            {
+                UIManager.Instance.ActiveUIPanel("InGameLevelUpPanel", true);
+                needLevelUp = false;
+            }
             waveIntervalTimer += Time.deltaTime;
         }
     }
@@ -90,8 +96,9 @@ public class EnemyManager : Singleton<EnemyManager> {
     private void SpawnEnemyForWaveWithType(EnemyTypeEnum type) {
         WaveEnemyConfigMetadata waveConfig = waveConfigDictionary[currentWave];
         int enemyQuantity = 0;
+        needLevelUp = false;
 
-        switch(type) {
+        switch (type) {
             case EnemyTypeEnum.AVERAGE:
                 enemyQuantity = waveConfig.averageEnemyQuantity;
                 break;
@@ -103,9 +110,13 @@ public class EnemyManager : Singleton<EnemyManager> {
                 break;
             case EnemyTypeEnum.SMALL_BOSS:
                 enemyQuantity = waveConfig.smallBossQuantity;
+                //if (enemyQuantity > 0)
+                    needLevelUp = true;
                 break;
             case EnemyTypeEnum.BIG_BOSS:
                 enemyQuantity = waveConfig.bigBossQuantity;
+                //if (enemyQuantity > 0)
+                    needLevelUp = true;
                 break;
 
         }

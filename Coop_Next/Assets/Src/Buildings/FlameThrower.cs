@@ -12,8 +12,8 @@ public class FlameThrower : AttackBuilding {
         base.InitializeWithBuildingConfig();
         BuildingMetadata metadata = objectMetadata as BuildingMetadata;
         flameWidth = metadata.GetFloatCustomValue("flameWidth");
-        flameCollider.center = new Vector3(0, 3, attackRange / 4.0f);
-        flameCollider.size = new Vector3(flameWidth / 2.0f, 8, attackRange / 2.0f);
+        flameCollider.center = new Vector3(0, 3, attackRange / 2.0f);
+        flameCollider.size = new Vector3(flameWidth / 2.0f, 8, attackRange);
     }
 
     public List<EnemyBase> attackingEnemys = new List<EnemyBase>();

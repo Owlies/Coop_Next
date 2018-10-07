@@ -54,28 +54,24 @@ public class MapManager : Singleton<MapManager> {
                     ItemManager.InitItem(obj, (ItemMetadata)objectData);
                 }
 
-                obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.x / 2.0f, objectData.size.y / 2.0f));
+                obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(1 / 2.0f, 1 / 2.0f));
                 if (instance.dir == ObjectDir.Vertical)
                 {
                     obj.transform.localEulerAngles = new Vector3(0, 90, 0);
-                    obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(objectData.size.y / 2.0f, objectData.size.x / 2.0f));
+                    obj.transform.localPosition = MapIndexToWorldPos(instance.position + new Vector2(1 / 2.0f, 1 / 2.0f));
                 }
-                for(int idxX = 0; idxX < objectData.size.x; idxX++)
-                {
-                    for (int idxY = 0; idxY < objectData.size.y; idxY++)
-                    {
-                        Vector2Int index = instance.position + new Vector2Int(idxX, idxY);
 
-                        if (instance.dir == ObjectDir.Vertical)
-                            index = instance.position + new Vector2Int(idxY, idxX);
-                            if (index.x >= 0 && index.y >= 0 &&
-                            index.x < levelConfig.mapSize.x && index.y < levelConfig.mapSize.y)
-                        {
-                            mapNodes[index.x, index.y].isBlocked = true;
-                            mapNodes[index.x, index.y].gameObject = obj;
-                        }
-                    }
+                Vector2Int index = instance.position;
+
+                if (instance.dir == ObjectDir.Vertical)
+                    index = instance.position;
+                if (index.x >= 0 && index.y >= 0 &&
+                index.x < levelConfig.mapSize.x && index.y < levelConfig.mapSize.y)
+                {
+                    mapNodes[index.x, index.y].isBlocked = true;
+                    mapNodes[index.x, index.y].gameObject = obj;
                 }
+
                 gameObjectOnMapDictionary[obj] = true;
             }
         }
@@ -209,39 +205,20 @@ public class MapManager : Singleton<MapManager> {
     public bool PlaceItemOnMap(InteractiveObject item, Vector2Int mapIndex, ObjectDir dir = ObjectDir.Horizontal)
     {
         GameObject obj = item.gameObject;
-        Vector2Int size = item.size;
         bool accessible = true;
-        for (int i = 0; i < size.x; i++)
-        {
-            for (int j = 0; j < size.y; j++)
-            {
-                Vector2Int index = mapIndex + new Vector2Int(i, j);
-                if (dir == ObjectDir.Vertical && (item.objectMetadata == null ||!item.objectMetadata.fixDir))
-                    index = mapIndex + new Vector2Int(j, i);
-                if (IsMapIndexOutOfBound(index) || !mapNodes[index.x, index.y].IsEmpty())
-                {
-                    accessible = false;
-                }
-            }
-        }
+
+        if (IsMapIndexOutOfBound(mapIndex) || !mapNodes[mapIndex.x, mapIndex.y].IsEmpty())
+            accessible = false;
+
         if (accessible)
         {
-            for (int i = 0; i < size.x; i++)
-            {
-                for (int j = 0; j < size.y; j++)
-                {
-                    Vector2Int index = mapIndex + new Vector2Int(i, j);
-                    if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
-                        index = mapIndex + new Vector2Int(j, i);
-                    mapNodes[index.x, index.y].AddItemToNode(obj);
-                }
-            }
+            mapNodes[mapIndex.x, mapIndex.y].AddItemToNode(obj);
             gameObjectOnMapDictionary[obj] = true;
             obj.transform.parent = sceneRoot.transform;
-            obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.x / 2.0f, size.y / 2.0f));
+            obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(1 / 2.0f, 1 / 2.0f));
 
             if (dir == ObjectDir.Vertical && !item.objectMetadata.fixDir)
-                obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(size.y / 2.0f, size.x / 2.0f));
+                obj.transform.localPosition = MapIndexToWorldPos(mapIndex + new Vector2(1 / 2.0f, 1 / 2.0f));
 
             if (item.objectMetadata.fixDir)
                 obj.transform.localRotation = Quaternion.identity;
@@ -288,17 +265,9 @@ public class MapManager : Singleton<MapManager> {
         ObjectDir dir = item.GetItemDirection();
         Vector2Int pos = GeItemMapPosition(item);
 
-        for (int i = 0; i < item.size.x; i++)
-        {
-            for(int j = 0; j < item.size.y; j++)
-            {
-                Vector2Int index = pos + new Vector2Int(i, j);
-                if (dir == ObjectDir.Vertical)
-                    index = pos + new Vector2Int(j, i);
-                if (IsBlocked(index))
-                    return false;
-            }
-        }
+        if (IsBlocked(pos))
+            return false;
+
         return true;
     }
 
@@ -324,13 +293,49 @@ public class MapManager : Singleton<MapManager> {
             
         ObjectDir itemDirection = item.GetItemDirection();
         Vector2Int index = MapManager.Instance.WorldPosToMapIndex(item.transform.position);
-        if (itemDirection == ObjectDir.Horizontal) {
-            index -= new Vector2Int(item.size.x / 2, item.size.y / 2);
-        } else {
-            index -= new Vector2Int(item.size.y / 2, item.size.x / 2);
-        }
+        index -= new Vector2Int(1 / 2, 1 / 2);
             
         return index;
+    }
+
+    private Dictionary<GameObject,GameObject> originToNew = new Dictionary<GameObject, GameObject>(32);
+    public void UpgradeBuildings(string tech, int level)
+    {
+        var iter = gameObjectOnMapDictionary.GetEnumerator();
+        while(iter.MoveNext())
+        {
+            InteractiveObject interactiveObject = iter.Current.Key.GetComponent<InteractiveObject>();
+            if (interactiveObject.objectMetadata.techTreeId.Equals(tech) && interactiveObject.objectMetadata.level < level)
+            {
+                var objMetaData = metadataManager.GetObjectMetadataWithObjectId(interactiveObject.objectMetadata.objectId + level - interactiveObject.objectMetadata.level);
+                if (objMetaData != null)
+                {
+                    GameObject originObj = iter.Current.Key;
+                    GameObject obj = objMetaData.GetGameObjectFromPool(sceneRoot.transform);
+                    obj.transform.SetPositionAndRotation(originObj.transform.position, originObj.transform.rotation);
+
+                    originToNew.Add(originObj, obj);
+                }
+            }
+        }
+
+        for (int i = 0; i < mapNodes.GetLength(0); i++)
+        {
+            for (int j = 0; j < mapNodes.GetLength(1); j++)
+            {
+                if (mapNodes[i, j].gameObject != null && 
+                    originToNew.ContainsKey(mapNodes[i, j].gameObject))
+                {
+                    GameObject origin = mapNodes[i, j].gameObject;
+                    mapNodes[i, j].gameObject = originToNew[origin];
+                    gameObjectOnMapDictionary.Add(mapNodes[i, j].gameObject, true);
+                    gameObjectOnMapDictionary.Remove(origin);
+                    GameObject.Destroy(origin);
+                }
+            }
+        }
+
+        originToNew.Clear();
     }
 
     public override void UpdateMe()
