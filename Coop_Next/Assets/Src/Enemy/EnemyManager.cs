@@ -146,8 +146,8 @@ public class EnemyManager : Singleton<EnemyManager> {
             float xOffset = Random.Range(1.0f, 3.0f);
             float zOffset = Random.Range(1.0f, 3.0f);
             Vector3 spawnPos = new Vector3(spawnLocation.transform.position.x + xOffset, spawnLocation.transform.position.y, spawnLocation.transform.position.z + zOffset);
-            
-            SpawnEnemyAtPosition(enemyPrefab, spawnPos, config);
+
+            StartCoroutine(SpawnEnemyAtPosition(enemyPrefab, spawnPos, config, (i + 1) * AppConstant.Instance.enemySpawnInterval));
         }
     }
 
@@ -174,13 +174,15 @@ public class EnemyManager : Singleton<EnemyManager> {
         return allEnemies;
     }
 
-    private void SpawnEnemyAtPosition(GameObject enemyPrefab, Vector3 pos, EnemyMetadata config) {
+    private IEnumerator SpawnEnemyAtPosition(GameObject enemyPrefab, Vector3 pos, EnemyMetadata config, float delay) {
+        yield return new WaitForSeconds(delay);
+
         GameObject enemyObject = GameObject.Instantiate(enemyPrefab, pos, Quaternion.identity);
         EnemyBase enemy = enemyObject.GetComponent<EnemyBase>();
         if (enemy == null) {
             Debug.Log("ERROR: No EnemyBase Component");
             DestroyImmediate(enemyObject);
-            return;
+            yield return null;
         }
 
         allEnemies.Add(enemy);
