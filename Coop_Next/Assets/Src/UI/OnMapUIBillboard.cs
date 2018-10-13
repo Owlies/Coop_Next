@@ -10,7 +10,7 @@ public class OnMapUIBillboard : OverridableMonoBehaviour {
 
     public void Initialize(string titleString, string contentString)
     {
-        canvas = GetComponentInChildren<Canvas>();
+        canvas = GetComponent<Canvas>();
         title = GetComponentsInChildren<Text>()[0];
         content = GetComponentsInChildren<Text>()[1];
         UpdateTitle(titleString);

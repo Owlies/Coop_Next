@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UpdateCanvasLookAt : OverridableMonoBehaviour {
-    private Canvas canvas;
+    public Canvas canvas;
     public bool canvasEnableOnStart;
     // Use this for initialization
     void Start () {
-        canvas = GetComponentInChildren<Canvas>();
+        if (canvas == null)
+            canvas = GetComponentInChildren<Canvas>();
         if(canvas == null) {
             return;
         }

@@ -45,7 +45,10 @@ public class UIManager : Singleton<UIManager>
             UIPanels[name].SetActive(!isActive);
         }
         if (stopGame)
+        {
             UpdateManager.isActive = false;
+            Time.timeScale = 0;
+        }
 
     }
 
@@ -56,7 +59,10 @@ public class UIManager : Singleton<UIManager>
             UIPanels[name].SetActive(false);
         }
         if (restoreGame)
+        {
             UpdateManager.isActive = true;
+            Time.timeScale = 1;
+        }
     }
 
     public void Destory()
