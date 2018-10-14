@@ -20,6 +20,11 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         return techTreeLevelMap;
     }
 
+    public Dictionary<string, int> GetSubTypeLevelMap()
+    {
+        return subTypeLevelMap;
+    }
+
     private void InitializeWithBuildings() {
         List<ObjectMetadata> unlockedCrafts = CraftingManager.Instance.GetUnlockedCrafts();
         foreach (ObjectMetadata craft in unlockedCrafts) {
@@ -27,6 +32,11 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         }
 
         foreach (string subType in Enum.GetNames(typeof(ObjectSubType))) {
+            if (subType.Equals("FunctionalBuilding")
+                || subType.Equals("EquipmentItem")
+                || subType.Equals("ResourceItem")
+                || subType.Equals("None"))
+                continue;
             subTypeLevelMap.Add(subType, 1);
         }
     }
