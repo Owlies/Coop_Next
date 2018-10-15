@@ -110,12 +110,12 @@ public class EnemyManager : Singleton<EnemyManager> {
                 break;
             case EnemyTypeEnum.SMALL_BOSS:
                 enemyQuantity = waveConfig.smallBossQuantity;
-                //if (enemyQuantity > 0)
+                if (enemyQuantity > 0)
                     needLevelUp = true;
                 break;
             case EnemyTypeEnum.BIG_BOSS:
                 enemyQuantity = waveConfig.bigBossQuantity;
-                //if (enemyQuantity > 0)
+                if (enemyQuantity > 0)
                     needLevelUp = true;
                 break;
 
@@ -151,9 +151,13 @@ public class EnemyManager : Singleton<EnemyManager> {
         }
     }
 
-    public void OnEnemyKilled(EnemyBase enemy) {
-        foreach (int lootId in enemy.lootIds) {
-            LootManager.Instance.DropLoot(lootId, enemy.transform.position);
+    public void OnEnemyKilled(EnemyBase enemy, bool dropLoot) {
+        if (dropLoot)
+        {
+            foreach (int lootId in enemy.lootIds)
+            {
+                LootManager.Instance.DropLoot(lootId, enemy.transform.position);
+            }
         }
         
         allEnemies.Remove(enemy);

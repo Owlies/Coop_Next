@@ -11,6 +11,15 @@ public class MapManager : Singleton<MapManager> {
     private Vector2Int mapSize;
     private Vector3 mapOrigin;
     public bool showDebug = true;
+    public int currentHitPoint = 10;
+
+    public void ReduceCurrentHP(int value)
+    {
+        currentHitPoint -= value;
+        Debug.LogErrorFormat("只有{0}血啦!!!!!!!",currentHitPoint);
+        if (currentHitPoint <= 0)
+            Debug.LogError("DIEDIEDIEDIEDIEDIE");
+    }
 
     // <GameObject, isOnMap>
     private Dictionary<GameObject, bool> gameObjectOnMapDictionary = new Dictionary<GameObject, bool>();

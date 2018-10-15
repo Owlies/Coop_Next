@@ -32,11 +32,15 @@ public class HealingTower : SupportBuilding
                 }
             }
         }
-        if (lowestHealthBuilding != null)
+        if (lowestHealthBuilding != null && hpRate < 1.0f)
         {
+            //Debug.LogFormat("{0},{1}", lowestHealthBuilding.name, strength);
             lowestHealthBuilding.AddHitPoint(strength);
+            actionState = ESupportBuildingState.COOLING_DOWN;
+            actionCoolDownStartTime = Time.time;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

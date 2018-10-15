@@ -132,6 +132,26 @@ public class EnemyBase : OverridableMonoBehaviour {
         return true;
     }
 
+    //void OnCollisionEnter(Collision collision)
+    //{
+    //    Debug.Log(collision.gameObject.name);
+    //    if(collision.gameObject.tag)
+    //}
+    private bool TryReachTarget()
+    {
+        if (IsDead())
+            return false;
+        if (targetGameOjbects == null)
+            return false;
+        if (targetGameOjbects.Count != 1)
+            return false;
+
+        if (Vector3.Distance(transform.position, targetGameOjbects[0].transform.position) < 3)
+            return true;
+
+        return false;
+    }
+
     private void MoveTowardsTarget() {
         if (!CanMoveTowardsTarget()) {
             return;
@@ -146,6 +166,14 @@ public class EnemyBase : OverridableMonoBehaviour {
         enemyState = EEnemyState.MOVING;
 
         animator.SetBool(ANIMATION_IS_IDLE, false);
+
+        //temp
+        if (TryReachTarget())
+        {
+            currentHitPoint = 0;
+            Die(false);
+            MapManager.Instance.ReduceCurrentHP(1);
+        }
     }
 
     private void TryFindBuildingToAttack() {
@@ -254,11 +282,16 @@ public class EnemyBase : OverridableMonoBehaviour {
 
         if (currentHitPoint <= Constants.EPS)
         {
-            animator.SetBool(ANIMATION_IS_DEAD, true);
-            hpBarBehaviour.gameObject.SetActive(false);
-            MapManager.Instance.RemoveItemFromMap(this.gameObject);
-            EnemyManager.Instance.OnEnemyKilled(this);
+            Die(true);
         }
+    }
+
+    private void Die(bool dropLoot)
+    {
+        animator.SetBool(ANIMATION_IS_DEAD, true);
+        hpBarBehaviour.gameObject.SetActive(false);
+        MapManager.Instance.RemoveItemFromMap(this.gameObject);
+        EnemyManager.Instance.OnEnemyKilled(this, dropLoot);
     }
 
     public bool IsDead() {
