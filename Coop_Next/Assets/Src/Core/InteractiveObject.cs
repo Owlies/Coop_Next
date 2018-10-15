@@ -123,7 +123,7 @@ public class InteractiveObject : OverridableMonoBehaviour {
         return true;
     }
 
-    public virtual bool ShortPressAction(Player actor)
+    public virtual bool DefaultShortPressAction(Player actor)
     {
         return TryPlaceItemOnMap(actor);
     } 

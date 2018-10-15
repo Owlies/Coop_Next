@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TrashBin : BuildingBase {
-	public override bool ShortPressAction(Player actor) {
+    public override bool InteractAction(Player actor) {
 		if (TryDestroyPlayerCarryingItem(actor)) {
 			return true;
 		}

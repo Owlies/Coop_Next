@@ -273,7 +273,7 @@ public class Player:OverridableMonoBehaviour
             return item.InteractAction(this);
         }
 
-        return carryingItem.ShortPressAction(this);
+        return carryingItem.DefaultShortPressAction(this);
     }
 
     private bool CanHandlePressReleaseAction() {
