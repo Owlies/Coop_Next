@@ -299,13 +299,13 @@ public class MapManager : Singleton<MapManager> {
     }
 
     private Dictionary<GameObject,GameObject> originToNew = new Dictionary<GameObject, GameObject>(32);
-    public void UpgradeBuildings(string tech, int level)
+    public void UpgradeBuildings(ObjectSubType subType, int level)
     {
         var iter = gameObjectOnMapDictionary.GetEnumerator();
         while(iter.MoveNext())
         {
             InteractiveObject interactiveObject = iter.Current.Key.GetComponent<InteractiveObject>();
-            if (interactiveObject.objectMetadata.techTreeId.Equals(tech) && interactiveObject.objectMetadata.level < level)
+            if (interactiveObject.objectMetadata.subType == subType && interactiveObject.objectMetadata.level < level)
             {
                 var objMetaData = metadataManager.GetObjectMetadataWithObjectId(interactiveObject.objectMetadata.objectId + level - interactiveObject.objectMetadata.level);
                 if (objMetaData != null)

@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class TechTreeManager : Singleton<TechTreeManager> {
     private Dictionary<string, int> techTreeLevelMap;
-    private Dictionary<string, int> subTypeLevelMap;
+    private Dictionary<int, int> subTypeLevelMap;
 
     public void Initialize() {
         techTreeLevelMap = new Dictionary<string, int>();
-        subTypeLevelMap = new Dictionary<string, int>();
+        subTypeLevelMap = new Dictionary<int, int>();
 
         InitializeWithBuildings();
     }
@@ -20,7 +20,7 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         return techTreeLevelMap;
     }
 
-    public Dictionary<string, int> GetSubTypeLevelMap()
+    public Dictionary<int, int> GetSubTypeLevelMap()
     {
         return subTypeLevelMap;
     }
@@ -31,13 +31,13 @@ public class TechTreeManager : Singleton<TechTreeManager> {
             techTreeLevelMap.Add(craft.techTreeId, 1);
         }
 
-        foreach (string subType in Enum.GetNames(typeof(ObjectSubType))) {
-            if (subType.Equals("FunctionalBuilding")
-                || subType.Equals("EquipmentItem")
-                || subType.Equals("ResourceItem")
-                || subType.Equals("None"))
+        foreach (ObjectSubType subType in Enum.GetValues(typeof(ObjectSubType))) {
+            if (subType == ObjectSubType.FunctionalBuilding
+                || subType == ObjectSubType.EquipmentItem
+                || subType == ObjectSubType.ResourceItem
+                || subType == ObjectSubType.None)
                 continue;
-            subTypeLevelMap.Add(subType, 1);
+            subTypeLevelMap.Add((int)subType, 1);
         }
     }
 
@@ -56,23 +56,23 @@ public class TechTreeManager : Singleton<TechTreeManager> {
     }
 
     public void UpgradeBuildingWithSubType(ObjectSubType subTypeToUpgrade) {
-        subTypeLevelMap[subTypeToUpgrade.ToString()]++;
-        int newLevel = subTypeLevelMap[subTypeToUpgrade.ToString()];
+        subTypeLevelMap[(int)subTypeToUpgrade]++;
+        int newLevel = subTypeLevelMap[(int)subTypeToUpgrade];
         foreach (ObjectMetadata metadata in CraftingManager.Instance.GetUnlockedCrafts()) {
             if (metadata.subType == subTypeToUpgrade) {
                 if (techTreeLevelMap[metadata.techTreeId] < newLevel) {
-                    techTreeLevelMap[metadata.techTreeId] = subTypeLevelMap[subTypeToUpgrade.ToString()];
+                    techTreeLevelMap[metadata.techTreeId] = subTypeLevelMap[(int)subTypeToUpgrade];
                 }
             }
         }
     }
 
     public bool UnlockItem(ObjectMetadata item) {
-        if (techTreeLevelMap.ContainsKey(item.techTreeId)) {
+        if (subTypeLevelMap.ContainsKey((int)item.subType)) {
             return false;
         }
 
-        techTreeLevelMap[item.techTreeId] = subTypeLevelMap[item.subType.ToString()];
+        techTreeLevelMap[item.techTreeId] = subTypeLevelMap[(int)item.subType];
         CraftingManager.Instance.UnlockCraft(item);
         return true;
     }
