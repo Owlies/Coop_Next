@@ -17,9 +17,14 @@ public class InGameLevelUpPanel : MonoBehaviour {
     private int[] techLevel = new int[2];
     private int currentIdx = -1;
 
+    Dictionary<int, int> techs = new Dictionary<int, int>();
     public void OnEnable()
     {
-        var techs = TechTreeManager.Instance.GetSubTypeLevelMap();
+        var subtypes = TechTreeManager.Instance.GetSubTypeLevelMap();
+        techs.Clear();
+        foreach (var id in subtypes)
+            if (id.Value < 3)
+                techs.Add(id.Key,id.Value);
         int id1 = Random.Range(0, techs.Count);
         int id2 = Random.Range(0, techs.Count);
         while (techs.Count > 1 && id2 == id1)
