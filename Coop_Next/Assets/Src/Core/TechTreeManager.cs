@@ -67,6 +67,17 @@ public class TechTreeManager : Singleton<TechTreeManager> {
         }
     }
 
+    public bool IsItemUnlocked(ObjectMetadata item){
+        if (subTypeLevelMap.ContainsKey((int)item.subType))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public bool UnlockItem(ObjectMetadata item) {
         if (subTypeLevelMap.ContainsKey((int)item.subType)) {
             return false;

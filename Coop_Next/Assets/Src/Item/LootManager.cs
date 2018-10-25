@@ -25,6 +25,17 @@ public class LootManager : Singleton<LootManager>
                     lootRoot.transform.rotation = Quaternion.identity;
                     lootRoot.transform.localScale = Vector3.one;
                 }
+                ObjectMetadata item = MetadataManager.Instance.GetObjectMetadataWithObjectId(itemId);
+                if (item == null)
+                {
+                    Debug.LogError("loot item " + itemId + " is not in db!");
+                    return;
+                }
+
+                bool isLootUnlocked = (lootMetadata.behaviour.Equals(LootEnum.UNLOCK_BEHAVIOUR) && TechTreeManager.Instance.IsItemUnlocked(item));
+                if (isLootUnlocked)
+                    return;
+
                 GameObject loot = GameObject.Instantiate(lootPrefab,lootRoot.transform) as GameObject;
 
                 Vector3 position = pos;
@@ -36,12 +47,7 @@ public class LootManager : Singleton<LootManager>
                     Debug.LogError("No LootObject on lootObject");
                     return;
                 } else {
-                    ObjectMetadata item = MetadataManager.Instance.GetObjectMetadataWithObjectId(itemId);
-                    if (item == null) {
-                        Debug.LogError("loot item " + itemId + " is not in db!");
-                    } else {
-                        lootObject.Init(lootMetadata.behaviour, item);
-                    }
+                    lootObject.Init(lootMetadata.behaviour, item);
                 }
             }
         }
